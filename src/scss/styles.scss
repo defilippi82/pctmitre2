@@ -1,0 +1,11 @@
+
+@import "bootstrap/scss/bootstrap";
+body{
+    background: #375DDB;
+    background: -moz-linear-gradient(-45deg, #375DDB 0%, #308CA4 50%, #F7FEFF 100%);
+    background: -webkit-linear-gradient(-45deg, #375DDB 0%, #308CA4 50%, #F7FEFF 100%);
+    background: linear-gradient(135deg, #375DDB 0%, #308CA4 50%, #F7FEFF 100%);
+    background-size:contain;
+    background-repeat: no-repeat;
+   
+}
