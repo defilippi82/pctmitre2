@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig/firebase';
@@ -69,9 +69,7 @@ export const RegistrarOperadores = () => {
       nombre,
       email,
       legajo,
-      
       rol: rol.valor,
-     
       contrasena,
       
     });

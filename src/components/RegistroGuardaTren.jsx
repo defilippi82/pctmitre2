@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth} from 'firebase/auth';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig/firebase';
 import { useNavigate } from 'react-router-dom';
@@ -9,38 +9,50 @@ import Swal from "sweetalert2";
 import whitReactContent from "sweetalert2-react-content";
 
 const MySwal = whitReactContent(Swal);
+
 export const RegistroGuardaTren = () => {
-    const [formData, setFormData] = useState({
-        nombre: '',
-        legajo: '',
-        servicio: '',
-        email: '',
-        direccion: '',
-        localidad: '',
-        provincia: '',
-        piso: '',
-        dpto: '',
-        cp: '',
-        codigoPais: '+54',
-        tel: '',
-        altCodigoPais: '+54',
-        altTel: ''
-    });
+    const [nombre, setNombre] = useState('');
+    const [legajo, setLegajo] = useState('');
+    const [servicio, setServicio] = useState('');
+    const [email, setEmail] = useState('');
+    const [direccion, setDireccion] = useState('');
+    const [localidad, setLocalidad] = useState('');
+    const [provincia, setProvincia] = useState('');
+    const [piso, setPiso] = useState('');
+    const [dpto, setDpto]= useState('');
+    const [cp, setCp]= useState('');
+    const [codigoPais, setCodigoPais]= useState('+54');
+    const [tel, setTel]= useState('');
+    const [altCodigoPais, setAltCodigoPais]= useState('+54');
+    const [altTel, setAltTel]= useState('');
+
+    
+    const guardatrenCollection = collection(db, 'guardatren');
+
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
-    };
-
-    const handleSubmit = async (e) => {
+   
+    const crearguardatren = async (e) => {
         e.preventDefault();
         try {
           // Guardar los datos en Firebase
-          await db.collection('guardatren').add(formData);
+          await addDoc(guardatrenCollection, {
+            nombre,
+            email,
+            legajo,
+            servicio,
+            direccion,
+            localidad,
+            provincia,
+            piso,
+            dpto,
+            cp,
+            codigoPais,
+            tel,
+            altCodigoPais,
+            altTel,
+                        
+          });
           console.log('Datos guardados en Firebase');
     
           // Mostrar alerta de éxito
@@ -51,26 +63,26 @@ export const RegistroGuardaTren = () => {
             showConfirmButton: true,
           }).then(() => {
             // Redirigir al usuario a otra página después de la alerta
-            navigate('/');
+            navigate('/guardatren/create');
           });
     
           // Restablecer el formulario después de enviar los datos
-          setFormData({
-            nombre: '',
-            legajo: '',
-            servicio: '',
-            email: '',
-            direccion: '',
-            localidad: '',
-            provincia: '',
-            piso: '',
-            dpto: '',
-            cp: '',
-            codigoPais: '+54',
-            tel: '',
-            altCodigoPais: '+54',
-            altTel: ''
-          });
+          
+            setNombre(''),
+            setLegajo(''),
+            setServicio(''),
+            setEmail('') ,
+            setDireccion('') ,
+            setLocalidad('') ,
+            setProvincia('') ,
+            setPiso('') ,
+            setDpto('') ,
+            setCp('') ,
+            setCodigoPais('+54') ,
+            setTel('') ,
+           setAltCodigoPais('+54'),
+           setAltTel('') 
+          
         } catch (error) {
           console.error('Error al guardar los datos en Firebase:', error);
           // Mostrar alerta de error
@@ -87,7 +99,7 @@ export const RegistroGuardaTren = () => {
         <main>
             <h1>Registro de GuardaTren</h1>
             <div>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={crearguardatren} className="card card-body shadow-lg">
                     <div>
                         <label htmlFor="nombre">Nombre y Apellido</label>
                         <input
@@ -97,7 +109,7 @@ export const RegistroGuardaTren = () => {
                             placeholder="Nombre y Apellido"
                             pattern="[A-Z\s-a-z]{3,20}"
                             required
-                            value={formData.nombre}
+                            value={nombre}
                             onChange={handleChange}
                         />
                         <label htmlFor="legajo">Legajo</label>
@@ -108,7 +120,7 @@ export const RegistroGuardaTren = () => {
                             maxLength="6"
                             className="input-number"
                             required
-                            value={formData.legajo}
+                            value={legajo}
                             onChange={handleChange}
                         />
                         <br />
@@ -120,7 +132,7 @@ export const RegistroGuardaTren = () => {
                             maxLength="6"
                             className="input-number"
                             required
-                            value={formData.servicio}
+                            value={servicio}
                             onChange={handleChange}
                         />
                         <div className="elem-group">
@@ -131,7 +143,7 @@ export const RegistroGuardaTren = () => {
                                 name="email"
                                 placeholder="ejemplo@email.com"
                                 required
-                                value={formData.email}
+                                value={email}
                                 onChange={handleChange}
                             />
                         </div>
@@ -144,7 +156,7 @@ export const RegistroGuardaTren = () => {
                                 placeholder="Dirección"
                                 pattern="[A-Z\s-a-z]{3,20}"
                                 required
-                                value={formData.direccion}
+                                value={direccion}
                                 onChange={handleChange}
                             />
                             <label htmlFor="localidad">Localidad</label>
@@ -155,7 +167,7 @@ export const RegistroGuardaTren = () => {
                                 placeholder="Barrio o Partido"
                                 pattern="[A-Z\s-a-z]{3,20}"
                                 required
-                                value={formData.localidad}
+                                value={localidad}
                                 onChange={handleChange}
                             />
                             <label htmlFor="provincia">Provincia</label>
@@ -166,7 +178,7 @@ export const RegistroGuardaTren = () => {
                                 placeholder="Provincia"
                                 pattern="[A-Z\s-a-z]{3,20}"
                                 required
-                                value={formData.provincia}
+                                value={provincia}
                                 onChange={handleChange}
                             />
                             <label htmlFor="piso">Piso</label>
@@ -176,7 +188,7 @@ export const RegistroGuardaTren = () => {
                                 name="piso"
                                 maxLength="2"
                                 className="input-number"
-                                value={formData.piso}
+                                value={piso}
                                 onChange={handleChange}
                             />
                             <label htmlFor="dpto">Dpto</label>
@@ -186,7 +198,7 @@ export const RegistroGuardaTren = () => {
                                 name="dpto"
                                 placeholder="Departamento"
                                 pattern="[A-Z\s-a-z]{3,20}"
-                                value={formData.dpto}
+                                value={dpto}
                                 onChange={handleChange}
                             />
                             <label htmlFor="cp">Codigo Postal</label>
@@ -196,7 +208,7 @@ export const RegistroGuardaTren = () => {
                                 name="cp"
                                 maxLength="6"
                                 className="input-number"
-                                value={formData.cp}
+                                value={cp}
                                 onChange={handleChange}
                             />
                         </div>
@@ -206,7 +218,7 @@ export const RegistroGuardaTren = () => {
                             <select
                                 id="codigoPais"
                                 name="codigoPais"
-                                value={formData.codigoPais}
+                                value={codigoPais}
                                 onChange={handleChange}
                             >
                                 <option value="+54">Argentina (+54)</option>
@@ -231,7 +243,7 @@ export const RegistroGuardaTren = () => {
                                 id="tel"
                                 name="tel"
                                 placeholder="11-XXXX-XXXX"
-                                value={formData.tel}
+                                value={tel}
                                 onChange={handleChange}
                             />
                             <br />
@@ -240,7 +252,7 @@ export const RegistroGuardaTren = () => {
                             <select
                                 id="altCodigoPais"
                                 name="altCodigoPais"
-                                value={formData.altCodigoPais}
+                                value={altCodigoPais}
                                 onChange={handleChange}
                             >
                                 <option value="+54">Argentina (+54)</option>
@@ -259,19 +271,20 @@ export const RegistroGuardaTren = () => {
                                 <option value="+41">Suiza (+41)</option>
                                 {/* Agrega más opciones según sea necesario */}
                             </select>
-                            <label htmlFor="altTel">Teléfono</label>
+                            <label htmlFor="altTel">Teléfono </label>
                             <input
                                 type="text"
                                 id="altTel"
                                 name="altTel"
                                 placeholder="11-XXXX-XXXX"
-                                value={formData.altTel}
+                                value={altTel}
                                 onChange={handleChange}
+                                required
                             />
                         </div>
                         <div style={{ display: 'inline' }}>
                             <input type="submit" className="btn btn-outline-success" value="Registrar" />
-                            <a href="/" className="btn btn-warning">Cancel</a>
+                            <a href="/guardatren/create" className="btn btn-warning">Cancel</a>
                         </div>
                     </div>
                 </form>
