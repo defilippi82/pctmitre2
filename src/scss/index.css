@@ -18,6 +18,15 @@
     background: linear-gradient(135deg, #375DDB 0%, #308CA4 50%, #F7FEFF 100%);
     
 }
+/* Estilo para la torre de control de trenes */
+.torre-control {
+  background-image: url('/public/imagen_torre_futuro.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Otros estilos según tus necesidades */
+}
+
 .bg-body-tertiary{
   background: #375DDB;
   background: -moz-linear-gradient(-45deg, #375DDB 0%, #308CA4 50%, #F7FEFF 100%);
