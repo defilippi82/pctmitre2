@@ -40,7 +40,6 @@ export const Corrida = () => {
 
     const generarCampos = (type, count) => {
         const fields = [];
-        const relevoFields = [];
         for (let i = 0; i < count; i++) {
             fields.push(
                 <div key={`${type}-${i}`} className="row g-3">
@@ -83,8 +82,10 @@ export const Corrida = () => {
                 </div>
             );
         }
+        //return fields;
         setFields(fields);
         setRelevoFields(relevoFields);
+
     };
 
     const handleConductorChange = (e) => {
@@ -105,7 +106,6 @@ export const Corrida = () => {
         generarCampos('piloto', count, setPilotoFields, setRelevoPilotoFields);
     };
 
-
     const limpiarCampos = () => {
         setResponsable('');
         setTrabajo('');
@@ -121,80 +121,45 @@ export const Corrida = () => {
         setPilotoFields([]);
         setRelevoPilotoFields([]);
     };
-    const imprimirPDF = () => {
-        const responsable = document.getElementById("responsable").value;
-        const trabajo = document.getElementById("trabajo").value;
-      
-        const responsableJsx = (
-          <>
-            <span>
-              <b>Responsable:</b> <span>{responsable}</span>
-              <b>Trabajo:</b> <span>{trabajo}</span>
-            </span>
-          </>
-        );
-      
-        jsPDF.loadScript("https://mozilla.github.io/pdf.js/build/pdf.worker.js");
-      
-        const crearPDF = () => {
-          const pdf = new jsPDF();
-          pdf.text(10, 10, "SERVICIO DE BIENVENIDA SALUDOS");
-          pdf.setFontSize(12);
-          pdf.text(10, 20, `${responsableJsx}`);
-          pdf.save("servicio.pdf");
-        };
-      
-        crearPDF();
-    }
 
-    /*const imprimirPDF = () => {
-        const doc = new jsPDF();
-        doc.text('Formulario de Corrida', 10, 10);
-        doc.text(`Operador Responsable: ${responsable}`, 10, 20);
-        doc.text(`Nº de Trabajo: ${trabajo}`, 10, 30);
-        doc.text(`Secciones: ${secciones.join(', ')}`, 10, 40);
+   const imprimirPDF = () => {
+    const doc = new jsPDF();
+    doc.text('Formulario de Corrida', 10, 10);
+    doc.text(`Operador Responsable: ${responsable}`, 10, 20);
+    doc.text(`Nº de Trabajo: ${trabajo}`, 10, 30);
+    doc.text(`Secciones: ${secciones.join(', ')}`, 10, 40);
 
-        const yStart = 50;
-        let yPos = yStart;
+    const yStart = 50;
+    let yPos = yStart;
 
-        conductorFields.forEach((field, index) => {
-            const legajo = document.querySelector(`[name="conductor-legajo-${index}"]`).value;
-            const nombre = document.querySelector(`[name="conductor-nombre-${index}"]`).value;
-            const ingreso = document.querySelector(`[name="conductor-ingreso-${index}"]`).value;
-            const dejada = document.querySelector(`[name="conductor-dejada-${index}"]`).value;
-            doc.text(`Conductor ${index + 1} - Legajo: ${legajo}, Nombre: ${nombre}, Ingreso: ${ingreso}, Dejada: ${dejada}`, 10, yPos);
+    const agregarDetallesPersonal = (tipo, fields, relevoFields) => {
+        fields.forEach((field, index) => {
+            const legajo = document.querySelector(`[name="${tipo}-legajo-${index}"]`).value;
+            const nombre = document.querySelector(`[name="${tipo}-nombre-${index}"]`).value;
+            const ingreso = document.querySelector(`[name="${tipo}-ingreso-${index}"]`).value;
+            const dejada = document.querySelector(`[name="${tipo}-dejada-${index}"]`).value;
+            doc.text(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} ${index + 1} - Legajo: ${legajo}, Nombre: ${nombre}, Ingreso: ${ingreso}, Dejada: ${dejada}`, 10, yPos);
             yPos += 10;
-        });
-        relevoconductorFields.forEach((field, index) => {
-            const legajo = document.querySelector(`[name="conductor-legajo-${index}"]`).value;
-            const nombre = document.querySelector(`[name="conductor-nombre-${index}"]`).value;
-            const ingreso = document.querySelector(`[name="conductor-ingreso-${index}"]`).value;
-            const dejada = document.querySelector(`[name="conductor-dejada-${index}"]`).value;
-            doc.text(`Conductor ${index + 1} - Legajo: ${legajo}, Nombre: ${nombre}, Ingreso: ${ingreso}, Dejada: ${dejada}`, 10, yPos);
-            yPos += 10;
-        });
 
-        guardaFields.forEach((field, index) => {
-            const legajo = document.querySelector(`[name="guarda-legajo-${index}"]`).value;
-            const nombre = document.querySelector(`[name="guarda-nombre-${index}"]`).value;
-            const ingreso = document.querySelector(`[name="guarda-ingreso-${index}"]`).value;
-            const dejada = document.querySelector(`[name="guarda-dejada-${index}"]`).value;
-            doc.text(`Guarda ${index + 1} - Legajo: ${legajo}, Nombre: ${nombre}, Ingreso: ${ingreso}, Dejada: ${dejada}`, 10, yPos);
-            yPos += 10;
-        });
+            const relevoLegajo = document.querySelector(`[name="relevo-${tipo}-legajo-${index}"]`).value;
+            const relevoNombre = document.querySelector(`[name="relevo-${tipo}-nombre-${index}"]`).value;
+            const relevoIngreso = document.querySelector(`[name="relevo-${tipo}-ingreso-${index}"]`).value;
+            const relevoDejada = document.querySelector(`[name="relevo-${tipo}-dejada-${index}"]`).value;
 
-        pilotoFields.forEach((field, index) => {
-            const legajo = document.querySelector(`[name="piloto-legajo-${index}"]`).value;
-            const nombre = document.querySelector(`[name="piloto-nombre-${index}"]`).value;
-            const ingreso = document.querySelector(`[name="piloto-ingreso-${index}"]`).value;
-            const dejada = document.querySelector(`[name="piloto-dejada-${index}"]`).value;
-            doc.text(`Piloto ${index + 1} - Legajo: ${legajo}, Nombre: ${nombre}, Ingreso: ${ingreso}, Dejada: ${dejada}`, 10, yPos);
-            yPos += 10;
+            if (relevoLegajo || relevoNombre || relevoIngreso || relevoDejada) {
+                doc.text(`Relevo ${tipo.charAt(0).toUpperCase() + tipo.slice(1)} ${index + 1} - Legajo: ${relevoLegajo}, Nombre: ${relevoNombre}, Ingreso: ${relevoIngreso}, Dejada: ${relevoDejada}`, 10, yPos);
+                yPos += 10;
+            }
         });
+    };
 
-        doc.text(`Observaciones: ${observaciones}`, 10, yPos + 10);
-        doc.save('corrida.pdf');
-    };*/
+    agregarDetallesPersonal('conductor', conductorFields, relevoConductorFields);
+    agregarDetallesPersonal('guarda', guardaFields, relevoGuardaFields);
+    agregarDetallesPersonal('piloto', pilotoFields, relevoPilotoFields);
+
+    doc.text(`Observaciones: ${observaciones}`, 10, yPos + 10);
+    doc.save('corrida.pdf');
+};
 
     return (
         <div>
@@ -208,12 +173,11 @@ export const Corrida = () => {
                         </button>
                         <div className="collapse navbar-collapse" id="navbarNav">
                             <ul className="navbar-nav">
-                                <li className="nav-item"><a className="nav-link active" aria-current="page" href="index.html">Home</a></li>
-                                <li className="nav-item"><a className="nav-link" href="registroCond.html">Registro Conductor</a></li>
-                                <li className="nav-item"><a className="nav-link" href="registroGuarda.html">Registro GuardaTren</a></li>
-                                <li className="nav-item"><a className="nav-link" href="corridaTrabajos.html">Corridas</a></li>
-                                <li className="nav-item"><a className="nav-link" href="listas.html">Listas</a></li>
-                                <li className="nav-item"><a className="nav-link" href="registroPersonal.html">Base de datos</a></li>
+                                <li className="nav-item"><a className="nav-link" href="#/conductores/create">Registro Conductor</a></li>
+                                <li className="nav-item"><a className="nav-link" href="#/guardastren/create">Registro GuardaTren</a></li>
+                                <li className="nav-item"><a className="nav-link" href="#/corrida">Corridas</a></li>
+                                <li className="nav-item"><a className="nav-link" href="#/listaspersonal">Listas</a></li>
+                                <li className="nav-item"><a className="nav-link" href="#/administracion">Base de datos</a></li>
                             </ul>
                         </div>
                     </div>
