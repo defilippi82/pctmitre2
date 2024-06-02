@@ -8,10 +8,12 @@ export const Corrida = () => {
     const [trabajo, setTrabajo] = useState('');
     const [secciones, setSecciones] = useState([]);
     const [conductor, setConductor] = useState(0);
+    const [relevoconductor, setRelevoConductor] = useState(0);
     const [guarda, setGuarda] = useState(0);
     const [piloto, setPiloto] = useState(0);
     const [observaciones, setObservaciones] = useState('');
     const [conductorFields, setConductorFields] = useState([]);
+    const [relevoconductorFields, setRelevoConductorFields] = useState([]);
     const [guardaFields, setGuardaFields] = useState([]);
     const [pilotoFields, setPilotoFields] = useState([]);
     const [userData, setUserData]  = useState();
@@ -66,6 +68,9 @@ export const Corrida = () => {
         const count = parseInt(e.target.value) || 0;
         setConductor(count);
         setConductorFields(generarCampos('conductor', count));
+        const countRelevo = parseInt(e.target.value) || 0;
+        setRelevoConductor(countRelevo);
+        setRelevoConductorFields(generarCampos('relevo conductor', count));
     };
 
     const handleGuardaChange = (e) => {
@@ -85,6 +90,7 @@ export const Corrida = () => {
         setTrabajo('');
         setSecciones([]);
         setConductor(0);
+        setRelevoConductor(0);
         setGuarda(0);
         setPiloto(0);
         setObservaciones('');
@@ -104,6 +110,14 @@ export const Corrida = () => {
         let yPos = yStart;
 
         conductorFields.forEach((field, index) => {
+            const legajo = document.querySelector(`[name="conductor-legajo-${index}"]`).value;
+            const nombre = document.querySelector(`[name="conductor-nombre-${index}"]`).value;
+            const ingreso = document.querySelector(`[name="conductor-ingreso-${index}"]`).value;
+            const dejada = document.querySelector(`[name="conductor-dejada-${index}"]`).value;
+            doc.text(`Conductor ${index + 1} - Legajo: ${legajo}, Nombre: ${nombre}, Ingreso: ${ingreso}, Dejada: ${dejada}`, 10, yPos);
+            yPos += 10;
+        });
+        relevoconductorFields.forEach((field, index) => {
             const legajo = document.querySelector(`[name="conductor-legajo-${index}"]`).value;
             const nombre = document.querySelector(`[name="conductor-nombre-${index}"]`).value;
             const ingreso = document.querySelector(`[name="conductor-ingreso-${index}"]`).value;
