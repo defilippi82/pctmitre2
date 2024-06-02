@@ -6,6 +6,9 @@ import {Administracion} from "./components/Administracion";
 import {RegistrarOperadores} from "./components/RegistrarOperadores";
 import { RegistroConductores } from "./components/RegistroConductores";
 import { RegistroGuardaTren } from "./components/RegistroGuardaTren";
+import {EditarConductores} from "./components/EditarConductores";
+import {EditarGuardaTren} from "./components/EditarGuardaTren";
+import {Padron} from "./components/Padron";
 import { NavbarComponent } from './components/Navbar';
 import {UserProvider} from "./components/UserContext";
 import {Footer} from './components/Footer';
@@ -27,10 +30,10 @@ export const App = () => {
           <Route path="/administracion" element={<Administracion/>} />
           <Route path="/emergencias" element="aca SE VE COMPONENTE EMERGENCIAS" />
           <Route path="/conductores/create" element={<RegistroConductores/>} />
-          <Route path="/conductores/edit/:id" element="aca SE VE COMPONENTE EDIT COND" />
+          <Route path="/conductores/edit/:id" element={<EditarConductores/>} />
           <Route path="/guardastren/create" element={<RegistroGuardaTren/>} />
-          <Route path="/guardastren/edit/:id" element="aca SE VE COMPONENTE EDIT GUARDA" />
-          <Route path="/padron" element="aca SE VE COMPONENTE PADRON" />
+          <Route path="/guardastren/edit/:id" element={<EditarGuardaTren/>} />
+          <Route path="/padron" element={<Padron/>} />
           <Route path="/corrida" element={<Corrida/>} />
           <Route path="/listaspersonal" element="aca SE VE COMPONENTE LISTAS DE PERSONAL" />
 

@@ -10,19 +10,23 @@ const MySwal = withReactContent(Swal);
 
 export const Administracion = () => {
     const [conductores, setConductores] = useState([]);
-    const [guardatrenes, setGuardatrenes] = useState([]);
-    const [currentView, setCurrentView] = useState(null); // 'conductores', 'guardatrenes', 'operadores'
+    const [guardastrenes, setGuardatrenes] = useState([]);
+    const [operadores, setOperadores] = useState([]);
+    const [currentView, setCurrentView] = useState(null); // 'conductores', 'operadores', 'operadores'
     const navigate = useNavigate();
 
     // Firestore collections
     const conductoresCollection = collection(db, "conductores");
-    const guardatrenesCollection = collection(db, "guardatrenes");
+    const guardastrenesCollection = collection(db, "guardastren");
+    const operadoresCollection = collection(db, "operadores");
 
     useEffect(() => {
         if (currentView === 'conductores') {
             fetchConductores();
-        } else if (currentView === 'guardatrenes') {
-            fetchGuardatrenes();
+        } else if (currentView === 'operadores') {
+            fetchOperadores();
+        }else if (currentView === 'guardatren') {
+            fetchGuardatren();
         }
     }, [currentView]);
 
@@ -37,10 +41,19 @@ export const Administracion = () => {
 
     const fetchGuardatrenes = async () => {
         try {
-            const data = await getDocs(guardatrenesCollection);
+            const data = await getDocs(guardastrenesCollection);
             setGuardatrenes(data.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         } catch (error) {
-            console.error("Error fetching guardatrenes:", error);
+            console.error("Error fetching guarda Trenes:", error);
+        }
+    };
+
+    const fetchOperadores = async () => {
+        try {
+            const data = await getDocs(operadoresCollection);
+            setOperadores(data.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        } catch (error) {
+            console.error("Error fetching operadores:", error);
         }
     };
 
@@ -78,8 +91,9 @@ export const Administracion = () => {
                     <div className="col">
                         <div className="d-grid gap-2 col-6 mx-auto">
                             <button className="btn btn-secondary mt-2 mb-2" onClick={() => setCurrentView('conductores')}>Ver Conductores</button>
-                            <button className="btn btn-secondary mt-2 mb-2" onClick={() => setCurrentView('guardatrenes')}>Ver Guardatrenes</button>
-                            {/* Añadir botón para operadores aquí cuando sea necesario */}
+                            <button className="btn btn-secondary mt-2 mb-2" onClick={() => setCurrentView('guardatren')}>Ver GuardaTrenes</button>
+                            <button className="btn btn-secondary mt-2 mb-2" onClick={() => setCurrentView('operadores')}>Ver Operadores</button>
+                            
                         </div>
                         {currentView === 'conductores' && (
                             <div>
@@ -141,10 +155,10 @@ export const Administracion = () => {
                                 </table>
                             </div>
                         )}
-                        {currentView === 'guardatrenes' && (
+                        {currentView === 'guardastrenes' && (
                             <div>
                                 <div className="d-grid gap-2 col-6 mx-auto">
-                                    <Link to="/guardastren/create" className="btn btn-secondary mt-2 mb-2">Crear Guardatren</Link>
+                                    <Link to="/guardastren/create" className="btn btn-secondary mt-2 mb-2">Crear Guardastren</Link>
                                 </div>
                                 <table className="table table-dark table-hover">
                                     <thead>
@@ -167,25 +181,57 @@ export const Administracion = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {guardatrenes.map((guardatren) => (
-                                            <tr key={guardatren.id}>
-                                                <td>{guardatren.nombre}</td>
-                                                <td>{guardatren.legajo}</td>
-                                                <td>{guardatren.servicio}</td>
-                                                <td>{guardatren.email}</td>
-                                                <td>{guardatren.direccion}</td>
-                                                <td>{guardatren.localidad}</td>
-                                                <td>{guardatren.provincia}</td>
-                                                <td>{guardatren.piso}</td>
-                                                <td>{guardatren.dpto}</td>
-                                                <td>{guardatren.cp}</td>
-                                                <td>{guardatren.codigoPais}</td>
-                                                <td>{guardatren.tel}</td>
-                                                <td>{guardatren.altCodigoPais}</td>
-                                                <td>{guardatren.altTel}</td>
+                                        {guardastrenes.map((guardastren) => (
+                                            <tr key={guardastren.id}>
+                                                <td>{guardastren.nombre}</td>
+                                                <td>{guardastren.legajo}</td>
+                                                <td>{guardastren.servicio}</td>
+                                                <td>{guardastren.email}</td>
+                                                <td>{guardastren.direccion}</td>
+                                                <td>{guardastren.localidad}</td>
+                                                <td>{guardastren.provincia}</td>
+                                                <td>{guardastren.piso}</td>
+                                                <td>{guardastren.dpto}</td>
+                                                <td>{guardastren.cp}</td>
+                                                <td>{guardastren.codigoPais}</td>
+                                                <td>{guardastren.tel}</td>
+                                                <td>{guardastren.altCodigoPais}</td>
+                                                <td>{guardastren.altTel}</td>
                                                 <td>
-                                                    <Link to={`/guardatren/edit/${guardatren.id}`} className="btn btn-light"><i className="fa-solid fa-pen-to-square"></i></Link>
-                                                    <button className="btn btn-danger" onClick={() => confirmDelete('guardatrenes', guardatren.id, setGuardatrenes, guardatrenes)}><i className="fa-solid fa-trash"></i></button>
+                                                    <Link to={`/guardastren/edit/${guardastren.id}`} className="btn btn-light"><i className="fa-solid fa-pen-to-square"></i></Link>
+                                                    <button className="btn btn-danger" onClick={() => confirmDelete('guardastren', guardastren.id, setguardastrenes, guardastren)}><i className="fa-solid fa-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                        {currentView === 'operadores' && (
+                            <div>
+                                <div className="d-grid gap-2 col-6 mx-auto">
+                                    <Link to="/operadores/create" className="btn btn-secondary mt-2 mb-2">Crear Operador</Link>
+                                </div>
+                                <table className="table table-dark table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Legajo</th>
+                                            <th>Servicio</th>
+                                            <th>Email</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {operadores.map((operador) => (
+                                            <tr key={operador.id}>
+                                                <td>{operador.nombre}</td>
+                                                <td>{operador.legajo}</td>
+                                                <td>{operador.servicio}</td>
+                                                <td>{operador.email}</td>
+                                                <td>
+                                                    <Link to={`/operador/edit/${operador.id}`} className="btn btn-light"><i className="fa-solid fa-pen-to-square"></i></Link>
+                                                    <button className="btn btn-danger" onClick={() => confirmDelete('operadores', operador.id, setOperadores, operadores)}><i className="fa-solid fa-trash"></i></button>
                                                 </td>
                                             </tr>
                                         ))}

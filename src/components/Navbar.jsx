@@ -30,6 +30,11 @@ export const NavbarComponent = ({ handleLogout }) => {
           <Offcanvas.Body>
             <Nav className="justify-content-end flex-grow-1 pe-3">
             <Nav.Link  href="/login">Inicio</Nav.Link>
+            <NavDropdown
+                title="Emergencias"
+                id={`offcanvasNavbarDropdown-expand-${expand}`}
+              ></NavDropdown>
+              <NavDropdown.Item href="#/padron">Padron</NavDropdown.Item>
                 <Nav.Link  href="#/emergencias">Emergencias</Nav.Link>
               <NavDropdown
                 title="Personal"
@@ -39,6 +44,7 @@ export const NavbarComponent = ({ handleLogout }) => {
               <NavDropdown.Item href="#/listaspersonal">ListasPersonal</NavDropdown.Item>
               <NavDropdown.Item href="#/conductores/create">Registrar Conductores</NavDropdown.Item>
               <NavDropdown.Item href="#/guardastren/create">Registrar Guardas</NavDropdown.Item>
+              <NavDropdown.Item href="#/padron">Padron</NavDropdown.Item>
               <NavDropdown.Divider />
               {userData && userData.nombre && userData.rol && userData.rol.administrador && (
               <NavDropdown.Item href="#/administracion">
