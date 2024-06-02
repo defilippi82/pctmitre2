@@ -8,15 +8,16 @@ export const Corrida = () => {
     const [trabajo, setTrabajo] = useState('');
     const [secciones, setSecciones] = useState([]);
     const [conductor, setConductor] = useState(0);
-    const [relevoconductor, setRelevoConductor] = useState(0);
     const [guarda, setGuarda] = useState(0);
     const [piloto, setPiloto] = useState(0);
     const [observaciones, setObservaciones] = useState('');
     const [conductorFields, setConductorFields] = useState([]);
-    const [relevoconductorFields, setRelevoConductorFields] = useState([]);
+    const [relevoConductorFields, setRelevoConductorFields] = useState([]);
     const [guardaFields, setGuardaFields] = useState([]);
+    const [relevoGuardaFields, setRelevoGuardaFields] = useState([]);
     const [pilotoFields, setPilotoFields] = useState([]);
-    const [userData, setUserData]  = useState();
+    const [relevoPilotoFields, setRelevoPilotoFields] = useState([]);
+    const [userData, setUserData] = useState();
 
     useEffect(() => {
         const userDataFromStorage = localStorage.getItem('userData');
@@ -39,6 +40,7 @@ export const Corrida = () => {
 
     const generarCampos = (type, count) => {
         const fields = [];
+        const relevoFields = [];
         for (let i = 0; i < count; i++) {
             fields.push(
                 <div key={`${type}-${i}`} className="row g-3">
@@ -60,46 +62,92 @@ export const Corrida = () => {
                     </div>
                 </div>
             );
+            relevoFields.push(
+                <div key={`relevo-${type}-${i}`} className="row g-3">
+                    <div className="col-md-3">
+                        <label>{`Relevo ${type.charAt(0).toUpperCase() + type.slice(1)} ${i + 1} - Legajo`}</label>
+                        <input type="number" className="form-control" placeholder="Legajo" />
+                    </div>
+                    <div className="col-md-3">
+                        <label>{`Relevo ${type.charAt(0).toUpperCase() + type.slice(1)} ${i + 1} - Nombre`}</label>
+                        <input type="text" className="form-control" placeholder="Nombre" />
+                    </div>
+                    <div className="col-md-3">
+                        <label>{`Relevo ${type.charAt(0).toUpperCase() + type.slice(1)} ${i + 1} - Horario de Ingreso`}</label>
+                        <input type="time" className="form-control" placeholder="Horario de Ingreso" />
+                    </div>
+                    <div className="col-md-3">
+                        <label>{`Relevo ${type.charAt(0).toUpperCase() + type.slice(1)} ${i + 1} - Horario de Dejada`}</label>
+                        <input type="time" className="form-control" placeholder="Horario de Dejada" />
+                    </div>
+                </div>
+            );
         }
-        return fields;
+        setFields(fields);
+        setRelevoFields(relevoFields);
     };
 
     const handleConductorChange = (e) => {
         const count = parseInt(e.target.value) || 0;
         setConductor(count);
-        setConductorFields(generarCampos('conductor', count));
-        const countRelevo = parseInt(e.target.value) || 0;
-        setRelevoConductor(countRelevo);
-        setRelevoConductorFields(generarCampos('relevo conductor', count));
+        generarCampos('conductor', count, setConductorFields, setRelevoConductorFields);
     };
 
     const handleGuardaChange = (e) => {
         const count = parseInt(e.target.value) || 0;
         setGuarda(count);
-        setGuardaFields(generarCampos('guarda', count));
+        generarCampos('guarda', count, setGuardaFields, setRelevoGuardaFields);
     };
 
     const handlePilotoChange = (e) => {
         const count = parseInt(e.target.value) || 0;
         setPiloto(count);
-        setPilotoFields(generarCampos('piloto', count));
+        generarCampos('piloto', count, setPilotoFields, setRelevoPilotoFields);
     };
+
 
     const limpiarCampos = () => {
         setResponsable('');
         setTrabajo('');
         setSecciones([]);
         setConductor(0);
-        setRelevoConductor(0);
         setGuarda(0);
         setPiloto(0);
         setObservaciones('');
         setConductorFields([]);
+        setRelevoConductorFields([]);
         setGuardaFields([]);
+        setRelevoGuardaFields([]);
         setPilotoFields([]);
+        setRelevoPilotoFields([]);
     };
-
     const imprimirPDF = () => {
+        const responsable = document.getElementById("responsable").value;
+        const trabajo = document.getElementById("trabajo").value;
+      
+        const responsableJsx = (
+          <>
+            <span>
+              <b>Responsable:</b> <span>{responsable}</span>
+              <b>Trabajo:</b> <span>{trabajo}</span>
+            </span>
+          </>
+        );
+      
+        jsPDF.loadScript("https://mozilla.github.io/pdf.js/build/pdf.worker.js");
+      
+        const crearPDF = () => {
+          const pdf = new jsPDF();
+          pdf.text(10, 10, "SERVICIO DE BIENVENIDA SALUDOS");
+          pdf.setFontSize(12);
+          pdf.text(10, 20, `${responsableJsx}`);
+          pdf.save("servicio.pdf");
+        };
+      
+        crearPDF();
+    }
+
+    /*const imprimirPDF = () => {
         const doc = new jsPDF();
         doc.text('Formulario de Corrida', 10, 10);
         doc.text(`Operador Responsable: ${responsable}`, 10, 20);
@@ -146,7 +194,7 @@ export const Corrida = () => {
 
         doc.text(`Observaciones: ${observaciones}`, 10, yPos + 10);
         doc.save('corrida.pdf');
-    };
+    };*/
 
     return (
         <div>

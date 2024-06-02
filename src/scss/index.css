@@ -11,13 +11,22 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
+}
+  body{
+    background-image: url('/public/imagen_torre_futuro.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     background: #375DDB;
     background: -moz-linear-gradient(-45deg, #375DDB 0%, #308CA4 50%, #F7FEFF 100%);
     background: -webkit-linear-gradient(-45deg, #375DDB 0%, #308CA4 50%, #F7FEFF 100%);
     background: linear-gradient(135deg, #375DDB 0%, #308CA4 50%, #F7FEFF 100%);
-    
+    background-size:contain;
+    background-repeat: no-repeat;
+   
 }
+    
+
 /* Estilo para la torre de control de trenes */
 .torre-control {
   background-image: url('/public/imagen_torre_futuro.jpeg');

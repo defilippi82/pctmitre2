@@ -4,6 +4,19 @@
   padding: 2rem;
   text-align: center;
 }
+body{
+  background-image: url('/public/imagen_torre_futuro.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background: #375DDB;
+  background: -moz-linear-gradient(-45deg, #375DDB 0%, #308CA4 50%, #F7FEFF 100%);
+  background: -webkit-linear-gradient(-45deg, #375DDB 0%, #308CA4 50%, #F7FEFF 100%);
+  background: linear-gradient(135deg, #375DDB 0%, #308CA4 50%, #F7FEFF 100%);
+  background-size:contain;
+  background-repeat: no-repeat;
+ 
+}
 
 .logo {
   height: 6em;
