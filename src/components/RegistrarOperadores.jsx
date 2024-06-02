@@ -7,9 +7,9 @@ import { useNavigate } from 'react-router-dom';
 
 /* SWEET ALERT*/
 import Swal from "sweetalert2";
-import whitReactContent from "sweetalert2-react-content";
+import withReactContent from "sweetalert2-react-content";
 
-const MySwal = whitReactContent(Swal)
+const MySwal = withReactContent(Swal)
 
 export const RegistrarOperadores = () => {
   const [nombre, setNombre] = useState('');
@@ -35,7 +35,7 @@ export const RegistrarOperadores = () => {
   const navigate = useNavigate()
 
 
-  const MySwal = whitReactContent(Swal);
+  const MySwal = withReactContent(Swal);
 
   
 

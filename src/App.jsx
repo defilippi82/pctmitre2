@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { HashRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import { Login } from "./components/Login";
 import {Corrida} from "./components/Corrida";
+import {Administracion} from "./components/Administracion";
 import {RegistrarOperadores} from "./components/RegistrarOperadores";
 import { RegistroConductores } from "./components/RegistroConductores";
 import { RegistroGuardaTren } from "./components/RegistroGuardaTren";
@@ -23,7 +24,7 @@ export const App = () => {
         <Routes>
           <Route path="/" element={<Login/>} />
           <Route path="/operadores/create" element={<RegistrarOperadores/>} />
-          <Route path="/administracion" element="aca se VE ADMIN" />
+          <Route path="/administracion" element={<Administracion/>} />
           <Route path="/emergencias" element="aca SE VE COMPONENTE EMERGENCIAS" />
           <Route path="/conductores/create" element={<RegistroConductores/>} />
           <Route path="/conductores/edit/:id" element="aca SE VE COMPONENTE EDIT COND" />

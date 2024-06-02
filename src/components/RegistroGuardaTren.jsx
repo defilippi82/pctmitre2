@@ -11,89 +11,80 @@ import whitReactContent from "sweetalert2-react-content";
 const MySwal = whitReactContent(Swal);
 
 export const RegistroGuardaTren = () => {
-    const [nombre, setNombre] = useState('');
-    const [legajo, setLegajo] = useState('');
-    const [servicio, setServicio] = useState('');
-    const [email, setEmail] = useState('');
-    const [direccion, setDireccion] = useState('');
-    const [localidad, setLocalidad] = useState('');
-    const [provincia, setProvincia] = useState('');
-    const [piso, setPiso] = useState('');
-    const [dpto, setDpto]= useState('');
-    const [cp, setCp]= useState('');
-    const [codigoPais, setCodigoPais]= useState('+54');
-    const [tel, setTel]= useState('');
-    const [altCodigoPais, setAltCodigoPais]= useState('+54');
-    const [altTel, setAltTel]= useState('');
+    const [formData, setFormData] = useState({
+        nombre: '',
+        legajo: '',
+        servicio: '',
+        email: '',
+        direccion: '',
+        localidad: '',
+        provincia: '',
+        piso: '',
+        dpto: '',
+        cp: '',
+        codigoPais: '+54',
+        tel: '',
+        altCodigoPais: '+54',
+        altTel: ''
+    });
 
-    
     const guardatrenCollection = collection(db, 'guardatren');
-
     const navigate = useNavigate();
 
-   
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
+
     const crearguardatren = async (e) => {
         e.preventDefault();
         try {
-          // Guardar los datos en Firebase
-          await addDoc(guardatrenCollection, {
-            nombre,
-            email,
-            legajo,
-            servicio,
-            direccion,
-            localidad,
-            provincia,
-            piso,
-            dpto,
-            cp,
-            codigoPais,
-            tel,
-            altCodigoPais,
-            altTel,
-                        
-          });
-          console.log('Datos guardados en Firebase');
-    
-          // Mostrar alerta de éxito
-          MySwal.fire({
-            title: 'Registro exitoso',
-            text: 'Los datos han sido guardados correctamente',
-            icon: 'success',
-            showConfirmButton: true,
-          }).then(() => {
-            // Redirigir al usuario a otra página después de la alerta
-            navigate('/guardatren/create');
-          });
-    
-          // Restablecer el formulario después de enviar los datos
-          
-            setNombre(''),
-            setLegajo(''),
-            setServicio(''),
-            setEmail('') ,
-            setDireccion('') ,
-            setLocalidad('') ,
-            setProvincia('') ,
-            setPiso('') ,
-            setDpto('') ,
-            setCp('') ,
-            setCodigoPais('+54') ,
-            setTel('') ,
-           setAltCodigoPais('+54'),
-           setAltTel('') 
-          
+            // Guardar los datos en Firebase
+            await addDoc(guardatrenCollection, formData);
+            console.log('Datos guardados en Firebase');
+
+            // Mostrar alerta de éxito
+            MySwal.fire({
+                title: 'Registro exitoso',
+                text: 'Los datos han sido guardados correctamente',
+                icon: 'success',
+                showConfirmButton: true,
+            }).then(() => {
+                // Redirigir al usuario a otra página después de la alerta
+                navigate('/guardatren/create');
+            });
+
+            // Restablecer el formulario después de enviar los datos
+            setFormData({
+                nombre: '',
+                legajo: '',
+                servicio: '',
+                email: '',
+                direccion: '',
+                localidad: '',
+                provincia: '',
+                piso: '',
+                dpto: '',
+                cp: '',
+                codigoPais: '+54',
+                tel: '',
+                altCodigoPais: '+54',
+                altTel: ''
+            });
         } catch (error) {
-          console.error('Error al guardar los datos en Firebase:', error);
-          // Mostrar alerta de error
-          MySwal.fire({
-            title: 'Error',
-            text: error.message,
-            icon: 'error',
-            showConfirmButton: true,
-          });
+            console.error('Error al guardar los datos en Firebase:', error);
+            // Mostrar alerta de error
+            MySwal.fire({
+                title: 'Error',
+                text: error.message,
+                icon: 'error',
+                showConfirmButton: true,
+            });
         }
-      };
+    };
 
     return (
         <main>
@@ -109,7 +100,7 @@ export const RegistroGuardaTren = () => {
                             placeholder="Nombre y Apellido"
                             pattern="[A-Z\s-a-z]{3,20}"
                             required
-                            value={nombre}
+                            value={formData.nombre}
                             onChange={handleChange}
                         />
                         <label htmlFor="legajo">Legajo</label>
@@ -120,7 +111,7 @@ export const RegistroGuardaTren = () => {
                             maxLength="6"
                             className="input-number"
                             required
-                            value={legajo}
+                            value={formData.legajo}
                             onChange={handleChange}
                         />
                         <br />
@@ -132,7 +123,7 @@ export const RegistroGuardaTren = () => {
                             maxLength="6"
                             className="input-number"
                             required
-                            value={servicio}
+                            value={formData.servicio}
                             onChange={handleChange}
                         />
                         <div className="elem-group">
@@ -143,7 +134,7 @@ export const RegistroGuardaTren = () => {
                                 name="email"
                                 placeholder="ejemplo@email.com"
                                 required
-                                value={email}
+                                value={formData.email}
                                 onChange={handleChange}
                             />
                         </div>
@@ -156,7 +147,7 @@ export const RegistroGuardaTren = () => {
                                 placeholder="Dirección"
                                 pattern="[A-Z\s-a-z]{3,20}"
                                 required
-                                value={direccion}
+                                value={formData.direccion}
                                 onChange={handleChange}
                             />
                             <label htmlFor="localidad">Localidad</label>
@@ -167,7 +158,7 @@ export const RegistroGuardaTren = () => {
                                 placeholder="Barrio o Partido"
                                 pattern="[A-Z\s-a-z]{3,20}"
                                 required
-                                value={localidad}
+                                value={formData.localidad}
                                 onChange={handleChange}
                             />
                             <label htmlFor="provincia">Provincia</label>
@@ -178,7 +169,7 @@ export const RegistroGuardaTren = () => {
                                 placeholder="Provincia"
                                 pattern="[A-Z\s-a-z]{3,20}"
                                 required
-                                value={provincia}
+                                value={formData.provincia}
                                 onChange={handleChange}
                             />
                             <label htmlFor="piso">Piso</label>
@@ -188,7 +179,7 @@ export const RegistroGuardaTren = () => {
                                 name="piso"
                                 maxLength="2"
                                 className="input-number"
-                                value={piso}
+                                value={formData.piso}
                                 onChange={handleChange}
                             />
                             <label htmlFor="dpto">Dpto</label>
@@ -198,7 +189,7 @@ export const RegistroGuardaTren = () => {
                                 name="dpto"
                                 placeholder="Departamento"
                                 pattern="[A-Z\s-a-z]{3,20}"
-                                value={dpto}
+                                value={formData.dpto}
                                 onChange={handleChange}
                             />
                             <label htmlFor="cp">Codigo Postal</label>
@@ -208,7 +199,7 @@ export const RegistroGuardaTren = () => {
                                 name="cp"
                                 maxLength="6"
                                 className="input-number"
-                                value={cp}
+                                value={formData.cp}
                                 onChange={handleChange}
                             />
                         </div>
@@ -218,7 +209,7 @@ export const RegistroGuardaTren = () => {
                             <select
                                 id="codigoPais"
                                 name="codigoPais"
-                                value={codigoPais}
+                                value={formData.codigoPais}
                                 onChange={handleChange}
                             >
                                 <option value="+54">Argentina (+54)</option>
@@ -243,16 +234,16 @@ export const RegistroGuardaTren = () => {
                                 id="tel"
                                 name="tel"
                                 placeholder="11-XXXX-XXXX"
-                                value={tel}
+                                value={formData.tel}
                                 onChange={handleChange}
                             />
                             <br />
-                            <label htmlFor="altTel">Telefono Alternativo</label><br />
+                            <label htmlFor="altTel">Teléfono Alternativo</label><br />
                             <label htmlFor="altCodigoPais">Código de País</label>
                             <select
                                 id="altCodigoPais"
                                 name="altCodigoPais"
-                                value={altCodigoPais}
+                                value={formData.altCodigoPais}
                                 onChange={handleChange}
                             >
                                 <option value="+54">Argentina (+54)</option>
@@ -271,13 +262,13 @@ export const RegistroGuardaTren = () => {
                                 <option value="+41">Suiza (+41)</option>
                                 {/* Agrega más opciones según sea necesario */}
                             </select>
-                            <label htmlFor="altTel">Teléfono </label>
+                            <label htmlFor="altTel">Teléfono</label>
                             <input
                                 type="text"
                                 id="altTel"
                                 name="altTel"
                                 placeholder="11-XXXX-XXXX"
-                                value={altTel}
+                                value={formData.altTel}
                                 onChange={handleChange}
                                 required
                             />
@@ -292,4 +283,3 @@ export const RegistroGuardaTren = () => {
         </main>
     );
 };
-

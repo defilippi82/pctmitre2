@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../firebaseConfig/firebase';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
  
@@ -29,7 +29,10 @@ export const RegistroConductores = () => {
         tel: '',
         secciones: []
     });
-    const navigate = useNavigate();
+    
+    const conductoresCollection = collection(db, 'conductores');
+    const navigate = useNavigate()
+  
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -48,12 +51,11 @@ export const RegistroConductores = () => {
         }
     };
 
-    const handleSubmit = async (e) => {
+    const crearconductor = async (e) => {
         e.preventDefault();
         try {
             // Guardar los datos en Firebase
-            await db.collection('conductores').add(formData);
-            console.log('Datos guardados en Firebase');
+            await addDoc(conductoresCollection, formData);
 
             // Mostrar alerta de éxito
             MySwal.fire({
@@ -63,7 +65,7 @@ export const RegistroConductores = () => {
                 showConfirmButton: true,
             }).then(() => {
                 // Redirigir al usuario a otra página después de la alerta
-                navigate('/');
+                navigate('/conductores/create');
             });
 
             // Restablecer el formulario después de enviar los datos
@@ -104,7 +106,7 @@ export const RegistroConductores = () => {
         <main>
             <h1>Registro de Conductores</h1>
             <div className="d-flex justify-content-start">
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={crearconductor}>
                     <div>
                         <label htmlFor="rol">Seleccione</label>
                         <select name="rol" id="rol" className="rol" value={formData.rol} onChange={handleChange}>

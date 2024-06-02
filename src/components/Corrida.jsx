@@ -82,8 +82,24 @@ export const Corrida = () => {
                     </div>
                 </div>
             );
+            
         }
-        return relevoFields;        
+        switch (type) {
+            case 'conductor':
+                setConductorFields(fields);
+                setRelevoConductorFields(relevoFields);
+                break;
+            case 'guarda':
+                setGuardaFields(fields);
+                setRelevoGuardaFields(relevoFields);
+                break;
+            case 'piloto':
+                setPilotoFields(fields);
+                setRelevoPilotoFields(relevoFields);
+                break;
+            default:
+                break;
+        }       
         
 
     };
@@ -91,19 +107,19 @@ export const Corrida = () => {
     const handleConductorChange = (e) => {
         const count = parseInt(e.target.value) || 0;
         setConductor(count);
-        generarCampos('conductor', count, setConductorFields, setRelevoConductorFields);
+        generarCampos('conductor', count);
     };
 
     const handleGuardaChange = (e) => {
         const count = parseInt(e.target.value) || 0;
         setGuarda(count);
-        generarCampos('guarda', count, setGuardaFields, setRelevoGuardaFields);
+        generarCampos('guarda', count);
     };
 
     const handlePilotoChange = (e) => {
         const count = parseInt(e.target.value) || 0;
         setPiloto(count);
-        generarCampos('piloto', count, setPilotoFields, setRelevoPilotoFields);
+        generarCampos('piloto', count);
     };
 
     const limpiarCampos = () => {
@@ -134,6 +150,47 @@ export const Corrida = () => {
 
     const agregarDetallesPersonal = (tipo, fields, relevoFields) => {
         fields.forEach((field, index) => {
+            const legajo = field.legajo;
+            const nombre = field.nombre;
+            const ingreso = field.ingreso;
+            const dejada = field.dejada;
+
+            let conductorTexto = `${tipo.charAt(0).toUpperCase() + tipo.slice(1)} ${index + 1}:`;
+            doc.text(conductorTexto, 10, yPos);
+            yPos += 5;
+    
+            // Detalles del conductor
+            doc.text(`Legajo: ${legajo}`, 15, yPos);
+            yPos += 5;
+            doc.text(`Nombre: ${nombre}`, 15, yPos);
+            yPos += 5;
+            doc.text(`Ingreso: ${ingreso}`, 15, yPos);
+            yPos += 5;
+            doc.text(`Dejada: ${dejada}`, 15, yPos);
+            yPos += 10;
+
+            const relevoLegajo = relevoFields[index].legajo;
+            const relevoNombre = relevoFields[index].nombre;
+            const relevoIngreso = relevoFields[index].ingreso;
+            const relevoDejada = relevoFields[index].dejada;
+
+            if (relevoLegajo || relevoNombre || relevoIngreso || relevoDejada) {
+                // Texto del relevo
+                let relevoTexto = `Relevo ${tipo.charAt(0).toUpperCase() + tipo.slice(1)} ${index + 1}:`;
+                doc.text(relevoTexto, 10, yPos);
+                yPos += 5;
+    
+                // Detalles del relevo
+                doc.text(`Legajo: ${relevoLegajo}`, 15, yPos);
+                yPos += 5;
+                doc.text(`Nombre: ${relevoNombre}`, 15, yPos);
+                yPos += 5;
+                doc.text(`Ingreso: ${relevoIngreso}`, 15, yPos);
+                yPos += 5;
+                doc.text(`Dejada: ${relevoDejada}`, 15, yPos);
+                yPos += 10;
+            }
+        /*fields.forEach((field, index) => {
             const legajo = document.querySelector(`[name="${tipo}-legajo-${index}"]`).value;
             const nombre = document.querySelector(`[name="${tipo}-nombre-${index}"]`).value;
             const ingreso = document.querySelector(`[name="${tipo}-ingreso-${index}"]`).value;
@@ -149,7 +206,8 @@ export const Corrida = () => {
             if (relevoLegajo || relevoNombre || relevoIngreso || relevoDejada) {
                 doc.text(`Relevo ${tipo.charAt(0).toUpperCase() + tipo.slice(1)} ${index + 1} - Legajo: ${relevoLegajo}, Nombre: ${relevoNombre}, Ingreso: ${relevoIngreso}, Dejada: ${relevoDejada}`, 10, yPos);
                 yPos += 10;
-            }
+            }*/
+
         });
     };
 
@@ -196,8 +254,8 @@ export const Corrida = () => {
                                     id="responsable"
                                     name="responsable"
                                     placeholder="Nombre y Apellido"
-                                    pattern="[A-Z\s-a-z]{3,20}"
-                                     value={userData ? userData.nombre : ''}
+                                    pattern="^[A-Za-z\s-]{3,20}$"  
+                                    value={userData ? userData.nombre : ''}
                                     onChange={(e) => setResponsable(e.target.value)}
                                     required
                                 />
@@ -282,15 +340,24 @@ export const Corrida = () => {
                                     required
                                 />
                             </p>
-                        </div>
+                           </div>
                         <div id="conductorCampos" className="row g-3">
                             {conductorFields}
+                        </div>
+                        <div id="relevoConductorCampos" className="row g-3">
+                            {relevoConductorFields}
                         </div>
                         <div id="guardaCampos" className="row g-3">
                             {guardaFields}
                         </div>
+                        <div id="relevoGuardaCampos" className="row g-3">
+                            {relevoGuardaFields}
+                        </div>
                         <div id="pilotoCampos" className="row g-3">
                             {pilotoFields}
+                        </div>
+                        <div id="relevoPilotoCampos" className="row g-3">
+                            {relevoPilotoFields}
                         </div>
                         <div>
                             <h4>Observaciones</h4>
