@@ -40,6 +40,7 @@ export const Corrida = () => {
 
     const generarCampos = (type, count) => {
         const fields = [];
+        const relevoFields = [];
         for (let i = 0; i < count; i++) {
             fields.push(
                 <div key={`${type}-${i}`} className="row g-3">

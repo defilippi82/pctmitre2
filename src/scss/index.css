@@ -13,7 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
   body{
-    background-image: url('/public/imagen_torre_futuro.jpeg');
+    background-image: url('../imagen_torre_futuro.jpeg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
