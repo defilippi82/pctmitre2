@@ -83,9 +83,8 @@ export const Corrida = () => {
                 </div>
             );
         }
-        //return fields;
-        setFields(fields);
-        setRelevoFields(relevoFields);
+        return fields, relevoFields;        
+        
 
     };
 
