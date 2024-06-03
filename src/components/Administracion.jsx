@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, Timestamp } from "firebase/firestore";
 import { db } from "../firebaseConfig/firebase";
+
 
 /* SWEET ALERT */
 import Swal from "sweetalert2";
@@ -10,14 +11,14 @@ const MySwal = withReactContent(Swal);
 
 export const Administracion = () => {
     const [conductores, setConductores] = useState([]);
-    const [guardastrenes, setGuardatrenes] = useState([]);
+    const [guardatrenes, setGuardatrenes] = useState([]);
     const [operadores, setOperadores] = useState([]);
     const [currentView, setCurrentView] = useState(null); // 'conductores', 'operadores', 'operadores'
     const navigate = useNavigate();
 
     // Firestore collections
     const conductoresCollection = collection(db, "conductores");
-    const guardastrenesCollection = collection(db, "guardastren");
+    const guardatrenesCollection = collection(db, "guardatren");
     const operadoresCollection = collection(db, "operadores");
 
     useEffect(() => {
@@ -39,9 +40,9 @@ export const Administracion = () => {
         }
     };
 
-    const fetchGuardatrenes = async () => {
+    const fetchGuardatren = async () => {
         try {
-            const data = await getDocs(guardastrenesCollection);
+            const data = await getDocs(guardatrenesCollection);
             setGuardatrenes(data.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         } catch (error) {
             console.error("Error fetching guarda Trenes:", error);
@@ -155,10 +156,10 @@ export const Administracion = () => {
                                 </table>
                             </div>
                         )}
-                        {currentView === 'guardastrenes' && (
+                        {currentView === 'guardatrenes' && (
                             <div>
                                 <div className="d-grid gap-2 col-6 mx-auto">
-                                    <Link to="/guardastren/create" className="btn btn-secondary mt-2 mb-2">Crear Guardastren</Link>
+                                    <Link to="/guardatren/create" className="btn btn-secondary mt-2 mb-2">Crear Guardatren</Link>
                                 </div>
                                 <table className="table table-dark table-hover">
                                     <thead>
@@ -181,25 +182,25 @@ export const Administracion = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {guardastrenes.map((guardastren) => (
-                                            <tr key={guardastren.id}>
-                                                <td>{guardastren.nombre}</td>
-                                                <td>{guardastren.legajo}</td>
-                                                <td>{guardastren.servicio}</td>
-                                                <td>{guardastren.email}</td>
-                                                <td>{guardastren.direccion}</td>
-                                                <td>{guardastren.localidad}</td>
-                                                <td>{guardastren.provincia}</td>
-                                                <td>{guardastren.piso}</td>
-                                                <td>{guardastren.dpto}</td>
-                                                <td>{guardastren.cp}</td>
-                                                <td>{guardastren.codigoPais}</td>
-                                                <td>{guardastren.tel}</td>
-                                                <td>{guardastren.altCodigoPais}</td>
-                                                <td>{guardastren.altTel}</td>
+                                        {guardatrenes.map((guardatren) => (
+                                            <tr key={guardatren.id}>
+                                                <td>{guardatren.nombre}</td>
+                                                <td>{guardatren.legajo}</td>
+                                                <td>{guardatren.servicio}</td>
+                                                <td>{guardatren.email}</td>
+                                                <td>{guardatren.direccion}</td>
+                                                <td>{guardatren.localidad}</td>
+                                                <td>{guardatren.provincia}</td>
+                                                <td>{guardatren.piso}</td>
+                                                <td>{guardatren.dpto}</td>
+                                                <td>{guardatren.cp}</td>
+                                                <td>{guardatren.codigoPais}</td>
+                                                <td>{guardatren.tel}</td>
+                                                <td>{guardatren.altCodigoPais}</td>
+                                                <td>{guardatren.altTel}</td>
                                                 <td>
-                                                    <Link to={`/guardastren/edit/${guardastren.id}`} className="btn btn-light"><i className="fa-solid fa-pen-to-square"></i></Link>
-                                                    <button className="btn btn-danger" onClick={() => confirmDelete('guardastren', guardastren.id, setguardastrenes, guardastren)}><i className="fa-solid fa-trash"></i></button>
+                                                    <Link to={`/guardatren/edit/${guardatren.id}`} className="btn btn-light"><i className="fas fa-edit"></i></Link>
+                                                    <button className="btn btn-danger" onClick={() => confirmDelete('guardatren', guardatren.id, setGuardatrenes, guardatren)}><i className="fas fa-trash-alt"></i></button>
                                                 </td>
                                             </tr>
                                         ))}

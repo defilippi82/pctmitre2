@@ -31,8 +31,8 @@ export const App = () => {
           <Route path="/emergencias" element="aca SE VE COMPONENTE EMERGENCIAS" />
           <Route path="/conductores/create" element={<RegistroConductores/>} />
           <Route path="/conductores/edit/:id" element={<EditarConductores/>} />
-          <Route path="/guardastren/create" element={<RegistroGuardaTren/>} />
-          <Route path="/guardastren/edit/:id" element={<EditarGuardaTren/>} />
+          <Route path="/guardatren/create" element={<RegistroGuardaTren/>} />
+          <Route path="/guardatren/edit/:id" element={<EditarGuardaTren/>} />
           <Route path="/padron" element={<Padron/>} />
           <Route path="/corrida" element={<Corrida/>} />
           <Route path="/listaspersonal" element="aca SE VE COMPONENTE LISTAS DE PERSONAL" />

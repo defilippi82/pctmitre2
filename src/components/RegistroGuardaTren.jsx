@@ -60,6 +60,7 @@ export const RegistroGuardaTren = () => {
             // Restablecer el formulario después de enviar los datos
             setFormData({
                 nombre: '',
+                apellido: '',
                 legajo: '',
                 servicio: '',
                 email: '',
@@ -92,17 +93,12 @@ export const RegistroGuardaTren = () => {
             <div>
                 <form onSubmit={crearguardatren} className="card card-body shadow-lg">
                     <div>
-                        <label htmlFor="nombre">Nombre y Apellido</label>
-                        <input
-                            type="text"
-                            id="nombre"
-                            name="nombre"
-                            placeholder="Nombre y Apellido"
-                            pattern="[A-Z\s-a-z]{3,20}"
-                            required
-                            value={formData.nombre}
-                            onChange={handleChange}
-                        />
+                    <label htmlFor="nombre">Nombre </label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Nombre"
+                             required value={formData.nombre} onChange={handleChange} />
+                        <label htmlFor="nombre">Apellido</label>
+                        <input type="text" id="apellido" name="apellido" placeholder="Apellido"
+                             required value={formData.apellido} onChange={handleChange} />
                         <label htmlFor="legajo">Legajo</label>
                         <input
                             type="number"

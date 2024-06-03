@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import firebase, { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useParams } from 'react-router-dom';
 import { db } from "../firebaseConfig/firebase";
 
-export const EditarGuardaTren = ({ id }) => {
+export const EditarGuardaTren = () => {
+    const { id } = useParams();
     const [formData, setFormData] = useState({
         nombre: '',
         legajo: '',
@@ -21,24 +22,15 @@ export const EditarGuardaTren = ({ id }) => {
     });
 
     useEffect(() => {
-        // Aquí deberías implementar la lógica para obtener los datos del guardatren con el ID proporcionado
-        // Por ejemplo, usando Firebase
-        const obtenerDatosGuardaTren = async () => {
-            try {
-                const doc = await firebase.firestore().collection('guardatren').doc(id).get();
-                if (doc.exists) {
-                    const data = doc.data();
-                    setFormData(data);
-                } else {
-                    console.log('No se encontraron datos para el ID proporcionado');
-                }
-            } catch (error) {
-                console.error('Error al obtener datos de Firebase:', error);
+        const fetchData = async () => {
+            const doc = await db.collection('guardatren').doc(id).get();
+            if (doc.exists) {
+                setFormData(doc.data());
             }
         };
-
-        obtenerDatosGuardaTren();
+        fetchData();
     }, [id]);
+    
 
     const handleChange = (e) => {
         const { name, value } = e.target;

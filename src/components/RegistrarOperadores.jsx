@@ -3,6 +3,7 @@ import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig/firebase';
 
+
 import { useNavigate } from 'react-router-dom';
 
 /* SWEET ALERT*/
@@ -100,7 +101,7 @@ export const RegistrarOperadores = () => {
   }
 };
 const RolSelect = () => {
-  const [rol, setRol] = useState(roles.get('electrico'));
+  const [rol, setRol] = useState(roles.get('personal'));
 
   const handleRolChange = (e) => {
     const nuevoRol = roles.get(e.target.value);

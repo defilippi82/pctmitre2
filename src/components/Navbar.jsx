@@ -12,16 +12,12 @@ export const NavbarComponent = ({ handleLogout }) => {
   const { userData } = useContext(UserContext);
  return (
   <>
-  {[ 'sm'].map((expand) => (
+  {[ 'lg'].map((expand) => (
     <Navbar key={expand} expand={expand} className="bg-body-tertiary mb-3">
       <Container fluid>
         <Navbar.Brand href="#"><strong>PCT Mitre ||</strong> {userData && userData.nombre && <> ¡Hola <em>{userData.nombre}!</em> </>}</Navbar.Brand>
         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${expand}`} />
-        <Navbar.Offcanvas
-          id={`offcanvasNavbar-expand-${expand}`}
-          aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`}
-          placement="end"
-        >
+        <Navbar.Offcanvas id={`offcanvasNavbar-expand-${expand}`} aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`} placement="end">
           <Offcanvas.Header closeButton>
             <Offcanvas.Title id={`offcanvasNavbarLabel-expand-${expand}`}>
               PCT Mitre
@@ -30,20 +26,12 @@ export const NavbarComponent = ({ handleLogout }) => {
           <Offcanvas.Body>
             <Nav className="justify-content-end flex-grow-1 pe-3">
             <Nav.Link  href="/login">Inicio</Nav.Link>
-            <NavDropdown
-                title="Emergencias"
-                id={`offcanvasNavbarDropdown-expand-${expand}`}
-              ></NavDropdown>
-              <NavDropdown.Item href="#/padron">Padron</NavDropdown.Item>
-                <Nav.Link  href="#/emergencias">Emergencias</Nav.Link>
-              <NavDropdown
-                title="Personal"
-                id={`offcanvasNavbarDropdown-expand-${expand}`}
-              >
-                <NavDropdown.Item href="#/corrida">CorridaTrenes</NavDropdown.Item>
-              <NavDropdown.Item href="#/listaspersonal">ListasPersonal</NavDropdown.Item>
-              <NavDropdown.Item href="#/conductores/create">Registrar Conductores</NavDropdown.Item>
-              <NavDropdown.Item href="#/guardastren/create">Registrar Guardas</NavDropdown.Item>
+                          
+              <NavDropdown title="Emergencias" id={`offcanvasNavbarDropdown-expand-${expand}`} >
+              <NavDropdown.Item href="">Partes Diarios</NavDropdown.Item>
+              <NavDropdown.Item href="">Barreras</NavDropdown.Item>
+              <NavDropdown.Item href="">ART</NavDropdown.Item>
+              <NavDropdown.Item href="">Telefonos</NavDropdown.Item>
               <NavDropdown.Item href="#/padron">Padron</NavDropdown.Item>
               <NavDropdown.Divider />
               {userData && userData.nombre && userData.rol && userData.rol.administrador && (
@@ -53,6 +41,16 @@ export const NavbarComponent = ({ handleLogout }) => {
               
               </NavDropdown.Item>
             )}
+              </NavDropdown>
+              <NavDropdown title="Personal" id={`offcanvasNavbarDropdown-expand-${expand}`} >
+                <NavDropdown.Item href="#/corrida">CorridaTrenes</NavDropdown.Item>
+              <NavDropdown.Item href="#/listaspersonal">ListasPersonal</NavDropdown.Item>
+              <NavDropdown.Item href="#/conductores/create">Registrar Conductores</NavDropdown.Item>
+              <NavDropdown.Item href="#/guardatren/create">Registrar Guardas</NavDropdown.Item>
+              <NavDropdown.Item href="#/padron">Padron</NavDropdown.Item>
+              <NavDropdown.Divider />
+              {userData && userData.nombre && userData.rol && (
+              <NavDropdown.Item href="#/administracion"> Administracion </NavDropdown.Item>    )}
               </NavDropdown>
             </Nav>
             
