@@ -231,7 +231,7 @@ export const Administracion = () => {
                                                 <td>{operador.servicio}</td>
                                                 <td>{operador.email}</td>
                                                 <td>
-                                                    <Link to={`/operador/edit/${operador.id}`} className="btn btn-light"><i className="fa-solid fa-pen-to-square"></i></Link>
+                                                    <Link to={`/operadores/edit/${operador.id}`} className="btn btn-light"><i className="fa-solid fa-pen-to-square"></i></Link>
                                                     <button className="btn btn-danger" onClick={() => confirmDelete('operadores', operador.id, setOperadores, operadores)}><i className="fa-solid fa-trash"></i></button>
                                                 </td>
                                             </tr>

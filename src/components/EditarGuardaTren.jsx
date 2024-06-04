@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from "../firebaseConfig/firebase";
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 export const EditarGuardaTren = () => {
     const { id } = useParams();
@@ -30,7 +34,6 @@ export const EditarGuardaTren = () => {
         };
         fetchData();
     }, [id]);
-    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -43,11 +46,21 @@ export const EditarGuardaTren = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Actualiza los datos del guardatren en Firebase
-            await firebase.firestore().collection('guardatren').doc(id).set(formData, { merge: true });
-            console.log('Datos actualizados correctamente');
+            await db.collection('guardatren').doc(id).set(formData);
+            MySwal.fire({
+                title: 'Actualización exitosa',
+                text: 'Los datos han sido actualizados correctamente',
+                icon: 'success',
+                showConfirmButton: true,
+            });
         } catch (error) {
-            console.error('Error al actualizar datos en Firebase:', error);
+            console.error('Error al actualizar los datos en Firebase:', error);
+            MySwal.fire({
+                title: 'Error',
+                text: error.message,
+                icon: 'error',
+                showConfirmButton: true,
+            });
         }
     };
 

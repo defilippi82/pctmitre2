@@ -4,6 +4,7 @@ import { Login } from "./components/Login";
 import {Corrida} from "./components/Corrida";
 import {Administracion} from "./components/Administracion";
 import {RegistrarOperadores} from "./components/RegistrarOperadores";
+import {EditarOperadores} from "./components/EditarOperadores";
 import { RegistroConductores } from "./components/RegistroConductores";
 import { RegistroGuardaTren } from "./components/RegistroGuardaTren";
 import {EditarConductores} from "./components/EditarConductores";
@@ -27,6 +28,7 @@ export const App = () => {
         <Routes>
           <Route path="/" element={<Login/>} />
           <Route path="/operadores/create" element={<RegistrarOperadores/>} />
+          <Route path="/operadores/edit/:id" element={<EditarOperadores/>} />
           <Route path="/administracion" element={<Administracion/>} />
           <Route path="/emergencias" element="aca SE VE COMPONENTE EMERGENCIAS" />
           <Route path="/conductores/create" element={<RegistroConductores/>} />
