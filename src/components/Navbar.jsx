@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
@@ -12,10 +11,10 @@ export const NavbarComponent = ({ handleLogout }) => {
   const { userData } = useContext(UserContext);
  return (
   <>
-  {[ 'lg'].map((expand) => (
-    <Navbar key={expand} expand={expand} className="bg-body-tertiary mb-3">
+  {[ 'xxl'].map((expand) => (
+    <Navbar key={expand} expand={expand} className="bg-body-tertiary xxl-3">
       <Container fluid>
-        <Navbar.Brand href="#"><strong>PCT Mitre ||</strong> {userData && userData.nombre && <> ¡Hola <em>{userData.nombre}!</em> </>}</Navbar.Brand>
+        <Navbar.Brand href="#"><strong>PCT Mitre ||</strong> {userData && userData.nombre && <> ¡Hola <em fluid>{userData.nombre}!</em> </>}</Navbar.Brand>
         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${expand}`} />
         <Navbar.Offcanvas id={`offcanvasNavbar-expand-${expand}`} aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`} placement="end">
           <Offcanvas.Header closeButton>

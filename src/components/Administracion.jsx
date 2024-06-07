@@ -156,7 +156,7 @@ export const Administracion = () => {
                                 </table>
                             </div>
                         )}
-                        {currentView === 'guardatrenes' && (
+                        {currentView === 'guardatren' && (
                             <div>
                                 <div className="d-grid gap-2 col-6 mx-auto">
                                     <Link to="/guardatren/create" className="btn btn-secondary mt-2 mb-2">Crear Guardatren</Link>

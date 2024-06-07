@@ -238,31 +238,12 @@ export const Corrida = () => {
 };
 
     return (
-        <div>
-            <header>
-                <nav className="navbar navbar-dark bg-dark">
-                    <div className="container-fluid">
-                        <a className="navbar-brand" href="#">Mesa Personal</a>
-                        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
-                        <div className="collapse navbar-collapse" id="navbarNav">
-                            <ul className="navbar-nav">
-                                <li className="nav-item"><a className="nav-link" href="#/conductores/create">Registro Conductor</a></li>
-                                <li className="nav-item"><a className="nav-link" href="#/guardastren/create">Registro GuardaTren</a></li>
-                                <li className="nav-item"><a className="nav-link" href="#/corrida">Corridas</a></li>
-                                <li className="nav-item"><a className="nav-link" href="#/listaspersonal">Listas</a></li>
-                                <li className="nav-item"><a className="nav-link" href="#/administracion">Base de datos</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
-            </header>
+        <div className='container-fluid'>
+            
 
             <main>
                 <h1>Personal para Corrida</h1>
-                <div className="container">
+                <div className="container-fluid">
                     <form id="formulario" className="row g-3" action="/register" method="POST">
                         <div className="d-flex justify-content-start">
                             <p>

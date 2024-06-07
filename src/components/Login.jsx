@@ -69,16 +69,22 @@ export const Login = () => {
     }
   };
     return (
-      <div className="container">
-        <div>
-          <h1>Ingreso de Operadores</h1>
+      <div className="container-fluid text center">
+        <div className='row'>
+          <div className='col-sm-6'>
+          <img src="../img/imagen_torre_futuro.jpeg" className='img-fluid' alt="torre futura" />
+
+          </div>
+        <div className='col-sm-6'>
+          <div>
+          <h3>Ingreso de Operadores</h3>
         </div>
        
         <div className="row justify-content-center">
         <div className="col-md-6">
         <div className="d-flex justify-content-center">
         <div className="login-key text-center">
-          <i className="fa fa-user-circle fa-10x" aria-hidden="true"></i>
+          <i className="fa fa-train fa-8x" aria-hidden="true"></i>
          </div>
         </div>
       </div>
@@ -110,9 +116,10 @@ export const Login = () => {
           <Link to ="/operadores/create" className="btn btn-primary"> Registrarse </Link>
           </div>
         </form>
-        
+        </div>
         
       
+      </div>
       </div>
     );
 
