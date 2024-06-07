@@ -32,10 +32,11 @@ export const Corrida = () => {
         }
       }, []);
       // Otros efectos que dependan de userData
-  useEffect(() => {
-    // Lógica adicional que depende de userData
-  }, [userData]);
-
+      useEffect(() => {
+        if (userData && userData.nombre) {
+            setResponsable(userData.nombre);
+        }
+      }, [userData]);
 
     const handleCheckboxChange = (e) => {
         const value = e.target.value;
