@@ -27,10 +27,10 @@ export const NavbarComponent = ({ handleLogout }) => {
             <Nav.Link  href="/login">Inicio</Nav.Link>
                           
               <NavDropdown title="Emergencias" id={`offcanvasNavbarDropdown-expand-${expand}`} >
-              <NavDropdown.Item href="">Partes Diarios</NavDropdown.Item>
-              <NavDropdown.Item href="">Barreras</NavDropdown.Item>
-              <NavDropdown.Item href="">ART</NavDropdown.Item>
-              <NavDropdown.Item href="">Telefonos</NavDropdown.Item>
+              <NavDropdown.Item href="#/partes">Partes Regularidad</NavDropdown.Item>
+              <NavDropdown.Item href="#/barreras">Barreras</NavDropdown.Item>
+              <NavDropdown.Item href="#/art">ART</NavDropdown.Item>
+              <NavDropdown.Item href="#/emergencias">Telefonos Utiles</NavDropdown.Item>
               <NavDropdown.Item href="#/padron">Padron</NavDropdown.Item>
               <NavDropdown.Divider />
               {userData && userData.nombre && userData.rol && userData.rol.administrador && (
