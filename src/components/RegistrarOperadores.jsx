@@ -22,8 +22,9 @@ export const RegistrarOperadores = () => {
     ['electrico', { valor: 'electrico', administrador: false, electrico: true, personal: false, emergencia: false,diesel: false, usuario: false }],
     ['diesel', { valor: 'diesel', administrador: false, electrico: false, personal: false, emergencia: false,diesel: true, usuario: false }],
     ['personal', { valor: 'personal', administrador: false, electrico: false, personal: true, emergencia: false,diesel: false, usuario: false }],
-    ['emergencia', { valor: 'emergencia', administrador: false, electrico: false, personal: true, emergencia: true,diesel: false, usuario: false }],
-    ['usuario', { valor: 'usuario', administrador: false, electrico: false, personal: true, emergencia: true,diesel: false, usuario: true }],
+    ['emergencia', { valor: 'emergencia', administrador: false, electrico: false, personal: false, emergencia: true,diesel: false, usuario: false }],
+    ['usuario', { valor: 'usuario', administrador: false, electrico: false, personal: false, emergencia: false,diesel: false, usuario: true }],
+    ['relevante', { valor: 'relevante', administrador: false, electrico: true, personal: true, emergencia: true, diesel: true, usuario: true }],
   ]);
   const [rol, setRol] = useState(roles.get('personal')); // Valor inicial del rol
  
@@ -70,7 +71,7 @@ export const RegistrarOperadores = () => {
       nombre,
       email,
       legajo,
-      rol: rol.valor,
+      rol,
       contrasena,
       
     });
@@ -90,6 +91,7 @@ export const RegistrarOperadores = () => {
     setNombre('');
     setEmail('');
     setContrasena('');
+    
   } catch (error) {
     // Mostrar alerta de error
     MySwal.fire({
@@ -101,8 +103,6 @@ export const RegistrarOperadores = () => {
   }
 };
 const RolSelect = () => {
-  const [rol, setRol] = useState(roles.get('personal'));
-
   const handleRolChange = (e) => {
     const nuevoRol = roles.get(e.target.value);
     setRol(nuevoRol);
@@ -110,23 +110,23 @@ const RolSelect = () => {
 
   return (
     <div className="container elem-group form-floating mb-3">
-      <select
-        name="rol"
-        id="rol"
-        value={rol.valor}
-        onChange={handleRolChange}
-        className="form-select"
-      >
-        {Array.from(roles.keys()).map((key) => (
-          <option key={key} value={key} disabled={key === 'administrador'}>
-            {key}
-          </option>
-        ))}
-      </select>
-      <label htmlFor="rol">Rol</label>
-    </div>
-  );
-};
+        <select
+          name="rol"
+          id="rol"
+          value={rol.valor}
+          onChange={handleRolChange}
+          className="form-select"
+        >
+          {Array.from(roles.keys()).map((key) => (
+            <option key={key} value={key} disabled={key === 'administrador'}>
+              {key}
+            </option>
+          ))}
+        </select>
+        <label htmlFor="rol">Rol</label>
+      </div>
+    );
+  };
 
     return (
 

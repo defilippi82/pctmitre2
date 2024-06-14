@@ -14,11 +14,13 @@ export const RegistroConductores = () => {
         apellido: '',
         legajo: '',
         servicio: '',
+        orden: '',
         tarea: '',
         dni: '',
         nacimiento: '',
         ingreso: '',
         cupon: '',
+        apto: '',
         base: '',
         email: '',
         direccion: '',
@@ -76,11 +78,13 @@ export const RegistroConductores = () => {
                 apellido: '',
                 legajo: '',
                 servicio: '',
+                orden: '',
                 tarea: '',
                 dni: '',
                 nacimiento: '',
                 ingreso: '',
                 cupon: '',
+                apto: '',
                 base: '',
                 email: '',
                 direccion: '',
@@ -231,9 +235,15 @@ export const RegistroConductores = () => {
                         <div className="elem-group">
                         <div className='form-floating mb-3'>
 
-                        <input  type="number" id="servicio" name="servicio" maxLength="6" className='form-control input-number' required value={formData.servicio} onChange={handleChange} />
+                        <input  type="number" id="servicio" name="servicio" maxLength="6" className='form-control input-number'  value={formData.servicio} onChange={handleChange} />
                         <label for="floatingInputDisabled" htmlFor="servicio">Servicio</label>
                         </div>
+                        </div>
+                        <div className="elem-group">
+                            <div className='form-floating mb-3'>
+                                <input type="number" id="orden" name="orden" maxLength="6" className='form-control input-number' value={formData.orden} onChange={handleChange} />
+                                <label htmlFor="orden">Numero de Orden</label>
+                            </div>
                         </div>
 
                         <div>
@@ -249,6 +259,12 @@ export const RegistroConductores = () => {
                         </div></div>
                         <div>
                         <div className="container elem-group form-floating mb-3">
+                            <input  type="date" id="apto" name="apto" className="form-control input-number" value={formData.apto} onChange={handleChange} />
+                            <label htmlFor="apto">Apto Físico</label>
+                        </div>
+                        </div>
+                        <div>
+                        <div className="container elem-group form-floating mb-3">
                             <input  type="date" id="cupon" name="cupon" className="form-control input-number" value={formData.cupon} onChange={handleChange} />
                             <label htmlFor="cupon">Venc. Cupón</label>
                         </div>
@@ -259,7 +275,7 @@ export const RegistroConductores = () => {
                             <fieldset>
                                 <div className="form-control content">
                                     <ul className="lista1 form-check-inline form-switch">
-                                        {['ap', 'bp', 'cp', 'dp', 'ep', 'rosario', 'ug', 'e1', 'e2', 'puerto'].map((seccion) => (
+                                        {['ap ', 'bp ', 'cp ', 'dp ', 'ep ', 'rosario ', 'ug ', 'e1 ', 'e2 ', 'puerto '].map((seccion) => (
                                             <li key={seccion}>
                                                 <label htmlFor={`checkbox-${seccion}`}>
                                                     <input

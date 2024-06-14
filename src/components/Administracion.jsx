@@ -107,11 +107,13 @@ export const Administracion = () => {
                                             <th>Nombre</th>
                                             <th>Legajo</th>
                                             <th>Servicio</th>
+                                            <th>Nº Orden</th>
                                             <th>Tarea</th>
                                             <th>DNI</th>
                                             <th>Nacimiento</th>
                                             <th>Ingreso</th>
                                             <th>Cupon</th>
+                                            <th>Apto Físico</th>
                                             <th>Base</th>
                                             <th>Email</th>
                                             <th>Dirección</th>
@@ -131,11 +133,13 @@ export const Administracion = () => {
                                                 <td>{conductor.nombre}</td>
                                                 <td>{conductor.legajo}</td>
                                                 <td>{conductor.servicio}</td>
+                                                <td>{conductor.orden}</td>
                                                 <td>{conductor.tarea}</td>
                                                 <td>{conductor.dni}</td>
-                                                <td>{formatDate(conductor.nacimiento)}</td>
-                                                <td>{formatDate(conductor.ingreso)}</td>
+                                                <td>{conductor.nacimiento}</td>
+                                                <td>{conductor.ingreso}</td>
                                                 <td>{conductor.cupon}</td>
+                                                <td>{conductor.apto}</td>
                                                 <td>{conductor.base}</td>
                                                 <td>{conductor.email}</td>
                                                 <td>{conductor.direccion}</td>
@@ -218,8 +222,8 @@ export const Administracion = () => {
                                         <tr>
                                             <th>Nombre</th>
                                             <th>Legajo</th>
-                                            <th>Servicio</th>
                                             <th>Email</th>
+                                            <th>Rol</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -228,8 +232,8 @@ export const Administracion = () => {
                                             <tr key={operador.id}>
                                                 <td>{operador.nombre}</td>
                                                 <td>{operador.legajo}</td>
-                                                <td>{operador.servicio}</td>
                                                 <td>{operador.email}</td>
+                                                <td>{operador.rol.valor}</td>
                                                 <td>
                                                     <Link to={`/operadores/edit/${operador.id}`} className="btn btn-light"><i className="fa-solid fa-pen-to-square"></i></Link>
                                                     <button className="btn btn-danger" onClick={() => confirmDelete('operadores', operador.id, setOperadores, operadores)}><i className="fa-solid fa-trash"></i></button>

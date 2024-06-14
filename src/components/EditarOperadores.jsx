@@ -1,92 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getDoc, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebaseConfig/firebase';
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const MySwal = withReactContent(Swal);
 
-const roles = new Map([
-    ['administrador', { valor: 'administrador', administrador: true, electrico: true, personal: true, emergencia: true, diesel: true, usuario: true }],
-    ['electrico', { valor: 'electrico', administrador: false, electrico: true, personal: false, emergencia: false, diesel: false, usuario: false }],
-    ['diesel', { valor: 'diesel', administrador: false, electrico: false, personal: false, emergencia: false, diesel: true, usuario: false }],
-    ['personal', { valor: 'personal', administrador: false, electrico: false, personal: true, emergencia: false, diesel: false, usuario: false }],
-    ['emergencia', { valor: 'emergencia', administrador: false, electrico: false, personal: true, emergencia: true, diesel: false, usuario: false }],
-    ['usuario', { valor: 'usuario', administrador: false, electrico: false, personal: true, emergencia: true, diesel: false, usuario: true }],
-]);
 
 export const EditarOperadores = () => {
-    const { id } = useParams();
+    
     const [formData, setFormData] = useState({
         nombre: '',
         email: '',
         legajo: '',
-        rol: '',
+        rol:"",
         contrasena: ''
-    });
+        });
+        const { id } = useParams();
+        const navigate = useNavigate();
+        const roles = new Map([
+            ['administrador', { valor: 'administrador', administrador: true, electrico: true, personal: true, emergencia: true, diesel: true, usuario: true }],
+            ['electrico', { valor: 'electrico', administrador: false, electrico: true, personal: false, emergencia: false, diesel: false, usuario: false }],
+            ['diesel', { valor: 'diesel', administrador: false, electrico: false, personal: false, emergencia: false, diesel: true, usuario: false }],
+            ['personal', { valor: 'personal', administrador: false, electrico: false, personal: true, emergencia: false, diesel: false, usuario: false }],
+            ['emergencia', { valor: 'emergencia', administrador: false, electrico: false, personal: false, emergencia: true, diesel: false, usuario: false }],
+            ['usuario', { valor: 'usuario', administrador: false, electrico: false, personal: true, emergencia: false, diesel: false, usuario: true }],
+            ['relevante', { valor: 'relevante', administrador: false, electrico: true, personal: true, emergencia: true, diesel: true, usuario: true }],
+        ]);
+        useEffect(() => {
+            const getOperador = async () => {
+                const operadorDoc = await getDoc(doc(db, 'operadores', id));
+                if (operadorDoc.exists()) {
+                    const data = operadorDoc.data();
+                    setFormData({
+                        ...data,
+                        rol: roles.get(data.rol.valor) || ''
+                    });
+                } else {
+                    MySwal.fire('Error', 'Operador no encontrado', 'error');
+                    navigate('/operadores');
+                }
+            };
+    
+            getOperador();
+        }, [id, navigate]);
+    
+        const handleChange = (e) => {
+            const { name, value } = e.target;
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: name === 'rol' ? roles.get(value) : value
+            }));
+        };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const doc = await db.collection('operadores').doc(id).get();
-            if (doc.exists) {
-                const data = doc.data();
-                setFormData({
-                    nombre: data.nombre,
-                    email: data.email,
-                    legajo: data.legajo,
-                    rol: roles.get(data.rol).valor,
-                    contrasena: ''
-                });
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            try {
+                const operadorDoc = doc(db, 'operadores', id);
+                await updateDoc(operadorDoc, formData);
+                MySwal.fire('Actualizado', 'Operador actualizado correctamente', 'success');
+                navigate('/administracion');
+            } catch (error) {
+                MySwal.fire('Error', 'Hubo un error al actualizar el operador', 'error');
             }
         };
-        fetchData();
-    }, [id]);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await db.collection('operadores').doc(id).set({
-                nombre: formData.nombre,
-                email: formData.email,
-                legajo: formData.legajo,
-                rol: formData.rol
-            });
-
-            if (formData.contrasena) {
-                const auth = getAuth();
-                const user = auth.currentUser;
-                if (user) {
-                    await updatePassword(user, formData.contrasena);
-                } else {
-                    throw new Error('Usuario no autenticado');
-                }
-            }
-            
-            MySwal.fire({
-                title: 'Actualización exitosa',
-                text: 'Los datos han sido actualizados correctamente',
-                icon: 'success',
-                showConfirmButton: true,
-            });
-        } catch (error) {
-            console.error('Error al actualizar los datos en Firebase:', error);
-            MySwal.fire({
-                title: 'Error',
-                text: error.message,
-                icon: 'error',
-                showConfirmButton: true,
-            });
-        }
-    };
-
+    
     return (
         <div className="container">
             <div className='card text-bg-primary mb-3 shadow-lg'>
@@ -149,7 +128,8 @@ export const EditarOperadores = () => {
                         required
                     >
                         {Array.from(roles.keys()).map((key) => (
-                            <option key={key} value={key}>{roles.get(key).valor}</option>
+                            <option key={key} value={key} >
+              {key}</option>
                         ))}
                     </select>
                     <label htmlFor="rol">Rol</label>
