@@ -10,6 +10,7 @@ import { RegistroGuardaTren } from "./components/RegistroGuardaTren";
 import {EditarConductores} from "./components/EditarConductores";
 import {EditarGuardaTren} from "./components/EditarGuardaTren";
 import {Padron} from "./components/Padron";
+import {Pool} from "./components/Pool";
 import { Emergencias} from "./components/Emergencias"
 import { NavbarComponent } from './components/Navbar';
 import {UserProvider} from "./components/UserContext";
@@ -39,7 +40,7 @@ export const App = () => {
           <Route path="/conductores/edit/:id" element={<EditarConductores/>} />
           <Route path="/guardatren/create" element={<RegistroGuardaTren/>} />
           <Route path="/guardatren/edit/:id" element={<EditarGuardaTren/>} />
-          <Route path="/pool" element=" Aca se ve los Personales Disponibles" />
+          <Route path="/pool" element={<Pool/>} />
           <Route path="/padron" element={<Padron/>} />
           <Route path="/corrida" element={<Corrida/>} />
           <Route path="/listaspersonal" element="aca SE VE COMPONENTE LISTAS DE PERSONAL" />
