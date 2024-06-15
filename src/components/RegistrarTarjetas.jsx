@@ -31,7 +31,7 @@ export const RegistrarTarjetas = () => {
     });
 
     const handleViewChange = (event) => setCurrentView(event.target.value);
-    const handleLegajoChange = (event) => setLegajo(event.target.value);
+    const handleNombreChange = (event) => setNombre(event.target.value);
     const handleInputChange = (event) => setFormData({
         ...formData,
         [event.target.name]: event.target.value
@@ -48,7 +48,7 @@ export const RegistrarTarjetas = () => {
 
       const fetchConductores = async () => {
         try {
-            const q = query(collection(db, 'conductores'), where('legajo', '==', legajo));
+            const q = query(collection(db, 'conductores'), where('apellido', '==', apellido));
             const data = await getDocs(q);
             setConductores(data.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         } catch (error) {
@@ -57,7 +57,7 @@ export const RegistrarTarjetas = () => {
     };
     const fetchGuardatren = async () => {
         try {
-            const q = query(collection(db, 'guardatren'), where('legajo', '==', legajo));
+            const q = query(collection(db, 'guardatren'), where('apellido', '==', apellido));
             const data = await getDocs(q);
             setGuardatrenes(data.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         } catch (error) {
@@ -111,9 +111,9 @@ export const RegistrarTarjetas = () => {
                         </Form.Group>
                     </Col>
                     <Col>
-                        <Form.Group controlId="formLegajo">
-                            <Form.Label>Legajo</Form.Label>
-                            <Form.Control type="text" value={legajo} onChange={handleLegajoChange} />
+                        <Form.Group controlId="formNombre">
+                            <Form.Label>Nombre</Form.Label>
+                            <Form.Control type="text" value={nombre} onChange={handleNombreChange} />
                         </Form.Group>
                     </Col>
                     <Col>
