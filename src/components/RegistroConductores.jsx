@@ -112,6 +112,8 @@ export const RegistroConductores = () => {
 
     return (
         <main>
+            <Container>
+
             <div className="container ">
             <div className='card text-bg-primary mb-3 shadow-lg" style="max-width: 18rem;"'>
             <h1 className='card-header'>Registro de Conductores</h1>
@@ -295,7 +297,7 @@ export const RegistroConductores = () => {
                                                         id={`checkbox-${seccion}`}
                                                         checked={formData.secciones.includes(seccion)}
                                                         onChange={handleChange}
-                                                    /> {seccion.toUpperCase()}
+                                                        /> {seccion.toUpperCase()}
                                                 </label>
                                             </li>
                                         ))}
@@ -313,6 +315,7 @@ export const RegistroConductores = () => {
                 </form>
             </div>
         </div>
+            </Container>
         </main>
     );
 };
