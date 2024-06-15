@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig/firebase';
 import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
  
