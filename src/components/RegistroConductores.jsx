@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig/firebase';
+import Row from 'react-bootstrap/Row';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
  
@@ -116,8 +117,9 @@ export const RegistroConductores = () => {
             </div>
             <div className="d-flex justify-content-start">
                 <form onSubmit={crearconductor} className="card card-body shadow-lg">
+                <Row className="mb-3">
                         <div>
-                        <div className="container elem-group form-floating mb-3">
+                        <div as={Col} md="4" className="container elem-group form-floating mb-3">
                          <select name="base" id="base" className="form-select" value={formData.base} onChange={handleChange}>
                             <option value="suarez">Suarez</option>
                             <option value="victoria">Victoria</option>
@@ -128,7 +130,7 @@ export const RegistroConductores = () => {
                         </div>
                      
                      <div>
-                    <div className="container elem-group form-floating mb-3">
+                    <div as={Col} md="4" className="container elem-group form-floating mb-3">
                         <select name="rol" id="rol" className="form-select" value={formData.rol} onChange={handleChange}>
                             <option value="diesel">Cond. Diesel</option>
                             <option value="electrico">Cond. Electrico</option>
@@ -141,15 +143,17 @@ export const RegistroConductores = () => {
                         <label htmlFor="categoria">Categoría</label>
                         </div>
                         </div>
-
+                        
                         <div className="elem-group">
-                        <div className='form-floating mb-2'>
+                        <div as={Col} md="4" className='form-floating mb-2'>
                         <input  type="number" id="legajo" name="legajo" maxLength="6" className="form-control input-number" required value={formData.legajo} onChange={handleChange} />
                         <label htmlFor="legajo" for="floatingInputDisabled">Legajo</label>
                         </div>
                         </div>
+                        </Row>
+                        <Row className="mb-3">
                         <div className="elem-group">
-                        <div className='form-floating mb-3'>
+                        <div  as={Col} md="4" className='form-floating mb-3'>
                         <input className='form-control' type="text" id="nombre" name="nombre" placeholder="Nombre"
                              required value={formData.nombre} onChange={handleChange} />
                         <label htmlFor="nombre">Nombre </label>
@@ -157,7 +161,7 @@ export const RegistroConductores = () => {
                         </div>
 
                         <div className="elem-group">
-                        <div className='form-floating mb-3'>
+                        <div as={Col} md="4" className='form-floating mb-3'>
                         <input className='form-control' type="text" id="apellido" name="apellido" placeholder="Apellido"
                              required value={formData.apellido} onChange={handleChange} />
                         <label htmlFor="apellido" for="floatingInputDisabled" >Apellido</label>
@@ -165,11 +169,13 @@ export const RegistroConductores = () => {
                         </div>
 
                         <div>
-                        <div className="container elem-group form-floating mb-3">
+                        <div as={Col} md="4" className="container elem-group form-floating mb-3">
                         <input className='form-control input-number' type="number" id="dni" name="dni" maxLength="7" placeholder="XX.XXX.XXX"  required value={formData.dni} onChange={handleChange} />
                         <label htmlFor="dni">DNI</label>
                         </div>
                         </div>
+                        </Row>
+                        <Row className="mb-3">
                         <div>
                         <div className="container elem-group form-floating mb-3">
                         <input  type="date" id="nacimiento" name="nacimiento" className="form-control input-number" required value={formData.nacimiento} onChange={handleChange} />
@@ -189,6 +195,8 @@ export const RegistroConductores = () => {
                             <label htmlFor="email" for="floatingInputDisabled">Correo electrónico</label>
                         </div>
                         </div>
+                        </Row>
+                        <Row className="mb-3">
                         <div>
                         <div className="container elem-group form-floating mb-3">
                             <input className='form-control' type="text" id="direccion" name="direccion" placeholder="Dirección"
@@ -208,7 +216,7 @@ export const RegistroConductores = () => {
                             <input className='form-control' type="text" id="provincia" name="provincia" placeholder="Provincia"
                                  required value={formData.provincia} onChange={handleChange} />
                             <label htmlFor="provincia" for="floatingInputDisabled">Provincia</label></div></div>
-
+                            </Row>
                             <div>
                         <div className="container elem-group form-floating mb-3">
                             <input className='form-control input-number' type="number" id="piso" name="piso" maxLength="2" value={formData.piso} onChange={handleChange} />

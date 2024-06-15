@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import jsPDF from 'jspdf';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 
 export const Corrida = () => {
@@ -239,11 +242,16 @@ export const Corrida = () => {
 };
 
     return (
+        <Container>
+                <Row>
+                    <Col sm>
+
         <div className='container-fluid'>
             
 
             <main>
                 <h1>Personal para Corrida</h1>
+
                 <div className="container-fluid">
                     <form id="formulario" className="row g-3" action="/register" method="POST">
                         <div className="d-flex justify-content-start">
@@ -257,7 +265,7 @@ export const Corrida = () => {
                                     value={userData ? userData.nombre : ""}
                                     onChange={(e) => setResponsable(e.target.value)}
                                     required
-                                />
+                                    />
                             </p>
                             <p>
                                 <label htmlFor="trabajo">Nº de Trabajo</label>
@@ -270,7 +278,7 @@ export const Corrida = () => {
                                     value={trabajo}
                                     onChange={(e) => setTrabajo(e.target.value)}
                                     required
-                                />
+                                    />
                             </p>
                         </div>
                         <div className="d-flex justify-content-start">
@@ -290,7 +298,7 @@ export const Corrida = () => {
                                                         id={`checkbox-${section}`}
                                                         checked={secciones.includes(section)}
                                                         onChange={handleCheckboxChange}
-                                                    /> {section.toUpperCase()}
+                                                        /> {section.toUpperCase()}
                                                 </label>
                                             ))}
                                         </li>
@@ -311,7 +319,7 @@ export const Corrida = () => {
                                     value={conductor}
                                     onChange={handleConductorChange}
                                     required
-                                />
+                                    />
                             </p>
                             <p>
                                 <label htmlFor="guarda">Nº de Guardas</label>
@@ -324,7 +332,7 @@ export const Corrida = () => {
                                     value={guarda}
                                     onChange={handleGuardaChange}
                                     required
-                                />
+                                    />
                             </p>
                             <p>
                                 <label htmlFor="piloto">Nº de Pilotos</label>
@@ -337,7 +345,7 @@ export const Corrida = () => {
                                     value={piloto}
                                     onChange={handlePilotoChange}
                                     required
-                                />
+                                    />
                             </p>
                            </div>
                         <div id="conductorCampos" className="row g-3">
@@ -367,7 +375,7 @@ export const Corrida = () => {
                                 rows="3"
                                 value={observaciones}
                                 onChange={(e) => setObservaciones(e.target.value)}
-                            ></textarea>
+                                ></textarea>
                         </div>
                         <div className="col-md-12" style={{ display: 'inline-block' }}>
                             <button type="button" className="btn btn-success" id="btnImprimir" onClick={imprimirPDF}>Imprimir</button>
@@ -378,5 +386,8 @@ export const Corrida = () => {
             </main>
 
         </div>
+        </Col>
+        </Row>
+      </Container>
     );
 };

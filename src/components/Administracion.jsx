@@ -102,7 +102,7 @@ export const Administracion = () => {
                                 <div className="d-grid gap-2 col-6 mx-auto">
                                     <Link to="/conductores/create" className="btn btn-secondary mt-2 mb-2">CREAR CONDUCTOR</Link>
                                 </div>
-                                <Table responsive="sm" className="table table-dark table-hover">
+                                <Table responsive className="table table-dark table-hover">
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
@@ -166,7 +166,7 @@ export const Administracion = () => {
                                 <div className="d-grid gap-2 col-6 mx-auto">
                                     <Link to="/guardatren/create" className="btn btn-secondary mt-2 mb-2">Crear Guardatren</Link>
                                 </div>
-                                <Table responsive className="table table-dark table-hover">
+                                <Table responsive className="table table-warning table-hover">
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
