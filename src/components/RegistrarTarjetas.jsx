@@ -14,7 +14,7 @@ import CardFooter from 'react-bootstrap/CardFooter';
 import { CardGroup } from 'react-bootstrap';
 
 export const RegistrarTarjetas = () => {
-    const [legajo, setLegajo] = useState('');
+    const [nombre, setNombre] = useState('');
     const [conductores, setConductores] = useState([]);
     const [guardatrenes, setGuardatrenes] = useState([]);
     const [currentView, setCurrentView] = useState('conductores');
