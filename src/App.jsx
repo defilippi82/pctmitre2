@@ -11,6 +11,7 @@ import {EditarConductores} from "./components/EditarConductores";
 import {EditarGuardaTren} from "./components/EditarGuardaTren";
 import {Padron} from "./components/Padron";
 import {Pool} from "./components/Pool";
+import {RegistrarTarjetas} from "./components/RegistrarTarjetas";
 import { Emergencias} from "./components/Emergencias"
 import { NavbarComponent } from './components/Navbar';
 import {UserProvider} from "./components/UserContext";
@@ -41,6 +42,7 @@ export const App = () => {
           <Route path="/guardatren/create" element={<RegistroGuardaTren/>} />
           <Route path="/guardatren/edit/:id" element={<EditarGuardaTren/>} />
           <Route path="/pool" element={<Pool/>} />
+          <Route path="/tarjetas" element={<RegistrarTarjetas/>} />
           <Route path="/padron" element={<Padron/>} />
           <Route path="/corrida" element={<Corrida/>} />
           <Route path="/listaspersonal" element="aca SE VE COMPONENTE LISTAS DE PERSONAL" />
