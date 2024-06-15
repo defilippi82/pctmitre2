@@ -4,6 +4,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig/firebase';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Container from 'react-bootstrap/Container';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
  
