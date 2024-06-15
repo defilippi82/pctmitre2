@@ -10,10 +10,12 @@ import Col from 'react-bootstrap/Col';
 import { CardGroup } from 'react-bootstrap';
 
 export const RegistrarTarjetas = () => {
-    const [currentView, setCurrentView] = useState('');
     const [legajo, setLegajo] = useState('');
-    const [nombre, setNombre] = useState('');
-    const [apellido, setApellido] = useState('');
+    const [conductores, setConductores] = useState([]);
+    const [guardatrenes, setGuardatrenes] = useState([]);
+    const [currentView, setCurrentView] = useState(null); // 'conductores', 'operadores', 'operadores'
+    const navigate = useNavigate();
+    
     const [formData, setFormData] = useState({
         dia: '',
         efectuoServicio: '',
@@ -30,6 +32,14 @@ export const RegistrarTarjetas = () => {
         ...formData,
         [event.target.name]: event.target.value
     });
+    useEffect(() => {
+        if (currentView === 'conductores') {
+            fetchConductores();
+        
+        }else if (currentView === 'guardatren') {
+            fetchGuardatren();
+        }
+    }, [currentView]);
 
     const fetchUserData = async () => {
         try {
@@ -119,7 +129,7 @@ export const RegistrarTarjetas = () => {
                 {currentView === 'conductores' && conductores.map((conductor, index) => (
                     <Col key={index} sm={12} md={6} lg={4}>
                         
-                        {['Success',].map((variant) => (
+                        {['Warning',].map((variant) => (
                             <Card
                             bg={variant.toLowerCase()}
                             key={variant}
@@ -181,6 +191,33 @@ export const RegistrarTarjetas = () => {
             </CardGroup>
 
             <div>
+            {currentView === 'conductores' && conductores.map((conductor, index) => (
+      <Table responsive="sm" variant="warning" key={index}> 
+        <thead>
+          <tr>
+            <th>Día</th>
+            <th>Efectuo el Servicio</th>
+            <th>Tomó</th>
+            <th>Dejó</th>
+            <th>Total de Horas Trab</th>
+            <th>Observaciones</th>
+            
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><Form.Control type="date" name="dia" value={formData.dia} onChange={handleInputChange} /></td>
+            <td><Form.Control type="text" name="efectuoServicio" value={formData.efectuoServicio} onChange={handleInputChange} /></td>
+            <td><Form.Control type="time" name="tomo" value={formData.tomo} onChange={handleInputChange} /></td>
+            <td><Form.Control type="time" name="dejo" value={formData.dejo} onChange={handleInputChange} /></td>
+            <td><Form.Control type="time" name="totalHorasTrab" value={formData.totalHorasTrab} onChange={handleInputChange} /></td>
+            <td><Form.Control as="textarea" name="observaciones" value={formData.observaciones} onChange={handleInputChange} /></td>
+            
+          </tr>
+          </tbody>
+    </Table>  
+            ))}
+                {currentView === 'guardatren' && guardatren.map((guarda, index) => (
       <Table responsive="sm">
         <thead>
           <tr>
@@ -205,61 +242,10 @@ export const RegistrarTarjetas = () => {
           </tr>
           </tbody>
     </Table>  
+            ))}
           <Button variant="primary" onClick={handleSubmit}>Guardar</Button>
           </div> 
           
-             
-                <Row>
-                    <Col>
-                    
-                        <Col>
-                        <Form.Group controlId="diaInput">
-                            <Form.Label>Dia</Form.Label>
-                            <Form.Control type="date" name="dia" value={formData.dia} onChange={handleInputChange} />
-                        </Form.Group>
-                        </Col>    
-                    
-                    <Col>
-                        <Form.Group controlId="efectuoServicioInput">
-                            <Form.Label>Efectuo el Servicio</Form.Label>
-                            <Form.Control type="text" name="efectuoServicio" value={formData.efectuoServicio} onChange={handleInputChange} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group controlId="tomoInput">
-                            <Form.Label>Tomo</Form.Label>
-                            <Form.Control type="time" name="tomo" value={formData.tomo} onChange={handleInputChange} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group controlId="dejoInput">
-                            <Form.Label>Dejó</Form.Label>
-                            <Form.Control type="time" name="dejo" value={formData.dejo} onChange={handleInputChange} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group controlId="horasDispInput">
-                            <Form.Label>H. de disp</Form.Label>
-                            <Form.Control type="time" name="horasDisp" value={formData.horasDisp} onChange={handleInputChange} />
-                        </Form.Group>
-                    </Col>
-                    <Col>
-                        <Form.Group controlId="totalHorasTrabInput">
-                            <Form.Label>Total de Horas Trab</Form.Label>
-                            <Form.Control type="time" name="totalHorasTrab" value={formData.totalHorasTrab} onChange={handleInputChange} />
-                        </Form.Group>
-                        </Col>
-                        
-                    </Col>
-                    
-                </Row>
-                <Form>
-                <Form.Group controlId="observacionesInput">
-                    <Form.Label>Observaciones</Form.Label>
-                    <Form.Control as="textarea" name="observaciones" value={formData.observaciones} onChange={handleInputChange} />
-                </Form.Group>
-                <Button variant="primary" onClick={handleSubmit}>Guardar</Button>
-            </Form>
         </Container>
      </div>
     );
