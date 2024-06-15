@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from "react-router-dom";
 import { db } from '../firebaseConfig/firebase';
 import Form from "react-bootstrap/Form";
@@ -8,15 +8,18 @@ import Container from 'react-bootstrap/Container';
 import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Card from 'react-bootstrap/Card';
+import CardHeader from 'react-bootstrap/CardHeader';
+import CardFooter from 'react-bootstrap/CardFooter';
 import { CardGroup } from 'react-bootstrap';
 
 export const RegistrarTarjetas = () => {
     const [legajo, setLegajo] = useState('');
     const [conductores, setConductores] = useState([]);
     const [guardatrenes, setGuardatrenes] = useState([]);
-    const [currentView, setCurrentView] = useState(null); // 'conductores', 'operadores', 'operadores'
+    const [currentView, setCurrentView] = useState('conductores');
+    const [selectedUser, setSelectedUser] = useState(null);
     const navigate = useNavigate();
-    
     const [formData, setFormData] = useState({
         dia: '',
         efectuoServicio: '',
@@ -33,6 +36,7 @@ export const RegistrarTarjetas = () => {
         ...formData,
         [event.target.name]: event.target.value
     });
+
     useEffect(() => {
         if (currentView === 'conductores') {
             fetchConductores();
@@ -42,16 +46,32 @@ export const RegistrarTarjetas = () => {
         }
     }, [currentView]);
 
-    const fetchUserData = async () => {
+      const fetchConductores = async () => {
+        try {
+            const q = query(collection(db, 'conductores'), where('legajo', '==', legajo));
+            const data = await getDocs(q);
+            setConductores(data.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        } catch (error) {
+            console.error('Error fetching conductores:', error);
+        }
+    };
+    const fetchGuardatren = async () => {
+        try {
+            const q = query(collection(db, 'guardatren'), where('legajo', '==', legajo));
+            const data = await getDocs(q);
+            setGuardatrenes(data.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        } catch (error) {
+            console.error('Error fetching guardatren:', error);
+        }
+    };
+    const fetchUserData = async (userId) => {
         try {
             const collectionRef = currentView === 'conductores' ? 'conductores' : 'guardatren';
-            const docRef = doc(db, collectionRef, legajo);
+            const docRef = doc(db, collectionRef, userId);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                const data = docSnap.data();
-                setNombre(data.nombre);
-                setApellido(data.apellido);
+                setSelectedUser({ id: docSnap.id, ...docSnap.data() });
             } else {
                 console.log('No such document!');
             }
@@ -62,193 +82,134 @@ export const RegistrarTarjetas = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        try {
-            const collectionRef = currentView === 'conductores' ? 'conductores' : 'guardatren';
-            const docRef = doc(db, collectionRef, legajo);
-
-            await updateDoc(docRef, {
-                ...formData
-            });
-            alert('Datos actualizados con éxito');
-        } catch (error) {
-            console.error('Error updating document:', error);
-        }
+        await fetchUserData();
     };
-
-    useEffect(() => {
-        if (legajo && currentView) {
-            fetchUserData();
-        }
-    }, [legajo, currentView]);
-
-    const handleShow = () => {
+    const handleSearch = async (event) => {
+        event.preventDefault();
         if (currentView === 'conductores') {
-            fetchConductores();
-        } else if (currentView === 'guardatren') {
-            fetchGuardatren();
+            await fetchConductores();
+        } else if (currentView === 'guardatrenes') {
+            await fetchGuardatren();
         }
     };
+
+   
 
     return (
-        <div className="">
+        
 
         <Container>
-            <Form>
-                <Form.Group controlId="currentViewSelect">
-                    <Form.Label>Especialidad</Form.Label>
-                    <Form.Control as="select" value={currentView} onChange={handleViewChange}>
-                        <option value="">Seleccione una especialidad</option>
-                        <option value="conductores">Conductores</option>
-                        <option value="guardatren">Guardas</option>
-                    </Form.Control>
-                </Form.Group>
-                <Form.Group controlId="legajoInput">
-                    <Form.Label>Legajo</Form.Label>
-                    <Form.Control type="text" value={legajo} onChange={handleLegajoChange} placeholder="Ingrese el legajo" />
-                    <Button variant="warning" onClick={handleShow}>Mostrar</Button>
-                </Form.Group>
-                {currentView === 'conductores' && (
-                <Form.Group controlId="rolSelect">
-                    <Form.Label>Especialidad</Form.Label>
-                    <Form.Control as="select" value={rol} onChange={handleRolChange}>
-                        <option value="">Seleccione una especialidad</option>
-                        <option value="diesel">Cond. Diesel</option>
-                            <option value="electrico">Cond. Electrico</option>
-                            <option value="instructorld">Instructor Tec. LF LD</option>
-                            <option value="instructorelec">Instructor Tec. LF Elec.</option>
-                            <option value="inspectorelec">Inspector Tec. LF Elec.</option>
-                            <option value="inspectorld">Inspector Tec. LF LD.</option>
-                            <option value="preConductor">Pre-Cond. Operativo</option>
-                    </Form.Control>
-                </Form.Group>
-                )}
-               <Button variant="warning" onClick={handleShow}>Mostrar</Button>
+            <Form  onSubmit={handleSearch}>
+                <Row>
+                    <Col>
+                    <Form.Group controlId="formViewSelect">
+                            <Form.Label>Seleccionar Vista</Form.Label>
+                            <Form.Control as="select" value={currentView} onChange={handleViewChange}>
+                                <option value="conductores">Conductores</option>
+                                <option value="guardatrenes">Guardatren</option>
+                            </Form.Control>
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Form.Group controlId="formLegajo">
+                            <Form.Label>Legajo</Form.Label>
+                            <Form.Control type="text" value={legajo} onChange={handleLegajoChange} />
+                        </Form.Group>
+                    </Col>
+                    <Col>
+                        <Button variant="primary" type="submit" style={{ marginTop: '30px' }}>
+                            Buscar
+                        </Button>
+                    </Col>
+                </Row>
             </Form>
 
-            <CardGroup>
-                <Row>
-                {currentView === 'conductores' && conductores.map((conductor, index) => (
-                    <Col key={index} sm={12} md={6} lg={4}>
-                        
-                        {['Warning',].map((variant) => (
-                            <Card
-                            bg={variant.toLowerCase()}
-                            key={variant}
-                            text={variant.toLowerCase() === 'light' ? 'dark' : 'white'}
-                            style={{ width: '18rem' }}
+            <Table striped bordered hover style={{ marginTop: '20px' }}>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Legajo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {(currentView === 'conductores' ? conductores : guardatrenes).map(user => (
+                        <tr key={user.id}>
+                            <td>{user.nombre}</td>
+                            <td>{user.apellido}</td>
+                            <td>{user.legajo}</td>
+                            <td>
+                                <Button variant="primary" onClick={() => fetchUserData(user.id)}>
+                                    Seleccionar
+                                </Button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+                {(currentView === 'conductores' ? conductores : guardatrenes).length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '20px' }}>
+                    {(currentView === 'conductores' ? conductores : guardatrenes).map(user => (
+                        <Card
+                            bg={currentView === 'conductores' ? 'warning' : 'secondary'}
+                            key={user.id}
+                            text='white'
+                            style={{ width: '18rem', margin: '10px' }}
                             className="mb-2"
-                            >
-                            <CardHeader><strong>{conductor.nombre} {conductor.apellido}</strong></CardHeader>
+                            onClick={() => fetchUserData(user.id)}
+                        >
+                            <CardHeader><strong>{user.nombre} {user.apellido}</strong></CardHeader>
                             <Card.Body>
-                                <Card.Title><strong>Cond.:</strong> {conductor.rol}</Card.Title>
-                                <Card.Text><strong>Legajo:</strong> {conductor.legajo}</Card.Text>
-                                <Card.Text><strong>Teléfono:</strong> {conductor.tel}</Card.Text>
-                                <Card.Text><strong>Base:</strong> {conductor.base}</Card.Text>
-                                <Card.Text><strong>Apto:</strong> {conductor.apto}</Card.Text>
-                                <Card.Text><strong>Cupón:</strong> {conductor.cupon}</Card.Text>
-                                <Card.Text><strong>Tarea:</strong> {conductor.tarea}</Card.Text>
-                                <Card.Text><strong>Servicio:</strong> {conductor.servicio}</Card.Text>
-                                <Card.Text><strong>Orden:</strong> {conductor.orden}</Card.Text>
-                                <Card.Text><strong>Secciones:</strong> {conductor.secciones.join(', ')}</Card.Text>
+                                <Card.Title>{currentView === 'conductores' ? `Cond.: ${user.rol}` : 'Guarda Tren'}</Card.Title>
+                                <Card.Text><strong>Legajo:</strong> {user.legajo}</Card.Text>
+                                <Card.Text><strong>Teléfono:</strong> {user.tel}</Card.Text>
+                                <Card.Text><strong>Base:</strong> {user.base}</Card.Text>
+                                {currentView === 'conductores' && <Card.Text><strong>Orden:</strong> {user.orden}</Card.Text>}
+                                <Card.Text><strong>Apto:</strong> {user.apto}</Card.Text>
+                                <Card.Text><strong>Cupón:</strong> {user.cupon}</Card.Text>
+                                <Card.Text><strong>Tarea:</strong> {user.tarea}</Card.Text>
+                                <Card.Text><strong>Servicio:</strong> {user.servicio}</Card.Text>
+                                {currentView === 'conductores' && <Card.Text><strong>Secciones:</strong> {user.secciones.join(', ')}</Card.Text>}
+                                {currentView === 'guardatrenes' && <Card.Text><strong>Orden:</strong> {user.orden}</Card.Text>}
                             </Card.Body>
+                            {currentView === 'guardatrenes' && (
                                 <CardFooter>
-                                    <Button variant="primary" onClick={''}>Atendió</Button>
-                                    <Button variant="danger" onClick={''}>No Atiende</Button>
+                                    
                                 </CardFooter>
+                            )}
                         </Card>
                     ))}
-                    </Col>
-                ))}
-                {currentView === 'guardatren' && guardatren.map((guarda, index) => (
-                    <Col key={index} sm={12} md={6} lg={4}>
-                        {['Secondary',].map((variant) => (
-                            <Card
-                            bg={variant.toLowerCase()}
-                            key={variant}
-                            text={variant.toLowerCase() === 'light' ? 'dark' : 'white'}
-                            style={{ width: '18rem' }}
-                            className="mb-2"
-                            >
-                                <CardHeader><strong>{guarda.nombre} {guarda.apellido}</strong></CardHeader>
-                            <Card.Body>
-                                <Card.Title><strong>Guarda Tren</strong></Card.Title>
-                                <Card.Text><strong>Legajo:</strong> {guarda.legajo}</Card.Text>
-                                <Card.Text><strong>Teléfono:</strong> {guarda.tel}</Card.Text>
-                                <Card.Text><strong>Base:</strong> {guarda.base}</Card.Text>
-                                <Card.Text><strong>Apto:</strong> {guarda.apto}</Card.Text>
-                                <Card.Text><strong>Cupón:</strong> {guarda.cupon}</Card.Text>
-                                <Card.Text><strong>Tarea:</strong> {guarda.tarea}</Card.Text>
-                                <Card.Text><strong>Servicio:</strong> {guarda.servicio}</Card.Text>
-                                <Card.Text><strong>Orden:</strong> {guarda.orden}</Card.Text>
-                                <Button variant="primary" onClick={''}>Atendió</Button>
-                                <Button variant="danger" onClick={''}>No Atiende</Button>
-                                
-                            </Card.Body>
-                        </Card>
-                        ))}
-                    </Col>
-                ))}
-            </Row>
-            </CardGroup>
-
-            <div>
-            {currentView === 'conductores' && conductores.map((conductor, index) => (
-      <Table responsive="sm" variant="warning" key={index}> 
-        <thead>
-          <tr>
-            <th>Día</th>
-            <th>Efectuo el Servicio</th>
-            <th>Tomó</th>
-            <th>Dejó</th>
-            <th>Total de Horas Trab</th>
-            <th>Observaciones</th>
-            
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><Form.Control type="date" name="dia" value={formData.dia} onChange={handleInputChange} /></td>
-            <td><Form.Control type="text" name="efectuoServicio" value={formData.efectuoServicio} onChange={handleInputChange} /></td>
-            <td><Form.Control type="time" name="tomo" value={formData.tomo} onChange={handleInputChange} /></td>
-            <td><Form.Control type="time" name="dejo" value={formData.dejo} onChange={handleInputChange} /></td>
-            <td><Form.Control type="time" name="totalHorasTrab" value={formData.totalHorasTrab} onChange={handleInputChange} /></td>
-            <td><Form.Control as="textarea" name="observaciones" value={formData.observaciones} onChange={handleInputChange} /></td>
-            
-          </tr>
-          </tbody>
-    </Table>  
-            ))}
-                {currentView === 'guardatren' && guardatren.map((guarda, index) => (
-      <Table responsive="sm">
-        <thead>
-          <tr>
-            <th>Día</th>
-            <th>Efectuo el Servicio</th>
-            <th>Tomó</th>
-            <th>Dejó</th>
-            <th>Total de Horas Trab</th>
-            <th>Observaciones</th>
-            
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><Form.Control type="date" name="dia" value={formData.dia} onChange={handleInputChange} /></td>
-            <td><Form.Control type="text" name="efectuoServicio" value={formData.efectuoServicio} onChange={handleInputChange} /></td>
-            <td><Form.Control type="time" name="tomo" value={formData.tomo} onChange={handleInputChange} /></td>
-            <td><Form.Control type="time" name="dejo" value={formData.dejo} onChange={handleInputChange} /></td>
-            <td><Form.Control type="time" name="totalHorasTrab" value={formData.totalHorasTrab} onChange={handleInputChange} /></td>
-            <td><Form.Control as="textarea" name="observaciones" value={formData.observaciones} onChange={handleInputChange} /></td>
-            
-          </tr>
-          </tbody>
-    </Table>  
-            ))}
-          <Button variant="primary" onClick={handleSubmit}>Guardar</Button>
-          </div> 
-          
+                </div>
+            )}
+            {selectedUser && (
+                <>
+                    <Table responsive="sm" variant="warning" style={{ marginTop: '20px' }}>
+                        <thead>
+                            <tr>
+                                <th>Día</th>
+                                <th>Efectuo el Servicio</th>
+                                <th>Tomó</th>
+                                <th>Dejó</th>
+                                <th>Total de Horas Trab</th>
+                                <th>Observaciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><Form.Control type="date" name="dia" value={formData.dia} onChange={handleInputChange} /></td>
+                                <td><Form.Control type="text" name="efectuoServicio" value={formData.efectuoServicio} onChange={handleInputChange} /></td>
+                                <td><Form.Control type="time" name="tomo" value={formData.tomo} onChange={handleInputChange} /></td>
+                                <td><Form.Control type="time" name="dejo" value={formData.dejo} onChange={handleInputChange} /></td>
+                                <td><Form.Control type="time" name="totalHorasTrab" value={formData.totalHorasTrab} onChange={handleInputChange} /></td>
+                                <td><Form.Control as="textarea" name="observaciones" value={formData.observaciones} onChange={handleInputChange} /></td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                </>
+            )}
         </Container>
-     </div>
+    
     );
 };
 
