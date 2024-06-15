@@ -4,6 +4,7 @@ import { db } from '../firebaseConfig/firebase';
 import Form from "react-bootstrap/Form";
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
+import Table from 'react-bootstrap/Table';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { CardGroup } from 'react-bootstrap';
