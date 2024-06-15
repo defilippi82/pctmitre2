@@ -14,7 +14,7 @@ import CardFooter from 'react-bootstrap/CardFooter';
 import { CardGroup } from 'react-bootstrap';
 
 export const RegistrarTarjetas = () => {
-    const [nombre, setNombre] = useState('');
+    const [apellido, setApellido] = useState('');
     const [conductores, setConductores] = useState([]);
     const [guardatrenes, setGuardatrenes] = useState([]);
     const [currentView, setCurrentView] = useState('conductores');
@@ -112,8 +112,8 @@ export const RegistrarTarjetas = () => {
                     </Col>
                     <Col>
                         <Form.Group controlId="formNombre">
-                            <Form.Label>Nombre</Form.Label>
-                            <Form.Control type="text" value={nombre} onChange={handleNombreChange} />
+                            <Form.Label>Apellido</Form.Label>
+                            <Form.Control type="text" value={apellido} onChange={handleNombreChange} />
                         </Form.Group>
                     </Col>
                     <Col>
