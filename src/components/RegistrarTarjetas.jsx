@@ -31,7 +31,7 @@ export const RegistrarTarjetas = () => {
     });
 
     const handleViewChange = (event) => setCurrentView(event.target.value);
-    const handleNombreChange = (event) => setNombre(event.target.value);
+    const handleApellidoChange = (event) => setApellido(event.target.value);
     const handleInputChange = (event) => setFormData({
         ...formData,
         [event.target.name]: event.target.value
@@ -113,7 +113,7 @@ export const RegistrarTarjetas = () => {
                     <Col>
                         <Form.Group controlId="formNombre">
                             <Form.Label>Apellido</Form.Label>
-                            <Form.Control type="text" value={apellido} onChange={handleNombreChange} />
+                            <Form.Control type="text" value={apellido} onChange={handleApellidoChange} />
                         </Form.Group>
                     </Col>
                     <Col>
