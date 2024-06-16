@@ -52,6 +52,7 @@ export const NavbarComponent = ({ handleLogout }) => {
             )}
               </NavDropdown>
             )}
+            {userData && userData.nombre && (userData.rol.valor === 'administrador'|| userData.rol.valor === 'personal') && (
               <NavDropdown title="Personal" id={`offcanvasNavbarDropdown-expand-${expand}`} >
                 <NavDropdown.Divider />
                 {userData && userData.nombre && (userData.rol.valor === 'administrador'|| userData.rol.valor === 'personal') && (
@@ -87,6 +88,7 @@ export const NavbarComponent = ({ handleLogout }) => {
             
             )}
              </NavDropdown>
+            )}
             </Nav>
             
             <Button variant="outline-danger" size='mg' href="/" onClick={handleLogout}>

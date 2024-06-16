@@ -3,7 +3,7 @@ import { HashRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import { Login } from "./components/Login";
 import {Novedades} from "./components/Novedades"
 import {Corrida} from "./components/Corrida";
-import {Administracion} from "./components/Administracion";
+import {Administracion} from "./components/Admin/Administracion";
 import {RegistrarOperadores} from "./components/RegistrarOperadores";
 import {EditarOperadores} from "./components/EditarOperadores";
 import { RegistroConductores } from "./components/RegistroConductores";
