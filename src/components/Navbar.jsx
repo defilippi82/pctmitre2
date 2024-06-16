@@ -28,6 +28,7 @@ export const NavbarComponent = ({ handleLogout }) => {
             <Nav className="justify-content-end flex-grow-1 pe-3">
             <Nav.Link  href="/login">Inicio</Nav.Link>
                           
+            {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'emergencia')  && (
               <NavDropdown title="Emergencias" id={`offcanvasNavbarDropdown-expand-${expand}`} >
               {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'emergencia')  && (
               <NavDropdown.Item href="#/partes">Partes Regularidad</NavDropdown.Item>
@@ -50,7 +51,7 @@ export const NavbarComponent = ({ handleLogout }) => {
               <NavDropdown.Item href="#/administracion"> Administracion </NavDropdown.Item>
             )}
               </NavDropdown>
-
+            )}
               <NavDropdown title="Personal" id={`offcanvasNavbarDropdown-expand-${expand}`} >
                 <NavDropdown.Divider />
                 {userData && userData.nombre && (userData.rol.valor === 'administrador'|| userData.rol.valor === 'personal') && (

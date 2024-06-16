@@ -40,8 +40,7 @@ export const Login = () => {
                 showConfirmButton: true,
                 timer: 3000,
               }).then(() => {
-                //window.location = '/panico';
-               navigate('/corrida');
+                 navigate('/novedades');
                 
               });
               
