@@ -15,7 +15,7 @@ export const EditarOperadores = () => {
         apellido: '',
         email: '',
         legajo: '',
-        rol:'',
+        rol:"",
         contrasena: ''
         });
         const { id } = useParams();
