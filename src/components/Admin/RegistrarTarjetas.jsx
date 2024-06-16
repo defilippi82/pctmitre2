@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from "react-router-dom";
-import { db } from '../firebaseConfig/firebase';
+import { db } from '../../firebaseConfig/firebase';
 import Form from "react-bootstrap/Form";
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';

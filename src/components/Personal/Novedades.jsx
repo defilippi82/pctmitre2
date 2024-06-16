@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc } from 'firebase/firestore';
-import { db } from '../firebaseConfig/firebase';
-import { UserContext } from '../Services/UserContext';
+import { db } from '../../firebaseConfig/firebase';
+import { UserContext } from '../../Services/UserContext';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -102,7 +102,7 @@ export const Novedades = () => {
     return (
         <div className="container mt-4">
             <h2>Novedades / Pendientes</h2>
-            <Table striped bordered hover>
+            <Table responsive striped bordered hover variant='secondary'>
                 <thead>
                     <tr>
                         <th>Operador</th>

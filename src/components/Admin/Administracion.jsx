@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { collection, getDocs, deleteDoc, doc, Timestamp } from "firebase/firestore";
 import Table from 'react-bootstrap/Table';
-import { db } from "../firebaseConfig/firebase";
+import { db } from "../../firebaseConfig/firebase";
 
 
 /* SWEET ALERT */
@@ -102,10 +102,11 @@ export const Administracion = () => {
                                 <div className="d-grid gap-2 col-6 mx-auto">
                                     <Link to="/conductores/create" className="btn btn-secondary mt-2 mb-2">CREAR CONDUCTOR</Link>
                                 </div>
-                                <Table responsive className="table table-dark table-hover">
+                                <Table responsive bordered striped hover size="sm" variant="warning">
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
+                                            <th>Apellido</th>
                                             <th>Legajo</th>
                                             <th>Servicio</th>
                                             <th>Nº Orden</th>
@@ -132,6 +133,7 @@ export const Administracion = () => {
                                         {conductores.map((conductor) => (
                                             <tr key={conductor.id}>
                                                 <td>{conductor.nombre}</td>
+                                                <td>{conductor.apellido}</td>
                                                 <td>{conductor.legajo}</td>
                                                 <td>{conductor.servicio}</td>
                                                 <td>{conductor.orden}</td>
@@ -166,10 +168,11 @@ export const Administracion = () => {
                                 <div className="d-grid gap-2 col-6 mx-auto">
                                     <Link to="/guardatren/create" className="btn btn-secondary mt-2 mb-2">Crear Guardatren</Link>
                                 </div>
-                                <Table responsive className="table table-warning table-hover">
+                                <Table responsive bordered striped hover size="sm" variant="info">
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
+                                            <th>Apellido</th>
                                             <th>Legajo</th>
                                             <th>Servicio</th>
                                             <th>Email</th>
@@ -190,6 +193,7 @@ export const Administracion = () => {
                                         {guardatrenes.map((guardatren) => (
                                             <tr key={guardatren.id}>
                                                 <td>{guardatren.nombre}</td>
+                                                <td>{guardatren.apellido}</td>
                                                 <td>{guardatren.legajo}</td>
                                                 <td>{guardatren.servicio}</td>
                                                 <td>{guardatren.email}</td>
@@ -218,7 +222,7 @@ export const Administracion = () => {
                                 <div className="d-grid gap-2 col-6 mx-auto">
                                     <Link to="/operadores/create" className="btn btn-secondary mt-2 mb-2">Crear Operador</Link>
                                 </div>
-                                <Table responsive className="table table-dark table-hover">
+                                <Table responsive bordered striped hover size="sm" variant="dark">
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>

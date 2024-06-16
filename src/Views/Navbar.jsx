@@ -13,26 +13,26 @@ export const NavbarComponent = ({ handleLogout }) => {
  
   return (
   <>
-  {[ 'xxl'].map((expand) => (
-    <Navbar key={expand} expand={expand} className="bg-body-tertiary xxl-3">
+  {[ false, ].map((expand) => (
+    <Navbar  key={expand} expand={expand} className="bg-body-tertiary xxl-3">
       <Container fluid>
         <Navbar.Brand href="#"><strong>PCT Mitre ||</strong> {userData && userData.nombre && <> ¡Hola <em fluid>{userData.nombre}!</em> </>}</Navbar.Brand>
         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${expand}`} />
-        <Navbar.Offcanvas id={`offcanvasNavbar-expand-${expand}`} aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`} placement="end">
+        <Navbar.Offcanvas  id={`offcanvasNavbar-expand-${expand}`} aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`} style={{ backgroundColor: '#3b9cc2de' }} placement="end">
           <Offcanvas.Header closeButton>
             <Offcanvas.Title id={`offcanvasNavbarLabel-expand-${expand}`}>
               PCT Mitre
             </Offcanvas.Title>
           </Offcanvas.Header>
-          <Offcanvas.Body>
+          <Offcanvas.Body >
             <Nav className="justify-content-end flex-grow-1 pe-3">
-            <Nav.Link  href="/novedades">Inicio</Nav.Link>
+            {userData && userData.nombre  && (
+            <Nav.Link  href="#/novedades">Inicio</Nav.Link>)}
                           
             {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'emergencia')  && (
               <NavDropdown title="Emergencias" id={`offcanvasNavbarDropdown-expand-${expand}`} >
               
               <NavDropdown.Item href="#/partes">Partes Regularidad</NavDropdown.Item>
-              
               
               <NavDropdown.Item href="#/barreras">Barreras</NavDropdown.Item>
               
@@ -51,33 +51,21 @@ export const NavbarComponent = ({ handleLogout }) => {
             )}
             {userData && userData.nombre && (userData.rol.valor === 'administrador'|| userData.rol.valor === 'personal') && (
               <NavDropdown title="Personal" id={`offcanvasNavbarDropdown-expand-${expand}`} >
-                
-                {userData && userData.nombre && (userData.rol.valor === 'administrador'|| userData.rol.valor === 'personal') && (
-                <NavDropdown.Item href="#/corrida">CorridaTrenes</NavDropdown.Item>
-              )}
-              {userData && userData.nombre && (userData.rol.valor === 'administrador'|| userData.rol.valor === 'personal') && (
-
+               
+               <NavDropdown.Item href="#/corrida">CorridaTrenes</NavDropdown.Item>
+              
               <NavDropdown.Item href="#/listaspersonal">Listas Personal</NavDropdown.Item>
-              )}
-              {userData && userData.nombre && (userData.rol.valor === 'administrador'|| userData.rol.valor === 'personal') && (
-                <NavDropdown title="Disponibilidad Personal"  id={`offcanvasNavbarDropdown-expand-${expand}`} > 
+               <NavDropdown title="Disponibilidad Personal"  id={`offcanvasNavbarDropdown-expand-${expand}`} > 
                 <NavDropdown.Item href="#/pool" >Llamar Personal</NavDropdown.Item>
                 <NavDropdown.Item href="#/tarjetas">Cargar Tarjetas</NavDropdown.Item>
                 </NavDropdown>
-              )}
-              {userData && userData.nombre && (userData.rol.valor === 'administrador'|| userData.rol.valor === 'personal') && (
-
+             
               <NavDropdown.Item href="#/conductores/create">Registrar Conductores</NavDropdown.Item>
-            )}
-              {userData && userData.nombre && (userData.rol.valor === 'administrador'|| userData.rol.valor === 'personal') && (
-
+            
               <NavDropdown.Item href="#/guardatren/create">Registrar Guardas</NavDropdown.Item>
-            )}
-              {userData && userData.nombre && (userData.rol.valor === 'administrador'|| userData.rol.valor === 'personal') && (
-              
+            
               <NavDropdown.Item href="#/padron">Padron</NavDropdown.Item>
-              
-            )}
+            
               <NavDropdown.Divider />
               
               {userData && userData.nombre && userData.rol.valor === 'administrador' && (

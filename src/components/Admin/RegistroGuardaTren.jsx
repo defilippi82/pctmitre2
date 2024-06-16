@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { getAuth} from 'firebase/auth';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebaseConfig/firebase';
+import { db } from '../../firebaseConfig/firebase';
 import { useNavigate } from 'react-router-dom';
 
 /* SWEET ALERT*/

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebaseConfig/firebase";
+import Table from 'react-bootstrap/Table';
 
 export const Padron = () => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -81,16 +82,13 @@ export const Padron = () => {
                                 <option value="retiro">Retiro</option>
                             </select>
                         )}
-                        <button className="btn btn-primary" onClick={handleSearch}>
-                            Buscar
-                        </button>
                     </div>
                 </div>
             </div>
             <div className="row">
                 <div className="col-12">
                     {results.length > 0 ? (
-                        <table className="table table-dark table-hover">
+                        <Table responsive bordered striped hover size="sm" variant="info">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
@@ -125,11 +123,14 @@ export const Padron = () => {
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
+                        </Table>
                     ) : (
                         <p className="text-center">No se encontraron resultados</p>
                     )}
                 </div>
+                        <button className="btn btn-primary" onClick={handleSearch}>
+                            Buscar
+                        </button>
             </div>
         </div>
     );

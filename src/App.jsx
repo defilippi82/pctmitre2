@@ -1,19 +1,19 @@
 import { useState } from 'react'
 import { HashRouter as Router, Routes, Route, Navigate} from "react-router-dom";
-import { Login } from "./components/Login";
-import {Novedades} from "./components/Novedades"
-import {Corrida} from "./components/Corrida";
-import {Administracion} from "./components/Administracion";
-import {RegistrarOperadores} from "./components/RegistrarOperadores";
-import {EditarOperadores} from "./components/EditarOperadores";
-import { RegistroConductores } from "./components/RegistroConductores";
-import { RegistroGuardaTren } from "./components/RegistroGuardaTren";
-import {EditarConductores} from "./components/EditarConductores";
-import {EditarGuardaTren} from "./components/EditarGuardaTren";
+import { Login } from "./components/Admin/Login";
+import {Novedades} from "./components/Personal/Novedades"
+import {Corrida} from "./components/Personal/Corrida";
+import {Administracion} from "./components/Admin/Administracion";
+import {RegistrarOperadores} from "./components/Admin/RegistrarOperadores";
+import {EditarOperadores} from "./components/Admin/EditarOperadores";
+import { RegistroConductores } from "./components/Admin/RegistroConductores";
+import { RegistroGuardaTren } from "./components/Admin/RegistroGuardaTren";
+import {EditarConductores} from "./components/Admin/EditarConductores";
+import {EditarGuardaTren} from "./components/Admin/EditarGuardaTren";
 import {Padron} from "./Services/Padron";
-import {Pool} from "./components/Pool";
-import {RegistrarTarjetas} from "./components/RegistrarTarjetas";
-import { Emergencias} from "./components/Emergencias"
+import {Pool} from "./components/Personal/Pool";
+import {RegistrarTarjetas} from "./components/Admin/RegistrarTarjetas";
+import { Emergencias} from "./components/Emergencia/Emergencias"
 import { NavbarComponent } from './Views/Navbar';
 import {UserProvider} from "./Services/UserContext";
 import {Footer} from './Views/Footer';
