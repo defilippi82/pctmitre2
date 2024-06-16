@@ -57,9 +57,6 @@ export const Padron = () => {
                             <option value="apellido">Apellido</option>
                             <option value="base">Base</option>
                         </select>
-                        <button className="btn btn-primary" onClick={handleSearch}>
-                            Buscar
-                        </button>
                     </div>
                 </div>
                 <div className="col-md-6">
@@ -84,6 +81,9 @@ export const Padron = () => {
                                 <option value="retiro">Retiro</option>
                             </select>
                         )}
+                        <button className="btn btn-primary" onClick={handleSearch}>
+                            Buscar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -94,9 +94,16 @@ export const Padron = () => {
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
+                                    <th>Apellido</th>
                                     <th>Legajo</th>
-                                    <th>Servicio</th>
-                                    <th>Email</th>
+                                    <th>Tarea</th>
+                                    <th>DNI</th>
+                                    <th>Tel</th>
+                                    <th>Direccion</th>
+                                    <th>Piso/Dpto</th>
+                                    <th>Cod. Postal</th>
+                                    <th>Localidad</th>
+                                    <th>Provincia</th>
                                     {/* Otros campos relevantes */}
                                 </tr>
                             </thead>
@@ -104,9 +111,16 @@ export const Padron = () => {
                                 {results.map((result) => (
                                     <tr key={result.id}>
                                         <td>{result.nombre}</td>
+                                        <td>{result.apellido}</td>
                                         <td>{result.legajo}</td>
-                                        <td>{result.servicio}</td>
-                                        <td>{result.email}</td>
+                                        <td>{result.tarea}</td>
+                                        <td>{result.dni}</td>
+                                        <td>{result.tel}</td>
+                                        <td>{result.direccion}</td>
+                                        <td>{result.piso}"/ "{result.dpto}</td>
+                                        <td>{result.cp}</td>
+                                        <td>{result.localidad}</td>
+                                        <td>{result.provincia}</td>
                                         {/* Otros campos relevantes */}
                                     </tr>
                                 ))}

@@ -54,7 +54,7 @@ export const NavbarComponent = ({ handleLogout }) => {
             )}
             {userData && userData.nombre && (userData.rol.valor === 'administrador'|| userData.rol.valor === 'personal') && (
               <NavDropdown title="Personal" id={`offcanvasNavbarDropdown-expand-${expand}`} >
-                <NavDropdown.Divider />
+                
                 {userData && userData.nombre && (userData.rol.valor === 'administrador'|| userData.rol.valor === 'personal') && (
                 <NavDropdown.Item href="#/corrida">CorridaTrenes</NavDropdown.Item>
               )}
@@ -85,7 +85,6 @@ export const NavbarComponent = ({ handleLogout }) => {
               
               {userData && userData.nombre && userData.rol.valor === 'administrador' && (
               <NavDropdown.Item href="#/administracion"> Administracion </NavDropdown.Item>
-            
             )}
              </NavDropdown>
             )}
