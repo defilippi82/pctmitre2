@@ -14,14 +14,11 @@ export const Novedades = () => {
     const { userData } = useContext(UserContext);
     const [novedades, setNovedades] = useState([]);
     const [newNovedad, setNewNovedad] = useState('');
-    const [editId, setEditId] = useState(null);
-    const [editNovedad, setEditNovedad] = useState('');
 
     useEffect(() => {
         const fetchNovedades = async () => {
             const querySnapshot = await getDocs(collection(db, 'novedades'));
             const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            // Ordenar las novedades por fecha de la más antigua a la más reciente
             data.sort((a, b) => new Date(a.fecha.split('/').reverse().join('-')) - new Date(b.fecha.split('/').reverse().join('-')));
             setNovedades(data);
         };
@@ -75,30 +72,36 @@ export const Novedades = () => {
         });
     };
 
-    const handleEditNovedad = (id, novedad) => {
-        setEditId(id);
-        setEditNovedad(novedad);
-    };
-
-    const handleUpdateNovedad = async (e) => {
-        e.preventDefault();
-        if (editNovedad.trim() === '') return;
-        try {
-            const novedadDoc = doc(db, 'novedades', editId);
-            await updateDoc(novedadDoc, { novedad: editNovedad });
-            setNovedades(novedades.map(n => n.id === editId ? { ...n, novedad: editNovedad } : n));
-            setEditId(null);
-            setEditNovedad('');
-            MySwal.fire('Éxito', 'Novedad actualizada correctamente', 'success');
-        } catch (error) {
-            console.error('Error updating document: ', error);
-            MySwal.fire('Error', 'Hubo un problema al actualizar la novedad', 'error');
-        }
+    const handleEditNovedad = (id, currentNovedad) => {
+        MySwal.fire({
+            title: 'Editar Novedad',
+            input: 'textarea',
+            inputLabel: 'Novedad',
+            inputValue: currentNovedad,
+            showCancelButton: true,
+            confirmButtonText: 'Guardar',
+            cancelButtonText: 'Cancelar',
+            preConfirm: async (newNovedad) => {
+                if (newNovedad.trim() === '') {
+                    Swal.showValidationMessage('La novedad no puede estar vacía');
+                    return false;
+                }
+                try {
+                    const novedadDoc = doc(db, 'novedades', id);
+                    await updateDoc(novedadDoc, { novedad: newNovedad });
+                    setNovedades(novedades.map(n => n.id === id ? { ...n, novedad: newNovedad } : n));
+                    MySwal.fire('Éxito', 'Novedad actualizada correctamente', 'success');
+                } catch (error) {
+                    console.error('Error updating document: ', error);
+                    MySwal.fire('Error', 'Hubo un problema al actualizar la novedad', 'error');
+                }
+            }
+        });
     };
 
     return (
         <div className="container mt-4">
-            <h2>Novedades</h2>
+            <h2>Novedades / Pendientes</h2>
             <Table striped bordered hover>
                 <thead>
                     <tr>
@@ -113,24 +116,9 @@ export const Novedades = () => {
                         <tr key={id}>
                             <td>{operador}</td>
                             <td>{fecha}</td>
+                            <td>{novedad}</td>
                             <td>
-                                {editId === id ? (
-                                    <Form.Control
-                                        as="textarea"
-                                        rows={3}
-                                        value={editNovedad}
-                                        onChange={(e) => setEditNovedad(e.target.value)}
-                                    />
-                                ) : (
-                                    novedad
-                                )}
-                            </td>
-                            <td>
-                                {editId === id ? (
-                                    <Button variant="success" onClick={handleUpdateNovedad}>Guardar</Button>
-                                ) : (
-                                    userData.nombre === operador && <Button variant="warning" onClick={() => handleEditNovedad(id, novedad)}>Editar</Button>
-                                )}
+                                {userData.nombre === operador && <Button variant="warning" onClick={() => handleEditNovedad(id, novedad)}>Editar</Button>}
                                 {' '}
                                 <Button variant="danger" onClick={() => handleDeleteNovedad(id)}>Borrar</Button>
                             </td>
@@ -155,4 +143,5 @@ export const Novedades = () => {
         </div>
     );
 };
+
 

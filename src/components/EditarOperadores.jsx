@@ -12,6 +12,7 @@ export const EditarOperadores = () => {
     
     const [formData, setFormData] = useState({
         nombre: '',
+        apellido: '',
         email: '',
         legajo: '',
         rol:"",
@@ -80,12 +81,27 @@ export const EditarOperadores = () => {
                             type="text"
                             id="nombre"
                             name="nombre"
-                            placeholder="Nombre completo"
+                            placeholder="Nombre"
                             value={formData.nombre}
                             onChange={handleChange}
                             required
                         />
-                        <label htmlFor="nombre">Nombre y Apellido</label>
+                        <label htmlFor="nombre">Nombre</label>
+                    </div>
+                </div>
+                <div className="elem-group">
+                    <div className='form-floating mb-3'>
+                        <input
+                            className='form-control'
+                            type="text"
+                            id="apellido"
+                            name="apellido"
+                            placeholder="Apellido"
+                            value={formData.apellido}
+                            onChange={handleChange}
+                            required
+                        />
+                        <label htmlFor="apellido">Apellido</label>
                     </div>
                 </div>
                 <div className="elem-group">

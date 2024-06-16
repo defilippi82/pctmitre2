@@ -222,6 +222,7 @@ export const Administracion = () => {
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
+                                            <th>Apellido</th>
                                             <th>Legajo</th>
                                             <th>Email</th>
                                             <th>Rol</th>
@@ -232,6 +233,7 @@ export const Administracion = () => {
                                         {operadores.map((operador) => (
                                             <tr key={operador.id}>
                                                 <td>{operador.nombre}</td>
+                                                <td>{operador.apellido}</td>
                                                 <td>{operador.legajo}</td>
                                                 <td>{operador.email}</td>
                                                 <td>{operador.rol.valor}</td>

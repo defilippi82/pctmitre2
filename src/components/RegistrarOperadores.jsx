@@ -14,6 +14,7 @@ const MySwal = withReactContent(Swal)
 
 export const RegistrarOperadores = () => {
   const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
   const [legajo, setlegajo] = useState('');
   
@@ -69,6 +70,7 @@ export const RegistrarOperadores = () => {
     // Agregar datos del usuario a la colección 'usuarios' en Firestore
     await addDoc(operadoresCollection, {
       nombre,
+      apellido,
       email,
       legajo,
       rol,
@@ -141,11 +143,24 @@ const RolSelect = () => {
           <input className='form-control'
             type="text"
             id="nombre"
-            placeholder="Nombre completo"
+            placeholder="Nombre"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             required />
-          <label for="floatingInputDisabled" htmlFor="nombre">Nombre y Apellido</label>
+          <label for="floatingInputDisabled" htmlFor="nombre">Nombre</label>
+         </div>
+        </div>
+        <div className="elem-group">
+         <div className='form-floating mb-3'>
+
+          <input className='form-control'
+            type="text"
+            id="apellido"
+            placeholder="Apellido"
+            value={apellido}
+            onChange={(e) => setNombre(e.target.value)}
+            required />
+          <label for="floatingInputDisabled" htmlFor="nombre">Apellido</label>
          </div>
         </div>
         <div className="elem-group">
