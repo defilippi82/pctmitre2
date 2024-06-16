@@ -4,7 +4,7 @@ import {App} from './App.jsx'
 import './scss/index.css'
 import  './scss/styles.scss'
 import "bootstrap/dist/css/bootstrap.min.css";
-import { UserProvider } from './components/UserContext.jsx'
+import { UserProvider } from './Services/UserContext.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   

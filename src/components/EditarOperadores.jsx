@@ -15,7 +15,7 @@ export const EditarOperadores = () => {
         apellido: '',
         email: '',
         legajo: '',
-        rol:"",
+        rol:'',
         contrasena: ''
         });
         const { id } = useParams();
@@ -40,7 +40,7 @@ export const EditarOperadores = () => {
                     });
                 } else {
                     MySwal.fire('Error', 'Operador no encontrado', 'error');
-                    navigate('/operadores');
+                    navigate('/administracion');
                 }
             };
     
@@ -139,7 +139,7 @@ export const EditarOperadores = () => {
                         className="form-control"
                         id="rol"
                         name="rol"
-                        value={formData.rol}
+                        value={formData.rol.valor}
                         onChange={handleChange}
                         required
                     >

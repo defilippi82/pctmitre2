@@ -9,7 +9,7 @@ import {EditarOperadores} from "./components/EditarOperadores";
 import { RegistroConductores } from "./components/RegistroConductores";
 import { RegistroGuardaTren } from "./components/RegistroGuardaTren";
 import {EditarConductores} from "./components/EditarConductores";
-import {EditarGuardaTren} from "./components/Admin/EditarGuardaTren";
+import {EditarGuardaTren} from "./components/EditarGuardaTren";
 import {Padron} from "./Services/Padron";
 import {Pool} from "./components/Pool";
 import {RegistrarTarjetas} from "./components/RegistrarTarjetas";
