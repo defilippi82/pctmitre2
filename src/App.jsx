@@ -17,6 +17,7 @@ import { Emergencias} from "./components/Emergencia/Emergencias"
 import { NavbarComponent } from './Views/Navbar';
 import {UserProvider} from "./Services/UserContext";
 import {Footer} from './Views/Footer';
+import {Privacidad} from "./Views/Privacidad";
 import './scss/App.css'
 
 export const App = () => {
@@ -48,6 +49,8 @@ export const App = () => {
           <Route path="/padron" element={<Padron/>} />
           <Route path="/corrida" element={<Corrida/>} />
           <Route path="/listaspersonal" element="aca SE VE COMPONENTE LISTAS DE PERSONAL" />
+          <Route path="/privacidad" element={<Privacidad/>} />
+
 
           
         </Routes>
