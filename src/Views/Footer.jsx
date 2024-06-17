@@ -9,21 +9,7 @@ export const Footer = () => {
       
       <section class="sm-4 text-center">
        
-        <a
-           class="btn btn-outline-light btn-floating m-1"
-           href="#!"
-           role="button"
-           ><i class="fab fa-facebook-f"></i
-          ></a>
-
-        
-        <a
-           class="btn btn-outline-light btn-floating m-1"
-           href="https://www.instagram.com/el_defa_de_la_gente/"
-           role="button"
-           ><i class="fab fa-instagram"></i
-          ></a>
-
+      
         <a
            class="btn btn-outline-light btn-floating m-1"
            href="https://www.linkedin.com/in/defilippi/"
