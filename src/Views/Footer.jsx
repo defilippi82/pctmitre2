@@ -14,7 +14,7 @@ export const Footer = () => {
            class="btn btn-outline-light btn-floating m-1"
            href="mailto:federico.filippi@trenesargentinos.gob.ar"
            role="button"
-           ><i class="fa fa-train fa-8x"></i
+           ><i class="fa fa-train "></i
           ></a>
 
         <a
