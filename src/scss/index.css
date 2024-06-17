@@ -6,6 +6,7 @@
   color-scheme: light dark;
   color: #3b9cc2de;
   background-color: #242424;
+  
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -33,6 +34,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+
   /* Otros estilos según tus necesidades */
 }
 

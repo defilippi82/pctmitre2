@@ -1,7 +1,7 @@
 
 @import "bootstrap/scss/bootstrap";
 body{
-    background-image: url('../imagen_torre_futuro.jpeg');
+    background-image: url('public/imagen_torre_futuro.jpeg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -11,15 +11,28 @@ body{
     background: linear-gradient(135deg, #375DDB 0%, #308CA4 50%, #F7FEFF 100%);
     background-size:contain;
     background-repeat: no-repeat;
+    
    
 }
+.footer{
+  //background-image: url(public/footer1.jpg);
+  background-size: cover;
+  background-position: center;
+  //color: #ffffff;
+  padding: 0.1px;
+  border-radius: 20px;
+  font-style: italic;
+  font-size: x-small;
+  //box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* En tu archivo CSS */
 
 .privacidad {
-    background-image: url('../img/footer.jpeg');
+    background-image: url(public/torrePCT.jpeg);
     background-size: cover;
     background-position: center;
-    color: #ffffff;
+    font-size: smaller;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
