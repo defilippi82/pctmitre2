@@ -9,7 +9,14 @@ export const Footer = () => {
       
       <section class="sm-4 text-center">
        
-      
+                
+        <a
+           class="btn btn-outline-light btn-floating m-1"
+           href="mailto:federico.filippi@trenesargentinos.gob.ar"
+           role="button"
+           ><i class="fab fa-train"></i
+          ></a>
+
         <a
            class="btn btn-outline-light btn-floating m-1"
            href="https://www.linkedin.com/in/defilippi/"
