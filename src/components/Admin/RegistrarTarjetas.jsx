@@ -21,11 +21,11 @@ export const RegistrarTarjetas = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        dia: '',
+        diaInicio: '',
+        diaFin: '',
         efectuoServicio: '',
         tomo: '',
         dejo: '',
-        horasDisp: '',
         totalHorasTrab: '',
         observaciones: ''
     });
@@ -45,6 +45,18 @@ export const RegistrarTarjetas = () => {
             fetchGuardatren();
         }
     }, [currentView]);
+
+    useEffect(() => {
+        if (formData.tomo && formData.dejo) {
+            const tomoTime = new Date(`1970-01-01T${formData.tomo}:00`);
+            const dejoTime = new Date(`1970-01-01T${formData.dejo}:00`);
+            const diff = (dejoTime - tomoTime) / (1000 * 60 * 60);
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                totalHorasTrab: diff.toFixed(2)
+            }));
+        }
+    }, [formData.tomo, formData.dejo]);
 
       const fetchConductores = async () => {
         try {
@@ -92,8 +104,18 @@ export const RegistrarTarjetas = () => {
             await fetchGuardatren();
         }
     };
-
-   
+    
+    const handleRegister = async (event) => {
+        event.preventDefault();
+        try {
+            const collectionRef = currentView === 'conductores' ? 'conductores' : 'guardatren';
+            const docRef = doc(db, collectionRef, selectedUser.id);
+            await updateDoc(docRef, formData);
+            alert('Datos registrados correctamente.');
+        } catch (error) {
+            console.error('Error updating document:', error);
+        }
+    };
 
     return (
         
@@ -187,7 +209,8 @@ export const RegistrarTarjetas = () => {
                     <Table responsive="sm" variant="warning" style={{ marginTop: '20px' }}>
                         <thead>
                             <tr>
-                                <th>Día</th>
+                                <th>Día Inicio</th>
+                                <th>Día Fin</th>
                                 <th>Efectuo el Servicio</th>
                                 <th>Tomó</th>
                                 <th>Dejó</th>
@@ -197,15 +220,19 @@ export const RegistrarTarjetas = () => {
                         </thead>
                         <tbody>
                             <tr>
-                                <td><Form.Control type="date" name="dia" value={formData.dia} onChange={handleInputChange} /></td>
-                                <td><Form.Control type="text" name="efectuoServicio" value={formData.efectuoServicio} onChange={handleInputChange} /></td>
+                                <td><Form.Control type="date" name="diaInicio" value={formData.diaInicio} onChange={handleInputChange} /></td>
+                                <td><Form.Control type="date" name="diaFin" value={formData.diaFin} onChange={handleInputChange} /></td>
+                                <td><Form.Control type="number" name="efectuoServicio" value={formData.efectuoServicio} onChange={handleInputChange} /></td>
                                 <td><Form.Control type="time" name="tomo" value={formData.tomo} onChange={handleInputChange} /></td>
                                 <td><Form.Control type="time" name="dejo" value={formData.dejo} onChange={handleInputChange} /></td>
-                                <td><Form.Control type="time" name="totalHorasTrab" value={formData.totalHorasTrab} onChange={handleInputChange} /></td>
+                                <td><Form.Control type="numbers" name="totalHorasTrab" value={formData.totalHorasTrab}  readOnly /></td>
                                 <td><Form.Control as="textarea" name="observaciones" value={formData.observaciones} onChange={handleInputChange} /></td>
                             </tr>
                         </tbody>
                     </Table>
+                    <Button variant="primary" onClick={handleRegister} style={{ marginTop: '20px' }}>
+                        Registrar
+                    </Button>
                 </>
             )}
         </Container>
