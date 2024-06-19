@@ -10,7 +10,7 @@ import {EditarConductores} from "./components/Admin/EditarConductores";
 import {EditarGuardaTren} from "./components/Admin/EditarGuardaTren";
 import {Padron} from "./Services/Padron";
 import {Pool} from "./components/Personal/Pool";
-import {Pool2} from "./components/Personal/Pool2";
+import {Pool2} from "./components/Personal/Pool2.jsx";
 import {Corrida} from "./components/Personal/Corrida";
 import {Novedades} from "./components/Personal/Novedades"
 import {RegistrarTarjetas} from "./components/Personal/RegistrarTarjetas";
