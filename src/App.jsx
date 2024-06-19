@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { HashRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import { Login } from "./components/Admin/Login";
-import {Novedades} from "./components/Personal/Novedades"
-import {Corrida} from "./components/Personal/Corrida";
 import {Administracion} from "./components/Admin/Administracion";
 import {RegistrarOperadores} from "./components/Admin/RegistrarOperadores";
 import {EditarOperadores} from "./components/Admin/EditarOperadores";
@@ -12,7 +10,10 @@ import {EditarConductores} from "./components/Admin/EditarConductores";
 import {EditarGuardaTren} from "./components/Admin/EditarGuardaTren";
 import {Padron} from "./Services/Padron";
 import {Pool} from "./components/Personal/Pool";
-import {RegistrarTarjetas} from "./components/Admin/RegistrarTarjetas";
+import {Pool2} from "./components/Personal/Pool2";
+import {Corrida} from "./components/Personal/Corrida";
+import {Novedades} from "./components/Personal/Novedades"
+import {RegistrarTarjetas} from "./components/Personal/RegistrarTarjetas";
 import { Emergencias} from "./components/Emergencia/Emergencias"
 import { NavbarComponent } from './Views/Navbar';
 import {UserProvider} from "./Services/UserContext";
@@ -45,6 +46,7 @@ export const App = () => {
           <Route path="/guardatren/create" element={<RegistroGuardaTren/>} />
           <Route path="/guardatren/edit/:id" element={<EditarGuardaTren/>} />
           <Route path="/pool" element={<Pool/>} />
+          <Route path="/pool2" element={<Pool2/>} />
           <Route path="/tarjetas" element={<RegistrarTarjetas/>} />
           <Route path="/padron" element={<Padron/>} />
           <Route path="/corrida" element={<Corrida/>} />
