@@ -10,7 +10,7 @@ import Button from 'react-bootstrap/Button';
 import CardGroup from 'react-bootstrap/CardGroup';
 import { CardFooter, CardHeader } from 'react-bootstrap';
 
-export const Pool = () => {
+export const Pool2 = () => {
     const [currentView, setCurrentView] = useState('');
     const [base, setBase] = useState('');
     const [rol, setRol] = useState('');
