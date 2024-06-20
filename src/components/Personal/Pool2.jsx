@@ -9,6 +9,7 @@ import Form from "react-bootstrap/Form";
 import Button from 'react-bootstrap/Button';
 import CardGroup from 'react-bootstrap/CardGroup';
 import { CardFooter, CardHeader } from 'react-bootstrap';
+import Carousel from 'react-bootstrap/Carousel';
 
 export const Pool2 = () => {
     const [currentView, setCurrentView] = useState('');
@@ -123,6 +124,9 @@ export const Pool2 = () => {
                 )}
                 <Button variant="warning" onClick={handleShow}>Mostrar</Button>
             </Form>
+                <Carousel activeIndex={currentPage} onSelect={handleSelect} interval={null}>
+                {Array.from({ length: totalPages }).map((_, pageIndex) => (
+                    <Carousel.Item key={pageIndex}>
             <CardGroup>
                 <Row>
                     {currentView === 'conductores' && conductores.map((conductor, index) => (
@@ -188,6 +192,9 @@ export const Pool2 = () => {
                     ))}
                 </Row>
             </CardGroup>
+            </Carousel.Item>
+                ))}
+            </Carousel>
         </Container>
     );
 };
