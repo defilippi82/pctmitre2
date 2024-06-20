@@ -29,6 +29,13 @@ export const Pool = () => {
     const handleBaseChange = (event) => setBase(event.target.value);
     const handleCurrentViewChange = (event) => setCurrentView(event.target.value);
     const handleRolChange = (event) => setRol(event.target.value);
+    const handleShow = () => {
+        if (currentView === 'conductores') {
+            fetchConductores();
+        } else if (currentView === 'guardatren') {
+            fetchGuardatren();
+        }
+    };
 
     useEffect(() => {
         if (currentView) {
@@ -93,7 +100,7 @@ export const Pool = () => {
         setCardStates({}); // Limpiar el estado de las tarjetas al cambiar de vista
     };*/
 
-    const handleBaseChange = (event) => setBase(event.target.value);
+    
 
     const handleAtendio = (id) => {
         setCardStates(prevState => ({
