@@ -11,7 +11,7 @@ import CardGroup from 'react-bootstrap/CardGroup';
 import { CardFooter, CardHeader } from 'react-bootstrap';
 import Carousel from 'react-bootstrap/Carousel';
 
-export const Pool2 = () => {
+export const Pool = () => {
     const [currentView, setCurrentView] = useState('');
     const [base, setBase] = useState('');
     const [rol, setRol] = useState('');
