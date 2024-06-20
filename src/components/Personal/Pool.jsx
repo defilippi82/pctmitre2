@@ -130,23 +130,41 @@ export const Pool = () => {
         <Container>
             <Row>
                 <Col>
-                    <Form>
-                        <Form.Group controlId="baseSelect">
-                            <Form.Label>Base Operativa</Form.Label>
-                            <Form.Control as="select" value={base} onChange={handleBaseChange}>
-                                <option value="">Seleccione una base</option>
-                                <option value="victoria">Victoria</option>
-                                <option value="suarez">Suarez</option>
-                            </Form.Control>
-                        </Form.Group>
-                        <Form.Group controlId="currentViewSelect">
-                            <Form.Label>{currentView === 'conductores' ? 'Funciones' : 'Especialidad'}</Form.Label>
-                            <Form.Control as="select" value={currentView} onChange={handleViewChange}>
-                                <option value="conductores">Conductores</option>
-                                <option value="guardatrenes">Guardatrenes</option>
-                            </Form.Control>
-                        </Form.Group>
-                    </Form>
+                <Form>
+                <Form.Group controlId="baseSelect">
+                    <Form.Label>Base Operativa</Form.Label>
+                    <Form.Control as="select" value={base} onChange={handleBaseChange}>
+                        <option value="">Seleccione una base</option>
+                        <option value="victoria">Victoria</option>
+                        <option value="suarez">Suarez</option>
+                    </Form.Control>
+                </Form.Group>
+                <Form.Group controlId="currentViewSelect">
+                    <Form.Label>Especialidad</Form.Label>
+                    <Form.Control as="select" value={currentView} onChange={handleCurrentViewChange}>
+                        <option value="">Seleccione una especialidad</option>
+                        <option value="conductores">Conductores</option>
+                        <option value="guardatren">Guardas</option>
+                    </Form.Control>
+                </Form.Group>
+                {currentView === 'conductores' && (
+                    <Form.Group controlId="rolSelect">
+                        <Form.Label>Especialidad</Form.Label>
+                        <Form.Control as="select" value={rol} onChange={handleRolChange}>
+                            <option value="">Seleccione una especialidad</option>
+                            <option value="diesel">Cond. Diesel</option>
+                            <option value="electrico">Cond. Electrico</option>
+                            <option value="instructorld">Instructor Tec. LF LD</option>
+                            <option value="instructorelec">Instructor Tec. LF Elec.</option>
+                            <option value="inspectorelec">Inspector Tec. LF Elec.</option>
+                            <option value="inspectorld">Inspector Tec. LF LD.</option>
+                            <option value="preConductor">Pre-Cond. Operativo</option>
+                        </Form.Control>
+                    </Form.Group>
+                )}
+                <Button variant="warning" onClick={handleShow}>Mostrar</Button>
+            </Form>
+                    
                 </Col>
             </Row>
             <Carousel activeIndex={currentPage} onSelect={handleSelect} interval={null}>
