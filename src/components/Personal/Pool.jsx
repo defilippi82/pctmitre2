@@ -13,14 +13,63 @@ import { CardFooter, CardHeader } from 'react-bootstrap';
 export const Pool = () => {
     const [conductores, setConductores] = useState([]);
     const [guardatrenes, setGuardatrenes] = useState([]);
-    const [currentView, setCurrentView] = useState('conductores');
+    const [rol, setRol] = useState('');
     const [base, setBase] = useState('');
+    const [currentView, setCurrentView] = useState('conductores');
     const [currentPage, setCurrentPage] = useState(0);
     const [cardStates, setCardStates] = useState({});
 
-    const itemsPerPage = 4; // Número de elementos por página
+    const itemsPerPage = 4;
+    
+    //panel de busqueada
+    
+    // Firestore collections
+    const conductoresCollection = collection(db, "conductores");
+    const guardatrenesCollection = collection(db, "guardatren");
+    const handleBaseChange = (event) => setBase(event.target.value);
+    const handleCurrentViewChange = (event) => setCurrentView(event.target.value);
+    const handleRolChange = (event) => setRol(event.target.value);
 
+    useEffect(() => {
+        if (currentView) {
+            handleShow();
+        }
+    }, [currentView]);
+    
     const fetchConductores = async () => {
+        try {
+            let q = query(conductoresCollection);
+
+            if (base) {
+                q = query(q, where('base', '==', base));
+            }
+            if (rol) {
+                q = query(q, where('rol', '==', rol));
+            }
+
+            const querySnapshot = await getDocs(q);
+            const data = querySnapshot.docs.map(doc => doc.data()).sort((a, b) => a.orden - b.orden);
+            setConductores(data);
+        } catch (error) {
+            console.error('Error fetching conductores:', error);
+        }
+    };
+
+    const fetchGuardatren = async () => {
+        try {
+            let q = query(guardatrenesCollection);
+            if (base) {
+                q = query(q, where('base', '==', base));
+            }
+            const querySnapshot = await getDocs(q);
+            const data = querySnapshot.docs.map(doc => doc.data());
+            setGuardatren(data);
+        } catch (error) {
+            console.error('Error fetching guardatren:', error);
+        }
+    };// Número de elementos por página
+
+    /*const fetchConductores = async () => {
         const q = query(collection(db, 'conductores'));
         const querySnapshot = await getDocs(q);
         const data = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
@@ -42,7 +91,7 @@ export const Pool = () => {
     const handleViewChange = (event) => {
         setCurrentView(event.target.value);
         setCardStates({}); // Limpiar el estado de las tarjetas al cambiar de vista
-    };
+    };*/
 
     const handleBaseChange = (event) => setBase(event.target.value);
 
