@@ -18,6 +18,7 @@ export const Pool2 = () => {
     const [conductores, setConductores] = useState([]);
     const [guardatren, setGuardatren] = useState([]);
     const [cardStates, setCardStates] = useState({}); // Estado para manejar la visibilidad y color de las tarjetas
+    const [currentPage, setCurrentPage] = useState(0);
 
     // Firestore collections
     const conductoresCollection = collection(db, "conductores");
@@ -26,6 +27,7 @@ export const Pool2 = () => {
     const handleBaseChange = (event) => setBase(event.target.value);
     const handleCurrentViewChange = (event) => setCurrentView(event.target.value);
     const handleRolChange = (event) => setRol(event.target.value);
+    const itemsPerPage = 4;
 
     useEffect(() => {
         if (currentView) {
@@ -86,6 +88,22 @@ export const Pool2 = () => {
             ...prevState,
             [id]: { ...prevState[id], color: 'danger' }
         }));
+    };
+    
+    const filteredData = (currentView === 'conductores' ? conductores : guardatrenes).filter(person => {
+        return (base ? person.base.toLowerCase().includes(base.toLowerCase()) : true);
+    });
+
+    // Ordenar por el campo 'orden'
+    const sortedData = filteredData.sort((a, b) => a.orden - b.orden);
+
+    // Obtener el número total de páginas
+    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+    // Dividir los datos en páginas
+    const paginatedData = sortedData.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+    const handleSelect = (selectedIndex, e) => {
+        setCurrentPage(selectedIndex);
     };
 
     return (
