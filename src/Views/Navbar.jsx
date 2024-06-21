@@ -14,7 +14,7 @@ export const NavbarComponent = ({ handleLogout }) => {
   return (
   <>
   {[ false, ].map((expand) => (
-    <Navbar  key={expand} expand={expand} fixed="top" className="bg-body-tertiary xxl-3">
+    <Navbar collapseOnSelect  key={expand} expand={expand} fixed="top" className="bg-body-tertiary xxl-3">
       <Container fluid>
         <Navbar.Brand href="#"><strong>PCT Mitre ||</strong> {userData && userData.nombre && <> ¡Hola <em fluid>{userData.nombre}!</em> </>}</Navbar.Brand>
         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${expand}`} />
