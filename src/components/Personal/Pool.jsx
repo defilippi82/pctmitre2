@@ -134,7 +134,7 @@ export const Pool = () => {
                                 {paginatedData.map((person, index) => (
                                     <Col key={index} sm={12} md={6} lg={4}>
                                         <Card
-                                            bg={cardStates[person.legajo]?.color || 'light'}
+                                            bg={cardStates[person.legajo]?.color }
                                             text={(cardStates[person.legajo]?.color) ? 'dark' : 'black'}
                                             style={{ width: '18rem', display: cardStates[person.legajo]?.hidden ? 'none' : 'block',  backgroundColor: currentView === 'conductores' ? 'orange' : 'lightblue',
                                             margin: '10px' }}

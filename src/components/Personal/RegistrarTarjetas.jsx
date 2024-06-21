@@ -222,11 +222,16 @@ export const RegistrarTarjetas = () => {
                             <option value="conductores">Conductores</option>
                             <option value="guardatren">Guardatrenes</option>
                         </Form.Control>
+                                                
                     </Form.Group>
-                    <Form.Group controlId="formBase">
-                        <Form.Label>Base</Form.Label>
-                        <Form.Control type="text" value={base} onChange={handleBaseChange} />
-                    </Form.Group>
+                    <Form.Group controlId="baseSelect">
+                    <Form.Label>Base Operativa</Form.Label>
+                    <Form.Control as="select" value={base} onChange={handleBaseChange}>
+                        <option value="">Seleccione una base</option>
+                        <option value="victoria">Victoria</option>
+                        <option value="suarez">Suarez</option>
+                    </Form.Control>
+                </Form.Group>
                     <Form.Group controlId="formLegajo">
                         <Form.Label>Legajo</Form.Label>
                         <Form.Control type="number" value={legajo} onChange={handleLegajoChange} />
