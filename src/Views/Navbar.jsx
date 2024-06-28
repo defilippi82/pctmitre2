@@ -28,6 +28,12 @@ export const NavbarComponent = ({ handleLogout }) => {
             <Nav className="justify-content-end flex-grow-1 pe-3">
             {userData && userData.nombre  && (
             <Nav.Link  href="#/novedades">Inicio</Nav.Link>)}
+            {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'electrico')  && (
+              <NavDropdown title="Electrica" id={`offcanvasNavbarDropdown-expand-${expand}`} >
+              
+              <NavDropdown.Item href="#/cortesecc">Corte Secciones</NavDropdown.Item>
+              </NavDropdown>
+            )}
                           
             {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'emergencia')  && (
               <NavDropdown title="Emergencias" id={`offcanvasNavbarDropdown-expand-${expand}`} >

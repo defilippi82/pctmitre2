@@ -8,7 +8,6 @@
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
-    
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
@@ -18,9 +17,12 @@
     "firebase-admin": "^10.3.0",
     "jspdf": "^2.5.1",
     "node-firestore-import-export": "^1.1.0",
+    "qs": "^6.12.1",
+    "query-overpass": "^1.5.5",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.2",
     "react-dom": "^18.2.0",
+    "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.23.1",
     "sweetalert2": "^11.6.13",
     "sweetalert2-react-content": "^5.0.7"
