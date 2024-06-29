@@ -5,6 +5,7 @@ import { Button, Form, Table } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase';
+import queryString from 'query-string';
 
 export const CorteSecc = () => {
   const [trabajos, setTrabajos] = useState([]);
@@ -32,20 +33,26 @@ export const CorteSecc = () => {
     const fetchHitos = () => {
       const query = `
         [out:json];
-        node["railway"="milestone"]["railway:position"](-34.7,-59,-34.5,-58.5);
+        (
+          node["railway"="milestone"]["railway:position"~"^\\d+/\\d+ pkm$"](-34.7,-59,-34.5,-58.5);
+        );
         out body;
       `;
+      const queryParams = queryString.stringify({ data: query });
 
-      const queryParams = new URLSearchParams({ data: query });
+      console.log(`Fetching hitos with query: https://overpass-api.de/api/interpreter?${queryParams}`);
+
       fetch(`https://overpass-api.de/api/interpreter?${queryParams}`)
         .then(response => response.json())
         .then(data => {
           console.log("Datos de hitos recibidos: ", data);
-          setHitos(data.elements);
+          if (data.elements) {
+            setHitos(data.elements);
+          } else {
+            console.error("No elements found in data");
+          }
         })
-        .catch(error => {
-          console.error("Error en queryOverpass: ", error);
-        });
+        .catch(error => console.error("Error fetching hitos: ", error));
     };
 
     fetchTrabajos();
@@ -63,6 +70,9 @@ export const CorteSecc = () => {
       Swal.fire('Error', 'Todos los campos son obligatorios', 'error');
       return;
     }
+
+    console.log("Trabajos actuales: ", trabajos);
+    console.log("Nuevo trabajo: ", nuevoTrabajo);
 
     try {
       const hitoInicio = encontrarHito(nuevoTrabajo.kmInicio, nuevoTrabajo.paloInicio);
@@ -107,7 +117,14 @@ export const CorteSecc = () => {
   };
 
   const encontrarHito = (km, palo) => {
-    return hitos.find(hito => hito.tags['railway:position'] === `${km}/${palo}`);
+    console.log("Buscando hito para km/palo: ", km, palo);
+    const hito = hitos.find(hito => hito.tags['railway:position'] === `${km}/${palo} pkm`);
+    if (!hito) {
+      console.error(`Hito no encontrado para km/palo: ${km}/${palo}`);
+    } else {
+      console.log("Hito encontrado: ", hito);
+    }
+    return hito;
   };
 
   return (
@@ -194,3 +211,4 @@ export const CorteSecc = () => {
     </div>
   );
 };
+
