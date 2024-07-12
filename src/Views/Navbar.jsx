@@ -8,7 +8,6 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UserContext } from '../Services/UserContext';
 import {NovedadesContext} from "../Services/NovedadesContext";
-import { faEnvelopeCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { faListCheck } from '@fortawesome/free-solid-svg-icons/faListCheck';
 
 export const NavbarComponent = ({ handleLogout }) => {
@@ -72,6 +71,7 @@ export const NavbarComponent = ({ handleLogout }) => {
                <NavDropdown title="Disponibilidad Personal"  id={`offcanvasNavbarDropdown-expand-${expand}`} > 
                 <NavDropdown.Item href="#/pool" >Llamar Personal</NavDropdown.Item>
                 <NavDropdown.Item href="#/tarjetas">Cargar Tarjetas</NavDropdown.Item>
+                <NavDropdown.Item href="#/sabana" >Sábana</NavDropdown.Item>
                 </NavDropdown>
              
               <NavDropdown.Item href="#/conductores/create">Registrar Conductores</NavDropdown.Item>

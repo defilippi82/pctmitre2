@@ -13,7 +13,8 @@ import {Padron} from "./Services/Padron";
 import {Pool} from "./components/Personal/Pool";
 import {Pool2} from "./components/Personal/Pool2.jsx";
 import {Corrida} from "./components/Personal/Corrida";
-import {Novedades} from "./components/Personal/Novedades1.jsx"
+import {Sabana} from "./components/Personal/Sabana.jsx";
+import {Novedades} from "./components/Personal/Novedades.jsx"
 import {RegistrarTarjetas} from "./components/Personal/RegistrarTarjetas.jsx";
 import { Emergencias} from "./components/Emergencia/Emergencias"
 import { NavbarComponent } from './Views/Navbar';
@@ -49,6 +50,7 @@ export const App = () => {
           <Route path="/guardatren/edit/:id" element={<EditarGuardaTren/>} />
           <Route path="/pool" element={<Pool/>} />
           <Route path="/pool2" element={<Pool2/>} />
+          <Route path="/sabana" element={<Sabana/>} />
           <Route path="/tarjetas" element={<RegistrarTarjetas/>} />
           <Route path="/padron" element={<Padron/>} />
           <Route path="/corrida" element={<Corrida/>} />

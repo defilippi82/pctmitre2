@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Polyline, Tooltip, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Button, Form, Table } from 'react-bootstrap';
+import { Form, Table, Button, FloatingLabel, Row, Col, Pagination } from 'react-bootstrap';
+import Container from 'react-bootstrap/Container';
 import Swal from 'sweetalert2';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase';
@@ -130,7 +131,11 @@ export const CorteSecc = () => {
   return (
     <div className="container mt-4">
       <h2>Corte de Secciones</h2>
+     
+      
       <Form onSubmit={handleSubmit}>
+        <Row>
+          <Col>
         <Form.Group>
           <Form.Label>Sector</Form.Label>
           <Form.Select name="sector" value={nuevoTrabajo.sector} onChange={handleInputChange} required>
@@ -140,28 +145,51 @@ export const CorteSecc = () => {
             <option value="CP">CP</option>
           </Form.Select>
         </Form.Group>
+        </Col>
+        <Col>
         <Form.Group>
           <Form.Label>KM Inicio</Form.Label>
           <Form.Control type="number" name="kmInicio" value={nuevoTrabajo.kmInicio} onChange={handleInputChange} required />
         </Form.Group>
+        </Col>
+        <Col>
         <Form.Group>
           <Form.Label>Palo Inicio</Form.Label>
           <Form.Control type="number" name="paloInicio" value={nuevoTrabajo.paloInicio} onChange={handleInputChange} required />
         </Form.Group>
+        </Col>
+        </Row>
+          
+        <Row>
+        <Col>
         <Form.Group>
           <Form.Label>KM Final</Form.Label>
           <Form.Control type="number" name="kmFinal" value={nuevoTrabajo.kmFinal} onChange={handleInputChange} required />
         </Form.Group>
+        </Col>
+        <Col>
         <Form.Group>
           <Form.Label>Palo Final</Form.Label>
           <Form.Control type="number" name="paloFinal" value={nuevoTrabajo.paloFinal} onChange={handleInputChange} required />
         </Form.Group>
+        </Col>
+          <Col>
         <Form.Group>
           <Form.Label>Responsable</Form.Label>
           <Form.Control type="text" name="responsable" value={nuevoTrabajo.responsable} onChange={handleInputChange} required />
         </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
         <Button variant="primary" type="submit">Agregar Trabajo</Button>
+          </Col>
+        </Row>
+        
+        
       </Form>
+     
+      
 
       <MapContainer center={[-34.6037, -58.3816]} zoom={13} style={{ height: '400px', width: '100%', marginTop: '20px' }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
