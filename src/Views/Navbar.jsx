@@ -5,10 +5,15 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UserContext } from '../Services/UserContext';
+import {NovedadesContext} from "../Services/NovedadesContext";
+import { faEnvelopeCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { faListCheck } from '@fortawesome/free-solid-svg-icons/faListCheck';
 
 export const NavbarComponent = ({ handleLogout }) => {
   const { userData } = useContext(UserContext);
+  const { novedades } = useContext(NovedadesContext);
   
  
   return (
@@ -27,7 +32,10 @@ export const NavbarComponent = ({ handleLogout }) => {
           <Offcanvas.Body >
             <Nav className="justify-content-end flex-grow-1 pe-3">
             {userData && userData.nombre  && (
-            <Nav.Link  href="#/novedades">Inicio</Nav.Link>)}
+            <Nav.Link  href="#/novedades"><FontAwesomeIcon className=" bg-warning sm-1" icon={faListCheck} />  Inicio    
+            {novedades.length > 0 && (
+                   <span className="badge bg-danger text-red lg-1">{novedades.length}</span>
+            )}</Nav.Link>)}
             {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'electrico')  && (
               <NavDropdown title="Electrica" id={`offcanvasNavbarDropdown-expand-${expand}`} >
               

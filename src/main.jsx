@@ -5,10 +5,15 @@ import './scss/index.css'
 import  './scss/styles.scss'
 import "bootstrap/dist/css/bootstrap.min.css";
 import { UserProvider } from './Services/UserContext.jsx'
+import { NovedadesProvider } from './Services/NovedadesContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   
+    
     <UserProvider>
-    <App />
+        <NovedadesProvider>
+            <App />
+        </NovedadesProvider>
     </UserProvider>,
+    document.getElementById('root')
 )

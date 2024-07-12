@@ -13,7 +13,7 @@ import {Padron} from "./Services/Padron";
 import {Pool} from "./components/Personal/Pool";
 import {Pool2} from "./components/Personal/Pool2.jsx";
 import {Corrida} from "./components/Personal/Corrida";
-import {Novedades} from "./components/Personal/Novedades"
+import {Novedades} from "./components/Personal/Novedades1.jsx"
 import {RegistrarTarjetas} from "./components/Personal/RegistrarTarjetas.jsx";
 import { Emergencias} from "./components/Emergencia/Emergencias"
 import { NavbarComponent } from './Views/Navbar';
