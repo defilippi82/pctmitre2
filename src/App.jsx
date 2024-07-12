@@ -37,6 +37,7 @@ export const App = () => {
           <Route path="/" element={<Login/>} />
           <Route path="/novedades" element={<Novedades/>} />
           <Route path="/cortesecc" element={<CorteSecc/>} />
+          <Route path="/auv" element="Aca Puede Realizar AUV" />
           <Route path="/operadores/create" element={<RegistrarOperadores/>} />
           <Route path="/operadores/edit/:id" element={<EditarOperadores/>} />
           <Route path="/administracion" element={<Administracion/>} />

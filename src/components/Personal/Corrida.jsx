@@ -37,7 +37,7 @@ export const Corrida = () => {
       // Otros efectos que dependan de userData
       useEffect(() => {
         if (userData && userData.nombre) {
-            setResponsable(userData.nombre);
+            setResponsable(userData.apellido);
         }
       }, [userData]);
 
@@ -152,7 +152,7 @@ export const Corrida = () => {
    const imprimirPDF = () => {
     const doc = new jsPDF();
     doc.text('Formulario de Corrida', 10, 10);
-    doc.text(`Operador Responsable: ${userData.nombre}`, 10, 20);
+    doc.text(`Operador Responsable: ${userData.apellido}`, 10, 20);
     doc.text(`Nº de Trabajo: ${trabajo}`, 10, 30);
     doc.text(`Secciones: ${secciones.join(', ')}`, 10, 40);
 
@@ -262,7 +262,7 @@ export const Corrida = () => {
                                     id="responsable"
                                     name="responsable"
                                     placeholder="Nombre y Apellido"
-                                    value={userData ? userData.nombre : ""}
+                                    value={userData ? userData.apellido : ""}
                                     onChange={(e) => setResponsable(e.target.value)}
                                     required
                                     />

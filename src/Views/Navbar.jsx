@@ -41,6 +41,12 @@ export const NavbarComponent = ({ handleLogout }) => {
               <NavDropdown.Item href="#/cortesecc">Corte Secciones</NavDropdown.Item>
               </NavDropdown>
             )}
+            {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'diesel')  && (
+              <NavDropdown title="Diesel" id={`offcanvasNavbarDropdown-expand-${expand}`} >
+              
+              <NavDropdown.Item href="#/auv">A.U.V.</NavDropdown.Item>
+              </NavDropdown>
+            )}
                           
             {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'emergencia')  && (
               <NavDropdown title="Emergencias" id={`offcanvasNavbarDropdown-expand-${expand}`} >
