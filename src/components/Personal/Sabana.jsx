@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, getDocs, doc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { collection, query, getDocs, doc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase';
 import { Form, Table, Button, FloatingLabel, Row, Col, Pagination } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
@@ -17,9 +17,11 @@ export const Sabana = () => {
     const [guardatrenes, setGuardatrenes] = useState([]);
     const [currentView, setCurrentView] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
+    const [novedades, setNovedades] = useState([]);
     const [formData, setFormData] = useState({
         diaNovedadInicio: '',
         diaNovedadFinal: '',
+        diaDisponible: '',
         hdisp: '',
         codigo: '',
         totalHorasTrab: '',
@@ -48,15 +50,15 @@ export const Sabana = () => {
     const fetchConductores = async () => {
         const q = query(collection(db, 'conductores'));
         const querySnapshot = await getDocs(q);
-        const data = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-        setConductores(data);
+        const novedades = querySnapshot.docs.map(doc => ({ ...doc.novedades(), id: doc.id }));
+        setConductores(novedades);
     };
 
     const fetchGuardatren = async () => {
         const q = query(collection(db, 'guardatrenes'));
         const querySnapshot = await getDocs(q);
-        const data = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-        setGuardatrenes(data);
+        const novedades = querySnapshot.docs.map(doc => ({ ...doc.novedades(), id: doc.id }));
+        setGuardatrenes(novedades);
     };
 
     useEffect(() => {
@@ -66,6 +68,21 @@ export const Sabana = () => {
             fetchGuardatren();
         }
     }, [currentView]);
+
+    useEffect(() => {
+        const fetchNovedades = async () => {
+            if (selectedUser) {
+                const userDocRef = doc(db, currentView, selectedUser.id);
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    setNovedades(userDoc.data().novedades || []);
+                } else {
+                    setNovedades([]);
+                }
+            }
+        };
+        fetchNovedades();
+    }, [selectedUser, currentView]);
 
     const filteredData = (currentView === 'conductores' ? conductores : guardatrenes).filter(person => {
         return (
@@ -99,10 +116,12 @@ export const Sabana = () => {
             });
             Swal.fire('Éxito', 'Novedad agregada exitosamente.', 'success');
             // Aquí podrías agregar la nueva novedad directamente al estado `data`
-            setData(prevData => [...prevData, formData]);
+            setNovedades(prevNovedades => [...prevNovedades, formData]);
+            //setData(prevData => [...prevData, formData]);
             setFormData({
                 diaNovedadInicio: '',
                 diaNovedadFinal: '',
+                diaDisponible: '',
                 hdisp: '',
                 codigo: '',
                 totalHorasTrab: '',
@@ -118,10 +137,11 @@ export const Sabana = () => {
         Swal.fire({
             title: 'Editar Registro',
             html: `
-                 <input type="date" id="diaNovedadInicio" class="swal2-input" value="${data[index].diaNovedadInicio}">
-                <input type="date" id="diaNovedadFinal" class="swal2-input" value="${data[index].diaNovedadFinal}">
-                <input type="time" id="hdisp" class="swal2-input" value="${data[index].hdisp}">
-                <select id="codigo" class="swal2-input" value="${data[index].codigo}">
+                 <input type="date" id="diaNovedadInicio" class="swal2-input" value="${novedades[index].diaNovedadInicio}">
+                <input type="date" id="diaNovedadFinal" class="swal2-input" value="${novedades[index].diaNovedadFinal}">
+                <input type="date" id="diaDisponible" class="swal2-input" value="${novedades[index].diaDisponible}">
+                <input type="time" id="hdisp" class="swal2-input" value="${novedades[index].hdisp}">
+                <select id="codigo" class="swal2-input" value="${novedades[index].codigo}">
                     <option value="">Seleccione</option>
                     <option value="1">Franco</option>
                     <option value="2">Franco Adeudado</option>
@@ -194,36 +214,61 @@ export const Sabana = () => {
                     <option value="604">Participación en siniestros</option>
                     <option value="605">Licencia sin goce de sueldo</option>
                 </select>
-                <input type="number" id="totalHorasTrab" class="swal2-input" value="${data[index].totalHorasTrab}">
-                <textarea id="observaciones" class="swal2-textarea">${data[index].observaciones}</textarea>`,
+                <input type="number" id="totalHorasTrab" class="swal2-input" value="${novedades[index].totalHorasTrab}">
+                <textarea id="observaciones" class="swal2-textarea">${novedades[index].observaciones}</textarea>`,
                 focusConfirm: false,
                 preConfirm: () => {
                     return {
                         diaNovedadInicio: document.getElementById('diaNovedadInicio').value,
                         diaNovedadFinal: document.getElementById('diaNovedadFinal').value,
+                        diaDisponible: document.getElementById('diaDisponible').value,
                         hdisp: document.getElementById('hdisp').value,
                         codigo: document.getElementById('codigo').value,
                         totalHorasTrab: document.getElementById('totalHorasTrab').value,
                         observaciones: document.getElementById('observaciones').value,
                     };
                 }
-            }).then((result) => {
+            }).then(async (result) => {
                 if (result.isConfirmed) {
-                    const updatedData = [...data];
-                    updatedData[index] = { ...result.value };
-                    setData(updatedData);
+                    const updatedNovedades = [...novedades];
+                    updatedNovedades[index] = { ...result.value };
+                    setNovedades(updatedNovedades);
+                    
+                    // Actualizar en Firebase
+                    try {
+                        const userDocRef = doc(db, currentView, selectedUser.id);
+                        await updateDoc(userDocRef, {
+                            novedades: updatedNovedades
+                        });
+                        Swal.fire('Éxito', 'Novedad actualizada correctamente', 'success');
+                    } catch (error) {
+                        console.error('Error al actualizar la novedad: ', error);
+                        Swal.fire('Error', 'Hubo un problema al actualizar la novedad', 'error');
+                    }
                 }
             });
         };
         
-        const handleDelete = (index) => {
-            const updatedData = data.filter((_, i) => i !== index);
-            setData(updatedData);
+        const handleDelete = async (index) => {
+            try {
+                const updatedNovedades = novedades.filter((_, i) => i !== index);
+                setNovedades(updatedNovedades);
+        
+                // Actualizar en Firebase
+                const userDocRef = doc(db, currentView, selectedUser.id);
+                await updateDoc(userDocRef, {
+                    novedades: updatedNovedades
+                });
+                Swal.fire('Éxito', 'Novedad eliminada correctamente', 'success');
+            } catch (error) {
+                console.error('Error al eliminar la novedad: ', error);
+                Swal.fire('Error', 'Hubo un problema al eliminar la novedad', 'error');
+            }
         };
 
         useEffect(() => {
-            console.log('Data:', data);
-        }, [data]);
+            console.log('Novedades:', novedades);
+        }, [novedades]);
 
     const renderPaginationItems = () => {
         const items = [];
@@ -267,6 +312,7 @@ export const Sabana = () => {
 
     return (
         <Container>
+            <h2>Busqueda por filtro</h2>
             <Row>
                 <Col>
                     <Row>
@@ -354,7 +400,11 @@ export const Sabana = () => {
                                     <Form.Control type="date" name="diaNovedadFinal" value={formData.diaNovedadFinal} onChange={handleInputChange} />
                                 </FloatingLabel>
                             </Col>
-                                                   
+                            <Col xs="auto">
+                                <FloatingLabel controlId="floatingdiaDisponible" label="Día Disponible">
+                                    <Form.Control type="date" name="diaDisponible" value={formData.diaDisponible} onChange={handleInputChange} />
+                                </FloatingLabel>
+                            </Col>                 
                             <Col sm="auto">
                                 <FloatingLabel controlId="floatingHdisp" label="H. de Disp.">
                                     <Form.Control type="time" name="hdisp" value={formData.hdisp} onChange={handleInputChange} />
@@ -451,18 +501,19 @@ export const Sabana = () => {
                                 </FloatingLabel>
                             </Col>
                             <Col xs="auto">
-                                <Button type="submit" className="mt-3">Guardar</Button>
+                                <Button type="submit" className="mt-3">Agregar Novedad</Button>
                             </Col>
                         </Row>
                     </Form>
                 )}
-
+                {selectedUser && (
                 <Table responsive striped bordered hover variant="dark" className="mt-3">
                     <thead>
                         <tr>
                             
                             <th>Desde</th>
                             <th>Hasta</th>
+                            <th>Disponible</th>
                             <th>H.de Disp.</th>
                             <th>Novedad</th>
                             <th>Total Hs.Trab</th>
@@ -471,15 +522,16 @@ export const Sabana = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((item, index) => (
+                        {novedades.map((novedad, index) => (
                             <tr key={index}>
                                 
-                                <td>{item.diaNovedadInicio}</td>
-                                <td>{item.diaNovedadFinal}</td>
-                                <td>{item.hdisp}</td>
-                                <td>{item.codigo}</td>
-                                <td>{item.totalHorasTrab}</td>
-                                <td>{item.observaciones}</td>
+                                <td>{novedad.diaNovedadInicio}</td>
+                                <td>{novedad.diaNovedadFinal}</td>
+                                <td>{novedad.diaDisponible}</td>
+                                <td>{novedad.hdisp}</td>
+                                <td>{novedad.codigo}</td>
+                                <td>{novedad.totalHorasTrab}</td>
+                                <td>{novedad.observaciones}</td>
                                 <td>
                                     <Button variant="warning" onClick={() => handleEdit(index)}><i className="fas fa-edit"></i></Button>
                                     <Button variant="danger" onClick={() => handleDelete(index)}><i className="fas fa-trash-alt"></i></Button>
@@ -488,6 +540,7 @@ export const Sabana = () => {
                         ))}
                     </tbody>
                 </Table>
+                )}
             </div>
         </Container>
     );
