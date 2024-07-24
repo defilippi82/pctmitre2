@@ -50,15 +50,15 @@ export const Sabana = () => {
     const fetchConductores = async () => {
         const q = query(collection(db, 'conductores'));
         const querySnapshot = await getDocs(q);
-        const novedades = querySnapshot.docs.map(doc => ({ ...doc.novedades(), id: doc.id }));
-        setConductores(novedades);
+        const conductoresData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        setConductores(conductoresData);
     };
 
     const fetchGuardatren = async () => {
         const q = query(collection(db, 'guardatrenes'));
         const querySnapshot = await getDocs(q);
-        const novedades = querySnapshot.docs.map(doc => ({ ...doc.novedades(), id: doc.id }));
-        setGuardatrenes(novedades);
+        const guardatrenesData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        setGuardatrenes(guardatrenesData);
     };
 
     useEffect(() => {
