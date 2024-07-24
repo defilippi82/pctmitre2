@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, getDocs } from 'firebase/firestore';
+import { collection, query, getDocs, doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase';
 import { Form, Table, Button, FloatingLabel, Row, Col, Pagination } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
@@ -20,13 +20,8 @@ export const Sabana = () => {
     const [formData, setFormData] = useState({
         diaNovedadInicio: '',
         diaNovedadFinal: '',
-        efectuoServicio: '',
-        licencia: '',
-        franco: false,
-        descanso: false,
-        tomo: '',
-        dejo: '',
         hdisp: '',
+        codigo: '',
         totalHorasTrab: '',
         observaciones: ''
     });
@@ -42,12 +37,13 @@ export const Sabana = () => {
     const handleLegajoChange = (event) => setLegajo(event.target.value);
 
     const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData({
-            ...formData,
-            [name]: type === 'checkbox' ? checked : value
-        });
+        const { name, value } = e.target;
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            [name]: value
+        }));
     };
+    
 
     const fetchConductores = async () => {
         const q = query(collection(db, 'conductores'));
@@ -89,92 +85,145 @@ export const Sabana = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const servicio = formData.licencia || (formData.franco ? 'Fco' : '') || (formData.descanso ? 'Desc' : '');
-        setData([...data, { ...formData, servicio }]);
-        setFormData({
-            diaNovedadInicio: '',
-            diaNovedadFinal: '',
-            efectuoServicio: '',
-            licencia: '',
-            franco: false,
-            descanso: false,
-            tomo: '',
-            dejo: '',
-            hdisp: '',
-            totalHorasTrab: '',
-            observaciones: ''
-        });
+        if (!selectedUser) {
+            Swal.fire('Error', 'Por favor, seleccione un usuario antes de agregar una novedad.', 'error');
+            return;
+        }
+    
+        try {
+            const userDocRef = doc(db, currentView, selectedUser.id);
+            await updateDoc(userDocRef, {
+                novedades: arrayUnion({ ...formData })
+            });
+            Swal.fire('Éxito', 'Novedad agregada exitosamente.', 'success');
+            // Aquí podrías agregar la nueva novedad directamente al estado `data`
+            setData(prevData => [...prevData, formData]);
+            setFormData({
+                diaNovedadInicio: '',
+                diaNovedadFinal: '',
+                hdisp: '',
+                codigo: '',
+                totalHorasTrab: '',
+                observaciones: ''
+            });
+        } catch (error) {
+            console.error('Error al agregar la novedad: ', error);
+            Swal.fire('Error', 'Hubo un problema al agregar la novedad.', 'error');
+        }
     };
-
+    
     const handleEdit = (index) => {
         Swal.fire({
             title: 'Editar Registro',
             html: `
-                <input type="date" id="diaNovedadInicio" class="swal2-input" value="${data[index].diaNovedadInicio}">
+                 <input type="date" id="diaNovedadInicio" class="swal2-input" value="${data[index].diaNovedadInicio}">
                 <input type="date" id="diaNovedadFinal" class="swal2-input" value="${data[index].diaNovedadFinal}">
-                <input type="number" id="efectuoServicio" class="swal2-input" value="${data[index].efectuoServicio}">
-                <select id="licencia" class="swal2-input" value="${data[index].licencia}">
-                    <option value="">Seleccione</option>
-                    <option value="por enfermedad">por enfermedad</option>
-                    <option value="por enfermedad familiar">por enfermedad familiar</option>
-                    <option value="por maternidad">por maternidad</option>
-                    <option value="por vacaciones">por vacaciones</option>
-                    <option value="deportiva">deportiva</option>
-                    <option value="por ART">por ART</option>
-                    <option value="por fallecimiento familiar cercano">por fallecimiento familiar cercano</option>
-                    <option value="por fallecimiento familiar">por fallecimiento familiar</option>
-                </select>
-                <input type="checkbox" id="franco" class="swal2-checkbox" ${data[index].franco ? 'checked' : ''}> Franco
-                <input type="checkbox" id="descanso" class="swal2-checkbox" ${data[index].descanso ? 'checked' : ''}> Descanso
-                <input type="time" id="tomo" class="swal2-input" value="${data[index].tomo}">
-                <input type="time" id="dejo" class="swal2-input" value="${data[index].dejo}">
                 <input type="time" id="hdisp" class="swal2-input" value="${data[index].hdisp}">
-                <input type="text" id="totalHorasTrab" class="swal2-input" value="${data[index].totalHorasTrab}">
+                <select id="codigo" class="swal2-input" value="${data[index].codigo}">
+                    <option value="">Seleccione</option>
+                    <option value="1">Franco</option>
+                    <option value="2">Franco Adeudado</option>
+                    <option value="3">Descanso por diagrama</option>
+                    <option value="4">Descanso por cambio de rotación u horario</option>
+                    <option value="144">Horas de inasistencia</option>
+                    <option value="148">Horas de impuntualidad</option>
+                    <option value="240">Días por fallecimiento</option>
+                    <option value="246">Donación de sangre</option>
+                    <option value="248">Licencia por examen</option>
+                    <option value="250">Inasistencia justificada</option>
+                    <option value="252">Inasistencia injustificada</option>
+                    <option value="254">Días de suspensión</option>
+                    <option value="256">Licencia sin goce de sueldo</option>
+                    <option value="258">Días por nacimiento</option>
+                    <option value="259">Días por enfermedad</option>
+                    <option value="261">Enfermedad prolongada</option>
+                    <option value="262">Días por accidente de trabajo</option>
+                    <option value="263">Baja por arrollamiento</option>
+                    <option value="264">Licencia gremial</option>
+                    <option value="266">Licencia por mudanza</option>
+                    <option value="268">Licencia por matrimonio</option>
+                    <option value="276">Licencia especial paga</option>
+                    <option value="277">Licencia deportiva</option>
+                    <option value="278">Licencia por maternidad</option>
+                    <option value="288">Declaración judicial</option>
+                    <option value="291">Vacaciones adeudadas - completas</option>
+                    <option value="292">Vacaciones según rotación - completas</option>
+                    <option value="293">Vacaciones adelantadas - completas</option>
+                    <option value="294">Vacaciones por cambio - completas</option>
+                    <option value="295">Vacaciones adeudadas - fracción</option>
+                    <option value="296">Vacaciones según rotación - fracción</option>
+                    <option value="297">Vacaciones adelantadas - fracción</option>
+                    <option value="298">Vacaciones por cambio - fracción</option>
+                    <option value="300">Orden médica a domicilio</option>
+                    <option value="301">Reiteración de O.M.D.</option>
+                    <option value="302">P.A.M. (Permiso Atención Médica)</option>
+                    <option value="303">O.M. y P.A.M. (Mismo día)</option>
+                    <option value="304">P.A.M. en servicio</option>
+                    <option value="305">Ausencia por causa médica - total</option>
+                    <option value="306">Ausencia por causa médica - parcial</option>
+                    <option value="307">Familiar enfermo</option>
+                    <option value="308">Control - citado por servicio médico</option>
+                    <option value="309">Alta médica - Reanuda tareas</option>
+                    <option value="310">Baja C.R.P.C.</option>
+                    <option value="311">P.A.M. por baja C.R.P.C.</option>
+                    <option value="400">Revisión médica anual</option>
+                    <option value="401">Descanso por revisión médica</option>
+                    <option value="402">Consulta médica en retiro</option>
+                    <option value="403">Consulta psicológica en retiro</option>
+                    <option value="404">Consulta médica y psicológica en retiro</option>
+                    <option value="405">Resolución N° 558 (Arrollamiento)</option>
+                    <option value="406">Consulta con médico especialista</option>
+                    <option value="407">Estudio médico complementario</option>
+                    <option value="408">Polisonografía</option>
+                    <option value="409">Revisión por cambio de categoría</option>
+                    <option value="410">Tarea liviana</option>
+                    <option value="411">Revisión por cambio de categoría</option>
+                    <option value="412">Fuera de la operatoria ferroviaria</option>
+                    <option value="413">Suspensión precaucional</option>
+                    <option value="500">Suspensión precaucional</option>
+                    <option value="501">Reserva de puesto</option>
+                    <option value="502">Citado por RR.HH</option>
+                    <option value="503">Pluriaccidentados</option>
+                    <option value="504">Permiso gremial</option>
+                    <option value="600">Certificado entrega 0 KM</option>
+                    <option value="601">Reposo por entrega 0 KM</option>
+                    <option value="602">P.A.M. por entrega 0 KM</option>
+                    <option value="603">Incidente en pasos a nivel</option>
+                    <option value="604">Participación en siniestros</option>
+                    <option value="605">Licencia sin goce de sueldo</option>
+                </select>
+                <input type="number" id="totalHorasTrab" class="swal2-input" value="${data[index].totalHorasTrab}">
                 <textarea id="observaciones" class="swal2-textarea">${data[index].observaciones}</textarea>`,
-            focusConfirm: false,
-            preConfirm: () => {
-                return {
-                    diaNovedadinicio: document.getElementById('diaNovedadInicio').value,
-                    diaNovedadfinal: document.getElementById('diaNovedadFinal').value,
-                    efectuoServicio: document.getElementById('efectuoServicio').value,
-                    licencia: document.getElementById('licencia').value,
-                    franco: document.getElementById('franco').checked,
-                    descanso: document.getElementById('descanso').checked,
-                    tomo: document.getElementById('tomo').value,
-                    dejo: document.getElementById('dejo').value,
-                    hdisp: document.getElementById('hdisp').value,
-                    totalHorasTrab: document.getElementById('totalHorasTrab').value,
-                    observaciones: document.getElementById('observaciones').value,
-                };
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const servicio = result.value.licencia || (result.value.franco ? 'Fco' : '') || (result.value.descanso ? 'Desc' : '');
-                const updatedData = [...data];
-                updatedData[index] = { ...result.value, servicio };
-                setData(updatedData);
-            }
-        });
-    };
+                focusConfirm: false,
+                preConfirm: () => {
+                    return {
+                        diaNovedadInicio: document.getElementById('diaNovedadInicio').value,
+                        diaNovedadFinal: document.getElementById('diaNovedadFinal').value,
+                        hdisp: document.getElementById('hdisp').value,
+                        codigo: document.getElementById('codigo').value,
+                        totalHorasTrab: document.getElementById('totalHorasTrab').value,
+                        observaciones: document.getElementById('observaciones').value,
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const updatedData = [...data];
+                    updatedData[index] = { ...result.value };
+                    setData(updatedData);
+                }
+            });
+        };
+        
+        const handleDelete = (index) => {
+            const updatedData = data.filter((_, i) => i !== index);
+            setData(updatedData);
+        };
 
-    const handleDelete = (index) => {
-        const updatedData = data.filter((_, i) => i !== index);
-        setData(updatedData);
-    };
-
-    useEffect(() => {
-        if (formData.tomo && formData.dejo) {
-            const tomoTime = new Date(`1970-01-01T${formData.tomo}:00`);
-            const dejoTime = new Date(`1970-01-01T${formData.dejo}:00`);
-            const diff = (dejoTime - tomoTime) / (1000 * 60 * 60);
-            setFormData(prevFormData => ({
-                ...prevFormData,
-                totalHorasTrab: diff.toFixed(2)
-            }));
-        }
-    }, [formData.tomo, formData.dejo]);
+        useEffect(() => {
+            console.log('Data:', data);
+        }, [data]);
 
     const renderPaginationItems = () => {
         const items = [];
@@ -305,62 +354,94 @@ export const Sabana = () => {
                                     <Form.Control type="date" name="diaNovedadFinal" value={formData.diaNovedadFinal} onChange={handleInputChange} />
                                 </FloatingLabel>
                             </Col>
-                            <Col xs="auto">
-                                <FloatingLabel controlId="floatingEfectuoServicio" label="Efectuó el Servicio">
-                                    <Form.Control type="number" name="efectuoServicio" value={formData.efectuoServicio} onChange={handleInputChange} />
-                                </FloatingLabel>
-                            </Col>
-                            <Col xs="auto">
-                                <Form.Check
-                                    type="checkbox"
-                                    name="franco"
-                                    checked={formData.franco}
-                                    onChange={handleInputChange}
-                                    label="Franco"
-                                    className="mt-4"
-                                />
-                            </Col>
-                            <Col xs="auto">
-                                <Form.Check
-                                    type="checkbox"
-                                    name="descanso"
-                                    checked={formData.descanso}
-                                    onChange={handleInputChange}
-                                    label="Descanso"
-                                    className="mt-4"
-                                />
-                            </Col>
-                        </Row>
-                        <Row className="align-items-center">
-                            <Col xs="auto">
-                                <FloatingLabel controlId="floatingTomo" label="Tomó">
-                                    <Form.Control type="time" name="tomo" value={formData.tomo} onChange={handleInputChange} />
-                                </FloatingLabel>
-                            </Col>
-                            <Col xs="auto">
-                                <FloatingLabel controlId="floatingDejo" label="Dejó">
-                                    <Form.Control type="time" name="dejo" value={formData.dejo} onChange={handleInputChange} />
-                                </FloatingLabel>
-                            </Col>
+                                                   
                             <Col sm="auto">
                                 <FloatingLabel controlId="floatingHdisp" label="H. de Disp.">
                                     <Form.Control type="time" name="hdisp" value={formData.hdisp} onChange={handleInputChange} />
                                 </FloatingLabel>
                             </Col>
                             <Col xs="auto">
-                                <FloatingLabel controlId="floatingLicencia" label="Licencia">
-                                    <Form.Control as="select" name="licencia" value={formData.licencia} onChange={handleInputChange}>
-                                        <option value="">Seleccione</option>
-                                        <option value="por enfermedad">por enfermedad</option>
-                                        <option value="por enfermedad familiar">por enfermedad familiar</option>
-                                        <option value="por maternidad">por maternidad</option>
-                                        <option value="por vacaciones">por vacaciones</option>
-                                        <option value="deportiva">deportiva</option>
-                                        <option value="por ART">por ART</option>
-                                        <option value="por fallecimiento familiar cercano">por fallecimiento familiar cercano</option>
-                                        <option value="por fallecimiento familiar">por fallecimiento familiar</option>
-                                    </Form.Control>
-                                </FloatingLabel>
+                            <FloatingLabel controlId="floatingCodigos" label="Códigos">
+          <Form.Control as="select" name="codigo" value={formData.codigo} onChange={handleInputChange}>
+        <option value="">Seleccione</option>
+        <option value="1">Franco</option>
+        <option value="2">Franco Adeudado</option>
+        <option value="3">Descanso por diagrama</option>
+        <option value="4">Descanso por cambio de rotación u horario</option>
+        <option value="144">Horas de inasistencia</option>
+        <option value="148">Horas de impuntualidad</option>
+        <option value="240">Días por fallecimiento</option>
+        <option value="246">Donación de sangre</option>
+        <option value="248">Licencia por examen</option>
+        <option value="250">Inasistencia justificada</option>
+        <option value="252">Inasistencia injustificada</option>
+        <option value="254">Días de suspensión</option>
+        <option value="256">Licencia sin goce de sueldo</option>
+        <option value="258">Días por nacimiento</option>
+        <option value="259">Días por enfermedad</option>
+        <option value="261">Enfermedad prolongada</option>
+        <option value="262">Días por accidente de trabajo</option>
+        <option value="263">Baja por arrollamiento</option>
+        <option value="264">Licencia gremial</option>
+        <option value="266">Licencia por mudanza</option>
+        <option value="268">Licencia por matrimonio</option>
+        <option value="276">Licencia especial paga</option>
+        <option value="277">Licencia deportiva</option>
+        <option value="278">Licencia por maternidad</option>
+        <option value="288">Declaración judicial</option>
+        <option value="291">Vacaciones adeudadas - completas</option>
+        <option value="292">Vacaciones según rotación - completas</option>
+        <option value="293">Vacaciones adelantadas - completas</option>
+        <option value="294">Vacaciones por cambio - completas</option>
+        <option value="295">Vacaciones adeudadas - fracción</option>
+        <option value="296">Vacaciones según rotación - fracción</option>
+        <option value="297">Vacaciones adelantadas - fracción</option>
+        <option value="298">Vacaciones por cambio - fracción</option>
+        <option value="300">Orden médica a domicilio</option>
+        <option value="301">Reiteración de O.M.D.</option>
+        <option value="302">P.A.M. (Permiso Atención Médica)</option>
+        <option value="303">O.M. y P.A.M. (Mismo día)</option>
+        <option value="304">P.A.M. en servicio</option>
+        <option value="305">Ausencia por causa médica - total</option>
+        <option value="306">Ausencia por causa médica - parcial</option>
+        <option value="307">Familiar enfermo</option>
+        <option value="308">Control - citado por servicio médico</option>
+        <option value="309">Alta médica - Reanuda tareas</option>
+        <option value="310">Baja C.R.P.C.</option>
+        <option value="311">P.A.M. por baja C.R.P.C.</option>
+        <option value="400">Revisión médica anual</option>
+        <option value="401">Descanso por revisión médica</option>
+        <option value="402">Consulta médica en retiro</option>
+        <option value="403">Consulta psicológica en retiro</option>
+        <option value="404">Consulta médica y psicológica en retiro</option>
+        <option value="405">Resolución N° 558 (Arrollamiento)</option>
+        <option value="406">Consulta con médico especialista</option>
+        <option value="407">Estudio médico complementario</option>
+        <option value="408">Polisonografía</option>
+        <option value="409">Revisión por cambio de categoría</option>
+        <option value="410">Tarea liviana</option>
+        <option value="411">Revisión por cambio de categoría</option>
+        <option value="412">Fuera de la operatoria ferroviaria</option>
+        <option value="413">Suspensión precaucional</option>
+        <option value="500">Suspensión precaucional</option>
+        <option value="501">Reserva de puesto</option>
+        <option value="502">Citado por RR.HH</option>
+        <option value="503">Pluriaccidentados</option>
+        <option value="504">Licencia por maternidad sin goce</option>
+        <option value="505">Declaración policial (DIV MITRE)</option>
+        <option value="519">Artículo 19 feriados acumulados (L.F)</option>
+        <option value="530">Artículo 30 feriados acumulados (ASFA)</option>
+        <option value="531">Feriados acumulados (U.F)</option>
+        <option value="600">Curso escuela fraternidad</option>
+        <option value="601">Cursos varios (solicitados por gremio o empresa)</option>
+        <option value="700">Cambio de base</option>
+        <option value="701">Baja por acuerdo voluntario</option>
+        <option value="702">Baja por desvinculamiento</option>
+        <option value="703">Suspensión de contrato temporal</option>
+        <option value="800">Baja por fallecimiento</option>
+                 </Form.Control>
+                        </FloatingLabel>
+
                             </Col>
                         </Row>
                         <Row className="align-items-center">
@@ -380,12 +461,10 @@ export const Sabana = () => {
                     <thead>
                         <tr>
                             
-                            <th>Día</th>
+                            <th>Desde</th>
                             <th>Hasta</th>
-                            <th>Servicio</th>
-                            <th>Tomó</th>
-                            <th>Dejó</th>
                             <th>H.de Disp.</th>
+                            <th>Novedad</th>
                             <th>Total Hs.Trab</th>
                             <th>Observaciones</th>
                             <th>Acciones</th>
@@ -397,10 +476,8 @@ export const Sabana = () => {
                                 
                                 <td>{item.diaNovedadInicio}</td>
                                 <td>{item.diaNovedadFinal}</td>
-                                <td>{item.servicio}</td>
-                                <td>{item.tomo}</td>
-                                <td>{item.dejo}</td>
                                 <td>{item.hdisp}</td>
+                                <td>{item.codigo}</td>
                                 <td>{item.totalHorasTrab}</td>
                                 <td>{item.observaciones}</td>
                                 <td>
