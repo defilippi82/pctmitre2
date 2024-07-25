@@ -8,6 +8,8 @@ import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase';
 import queryString from 'query-string';
 
+
+
 export const CorteSecc = () => {
   const [trabajos, setTrabajos] = useState([]);
   const [nuevoTrabajo, setNuevoTrabajo] = useState({
@@ -54,7 +56,7 @@ export const CorteSecc = () => {
       } catch (error) {
         console.error("Error cargando trabajos: ", error);
       }
-    };
+    }});
 
     const fetchHitos = () => {
       const query = `
@@ -64,24 +66,25 @@ export const CorteSecc = () => {
         );
         out body;
       `;
-      const queryParams = queryString.stringify({ data: query });
-
-      console.log(`Fetching hitos with query: https://overpass-api.de/api/interpreter?${queryParams}`);
-
-      fetch(`https://overpass-api.de/api/interpreter?${queryParams}`)
+      const encodedQuery = encodeURIComponent(query);
+      
+      console.log("Fetching hitos with query:", `https://overpass-api.de/api/interpreter?data=${encodedQuery}`);
+    
+      fetch(`https://overpass-api.de/api/interpreter?data=${encodedQuery}`)
         .then(response => response.json())
         .then(data => {
-          console.log("Datos de hitos recibidos: ", data);
+          console.log("Datos de hitos recibidos:", data);
           if (data.elements) {
             setHitos(data.elements);
           } else {
             console.error("No elements found in data");
           }
         })
-        .catch(error => console.error("Error fetching hitos: ", error));
-    };
+        .catch(error => console.error("Error fetching hitos:", error));
+  };
 
-    fetchTrabajos();
+    
+  useEffect(() => {
     fetchHitos();
   }, []);
 
@@ -145,7 +148,7 @@ export const CorteSecc = () => {
   const encontrarHito = (km, palo) => {
     return hitos.find(hito => hito.tags['railway:position'] === `${km}/${palo} pkm`);
   };
-
+  
   return (
     <div className="container mt-4">
       <h2>Corte de Secciones</h2>
@@ -156,7 +159,7 @@ export const CorteSecc = () => {
           <Col>
         <Form.Group>
           <Form.Label>Sector</Form.Label>
-          <Form.Select name="sector" value={nuevoTrabajo.sector} onChange={handleInputChange} required>
+          <Form.Select name="sector" value={nuevoTrabajo.sector} onChange={handleInputChange} >
             <option value="">Seleccione un sector</option>
             <option value="AP">AP</option>
             <option value="BP">BP</option>
@@ -211,22 +214,16 @@ export const CorteSecc = () => {
 
       <MapContainer center={[-34.6037, -58.3816]} zoom={13} style={{ height: '400px', width: '100%', marginTop: '20px' }}>
   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-  {trabajos.map(trabajo => (
-    <React.Fragment key={trabajo.id}>
-      <Polyline 
-        positions={[[trabajo.latInicio, trabajo.lngInicio], [trabajo.latFinal, trabajo.lngFinal]]}
-        color="red"
-      >
-        <Tooltip>{`${trabajo.sector} - ${trabajo.responsable}`}</Tooltip>
-      </Polyline>
-      <Marker position={[trabajo.latInicio, trabajo.lngInicio]}>
-        <Tooltip>{`Inicio: ${trabajo.kmInicio}/${trabajo.paloInicio}`}</Tooltip>
-      </Marker>
-      <Marker position={[trabajo.latFinal, trabajo.lngFinal]}>
-        <Tooltip>{`Final: ${trabajo.kmFinal}/${trabajo.paloFinal}`}</Tooltip>
-      </Marker>
-    </React.Fragment>
+  console.log("Rendering hitos:", hitos)
+  {hitos.map(hito => (
+    <Marker 
+      key={hito.id} 
+      position={[hito.lat, hito.lon]}
+    >
+      <Tooltip>{hito.tags['railway:position']}</Tooltip>
+    </Marker>
   ))}
+   
   {hitos.map(hito => (
     <Marker 
       key={hito.id} 
