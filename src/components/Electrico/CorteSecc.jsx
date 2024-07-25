@@ -21,6 +21,31 @@ export const CorteSecc = () => {
   const [hitos, setHitos] = useState([]);
 
   useEffect(() => {
+    const fetchHitos = () => {
+      const query = `
+        [out:json];
+        (
+          node["railway"="milestone"]["railway:position"~"^\\d+/\\d+ pkm$"](-34.7,-59,-34.5,-58.5);
+        );
+        out body;
+      `;
+      const encodedQuery = encodeURIComponent(query);
+      
+      fetch(`https://overpass-api.de/api/interpreter?data=${encodedQuery}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.elements) {
+            setHitos(data.elements);
+          }
+        })
+        .catch(error => console.error("Error fetching hitos: ", error));
+    };
+  
+    fetchHitos();
+  }, []);
+  
+
+  useEffect(() => {
     const fetchTrabajos = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'trabajos'));
@@ -118,14 +143,7 @@ export const CorteSecc = () => {
   };
 
   const encontrarHito = (km, palo) => {
-    console.log("Buscando hito para km/palo: ", km, palo);
-    const hito = hitos.find(hito => hito.tags['railway:position'] === `${km}/${palo} pkm`);
-    if (!hito) {
-      console.error(`Hito no encontrado para km/palo: ${km}/${palo}`);
-    } else {
-      console.log("Hito encontrado: ", hito);
-    }
-    return hito;
+    return hitos.find(hito => hito.tags['railway:position'] === `${km}/${palo} pkm`);
   };
 
   return (
@@ -192,25 +210,32 @@ export const CorteSecc = () => {
       
 
       <MapContainer center={[-34.6037, -58.3816]} zoom={13} style={{ height: '400px', width: '100%', marginTop: '20px' }}>
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {trabajos.map(trabajo => (
-          <Polyline 
-            key={trabajo.id} 
-            positions={[[trabajo.latInicio, trabajo.lngInicio], [trabajo.latFinal, trabajo.lngFinal]]}
-            color="red"
-          >
-            <Tooltip>{`${trabajo.sector} - ${trabajo.responsable}`}</Tooltip>
-          </Polyline>
-        ))}
-        {hitos.map(hito => (
-          <Marker 
-            key={hito.id} 
-            position={[hito.lat, hito.lon]}
-          >
-            <Tooltip>{hito.tags['railway:position']}</Tooltip>
-          </Marker>
-        ))}
-      </MapContainer>
+  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+  {trabajos.map(trabajo => (
+    <React.Fragment key={trabajo.id}>
+      <Polyline 
+        positions={[[trabajo.latInicio, trabajo.lngInicio], [trabajo.latFinal, trabajo.lngFinal]]}
+        color="red"
+      >
+        <Tooltip>{`${trabajo.sector} - ${trabajo.responsable}`}</Tooltip>
+      </Polyline>
+      <Marker position={[trabajo.latInicio, trabajo.lngInicio]}>
+        <Tooltip>{`Inicio: ${trabajo.kmInicio}/${trabajo.paloInicio}`}</Tooltip>
+      </Marker>
+      <Marker position={[trabajo.latFinal, trabajo.lngFinal]}>
+        <Tooltip>{`Final: ${trabajo.kmFinal}/${trabajo.paloFinal}`}</Tooltip>
+      </Marker>
+    </React.Fragment>
+  ))}
+  {hitos.map(hito => (
+    <Marker 
+      key={hito.id} 
+      position={[hito.lat, hito.lon]}
+    >
+      <Tooltip>{hito.tags['railway:position']}</Tooltip>
+    </Marker>
+  ))}
+</MapContainer>
 
       <Table striped bordered hover className="mt-4">
         <thead>

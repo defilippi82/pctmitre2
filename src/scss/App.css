@@ -30,6 +30,19 @@ body{
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
+.swal-image-clickable {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.swal-image-clickable:hover {
+  transform: scale(1.05);
+}
+@media (max-width: 768px) {
+  .swal2-popup {
+    width: 95% !important;
+  }
+}
 
 @keyframes logo-spin {
   from {

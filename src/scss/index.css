@@ -26,7 +26,19 @@
     background-repeat: no-repeat;
    
 }
-    
+.swal-image-clickable {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.swal-image-clickable:hover {
+  transform: scale(1.05);
+}
+@media (max-width: 768px) {
+  .swal2-popup {
+    width: 95% !important;
+  }
+}    
 
 /* Estilo para la torre de control de trenes */
 .torre-control {

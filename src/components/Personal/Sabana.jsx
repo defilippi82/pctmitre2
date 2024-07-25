@@ -75,7 +75,8 @@ export const Sabana = () => {
                 const userDocRef = doc(db, currentView, selectedUser.id);
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists()) {
-                    setNovedades(userDoc.data().novedades || []);
+                    const sortedNovedades = (userDoc.data().novedades || []).sort(sortNovedadesByDate);
+                    setNovedades(sortedNovedades);
                 } else {
                     setNovedades([]);
                 }
@@ -100,6 +101,12 @@ export const Sabana = () => {
         if (newPage >= 1 && newPage <= totalPages) {
             setCurrentPage(newPage);
         }
+    };
+    const [sortDirection, setSortDirection] = useState('asc');
+
+    const sortNovedadesByDate = (a, b) => {
+        const diff = new Date(a.diaNovedadInicio) - new Date(b.diaNovedadInicio);
+        return sortDirection === 'asc' ? diff : -diff;
     };
 
     const handleSubmit = async (e) => {
@@ -231,9 +238,9 @@ export const Sabana = () => {
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     const updatedNovedades = [...novedades];
-                    updatedNovedades[index] = { ...result.value };
-                    setNovedades(updatedNovedades);
-                    
+                    updatedNovedades[index] = updatedNovedad;
+                    const sortedNovedades = updatedNovedades.sort(sortNovedadesByDate);
+                    setNovedades(sortedNovedades);
                     // Actualizar en Firebase
                     try {
                         const userDocRef = doc(db, currentView, selectedUser.id);
@@ -252,7 +259,8 @@ export const Sabana = () => {
         const handleDelete = async (index) => {
             try {
                 const updatedNovedades = novedades.filter((_, i) => i !== index);
-                setNovedades(updatedNovedades);
+    const sortedNovedades = updatedNovedades.sort(sortNovedadesByDate);
+    setNovedades(sortedNovedades);
         
                 // Actualizar en Firebase
                 const userDocRef = doc(db, currentView, selectedUser.id);
@@ -309,6 +317,33 @@ export const Sabana = () => {
         }
         return items;
     };
+    const handleShowImage = () => {
+        Swal.fire({
+            imageUrl: '/codigos.png',
+          imageWidth: '100%', // Usa el 100% del ancho disponible
+          imageHeight: 'auto',
+          imageAlt: 'Imagen de códigos',
+          confirmButtonText: 'Cerrar',
+          showCloseButton: true,
+          width: '80%', // Usa el 80% del ancho de la pantalla
+          customClass: {
+            image: 'swal-image-clickable'
+          },
+          didOpen: (popup) => {
+            const image = popup.querySelector('.swal-image-clickable');
+            image.onclick = () => {
+              Swal.fire({
+                imageUrl: '/codigos.png',
+                imageAlt: 'Imagen de códigos en tamaño completo',
+                imageWidth: '100%',
+                width: '90%', // Usa el 90% del ancho de la pantalla para la imagen a tamaño completo
+                showCloseButton: true,
+                showConfirmButton: false
+              });
+            };
+          }
+        });
+      };
 
     return (
         <Container>
@@ -414,81 +449,81 @@ export const Sabana = () => {
                             <FloatingLabel controlId="floatingCodigos" label="Códigos">
           <Form.Control as="select" name="codigo" value={formData.codigo} onChange={handleInputChange}>
         <option value="">Seleccione</option>
-        <option value="1">Franco</option>
-        <option value="2">Franco Adeudado</option>
-        <option value="3">Descanso por diagrama</option>
-        <option value="4">Descanso por cambio de rotación u horario</option>
-        <option value="144">Horas de inasistencia</option>
-        <option value="148">Horas de impuntualidad</option>
-        <option value="240">Días por fallecimiento</option>
-        <option value="246">Donación de sangre</option>
-        <option value="248">Licencia por examen</option>
-        <option value="250">Inasistencia justificada</option>
-        <option value="252">Inasistencia injustificada</option>
-        <option value="254">Días de suspensión</option>
-        <option value="256">Licencia sin goce de sueldo</option>
-        <option value="258">Días por nacimiento</option>
-        <option value="259">Días por enfermedad</option>
-        <option value="261">Enfermedad prolongada</option>
-        <option value="262">Días por accidente de trabajo</option>
-        <option value="263">Baja por arrollamiento</option>
-        <option value="264">Licencia gremial</option>
-        <option value="266">Licencia por mudanza</option>
-        <option value="268">Licencia por matrimonio</option>
-        <option value="276">Licencia especial paga</option>
-        <option value="277">Licencia deportiva</option>
-        <option value="278">Licencia por maternidad</option>
-        <option value="288">Declaración judicial</option>
-        <option value="291">Vacaciones adeudadas - completas</option>
-        <option value="292">Vacaciones según rotación - completas</option>
-        <option value="293">Vacaciones adelantadas - completas</option>
-        <option value="294">Vacaciones por cambio - completas</option>
-        <option value="295">Vacaciones adeudadas - fracción</option>
-        <option value="296">Vacaciones según rotación - fracción</option>
-        <option value="297">Vacaciones adelantadas - fracción</option>
-        <option value="298">Vacaciones por cambio - fracción</option>
-        <option value="300">Orden médica a domicilio</option>
-        <option value="301">Reiteración de O.M.D.</option>
-        <option value="302">P.A.M. (Permiso Atención Médica)</option>
-        <option value="303">O.M. y P.A.M. (Mismo día)</option>
-        <option value="304">P.A.M. en servicio</option>
-        <option value="305">Ausencia por causa médica - total</option>
-        <option value="306">Ausencia por causa médica - parcial</option>
-        <option value="307">Familiar enfermo</option>
-        <option value="308">Control - citado por servicio médico</option>
-        <option value="309">Alta médica - Reanuda tareas</option>
-        <option value="310">Baja C.R.P.C.</option>
-        <option value="311">P.A.M. por baja C.R.P.C.</option>
-        <option value="400">Revisión médica anual</option>
-        <option value="401">Descanso por revisión médica</option>
-        <option value="402">Consulta médica en retiro</option>
-        <option value="403">Consulta psicológica en retiro</option>
-        <option value="404">Consulta médica y psicológica en retiro</option>
-        <option value="405">Resolución N° 558 (Arrollamiento)</option>
-        <option value="406">Consulta con médico especialista</option>
-        <option value="407">Estudio médico complementario</option>
-        <option value="408">Polisonografía</option>
-        <option value="409">Revisión por cambio de categoría</option>
-        <option value="410">Tarea liviana</option>
-        <option value="411">Revisión por cambio de categoría</option>
-        <option value="412">Fuera de la operatoria ferroviaria</option>
-        <option value="413">Suspensión precaucional</option>
-        <option value="500">Suspensión precaucional</option>
-        <option value="501">Reserva de puesto</option>
-        <option value="502">Citado por RR.HH</option>
-        <option value="503">Pluriaccidentados</option>
-        <option value="504">Licencia por maternidad sin goce</option>
-        <option value="505">Declaración policial (DIV MITRE)</option>
-        <option value="519">Artículo 19 feriados acumulados (L.F)</option>
-        <option value="530">Artículo 30 feriados acumulados (ASFA)</option>
-        <option value="531">Feriados acumulados (U.F)</option>
-        <option value="600">Curso escuela fraternidad</option>
-        <option value="601">Cursos varios (solicitados por gremio o empresa)</option>
-        <option value="700">Cambio de base</option>
-        <option value="701">Baja por acuerdo voluntario</option>
-        <option value="702">Baja por desvinculamiento</option>
-        <option value="703">Suspensión de contrato temporal</option>
-        <option value="800">Baja por fallecimiento</option>
+        <option value="1">1-Franco</option>
+        <option value="2">2-Franco Adeudado</option>
+        <option value="3">3-Descanso por diagrama</option>
+        <option value="4">4-Descanso por cambio de rotación u horario</option>
+        <option value="144">144-Horas de inasistencia</option>
+        <option value="148">148-Horas de impuntualidad</option>
+        <option value="240">240-Días por fallecimiento</option>
+        <option value="246">246-Donación de sangre</option>
+        <option value="248">248-Licencia por examen</option>
+        <option value="250">250-Inasistencia justificada</option>
+        <option value="252">252-Inasistencia injustificada</option>
+        <option value="254">254-Días de suspensión</option>
+        <option value="256">256-Licencia sin goce de sueldo</option>
+        <option value="258">258-Días por nacimiento</option>
+        <option value="259">259-Días por enfermedad</option>
+        <option value="261">261-Enfermedad prolongada</option>
+        <option value="262">262-Días por accidente de trabajo</option>
+        <option value="263">263-Baja por arrollamiento</option>
+        <option value="264">264-Licencia gremial</option>
+        <option value="266">266-Licencia por mudanza</option>
+        <option value="268">268-Licencia por matrimonio</option>
+        <option value="276">276-Licencia especial paga</option>
+        <option value="277">277-Licencia deportiva</option>
+        <option value="278">278-Licencia por maternidad</option>
+        <option value="288">288-Declaración judicial</option>
+        <option value="291">291-Vacaciones adeudadas - completas</option>
+        <option value="292">292-Vacaciones según rotación - completas</option>
+        <option value="293">293-Vacaciones adelantadas - completas</option>
+        <option value="294">294-Vacaciones por cambio - completas</option>
+        <option value="295">295-Vacaciones adeudadas - fracción</option>
+        <option value="296">296-Vacaciones según rotación - fracción</option>
+        <option value="297">297-Vacaciones adelantadas - fracción</option>
+        <option value="298">298-Vacaciones por cambio - fracción</option>
+        <option value="300">300-Orden médica a domicilio</option>
+        <option value="301">301-Reiteración de O.M.D.</option>
+        <option value="302">302-P.A.M. (Permiso Atención Médica)</option>
+        <option value="303">303-O.M. y P.A.M. (Mismo día)</option>
+        <option value="304">304-P.A.M. en servicio</option>
+        <option value="305">305-Ausencia por causa médica - total</option>
+        <option value="306">306-Ausencia por causa médica - parcial</option>
+        <option value="307">307-Familiar enfermo</option>
+        <option value="308">308-Control - citado por servicio médico</option>
+        <option value="309">309-Alta médica - Reanuda tareas</option>
+        <option value="310">310-Baja C.R.P.C.</option>
+        <option value="311">311-P.A.M. por baja C.R.P.C.</option>
+        <option value="400">400-Revisión médica anual</option>
+        <option value="401">401-Descanso por revisión médica</option>
+        <option value="402">402-Consulta médica en retiro</option>
+        <option value="403">403-Consulta psicológica en retiro</option>
+        <option value="404">404-Consulta médica y psicológica en retiro</option>
+        <option value="405">405-Resolución N° 558 (Arrollamiento)</option>
+        <option value="406">406-Consulta con médico especialista</option>
+        <option value="407">407-Estudio médico complementario</option>
+        <option value="408">408-Polisonografía</option>
+        <option value="409">409-Revisión por cambio de categoría</option>
+        <option value="410">410-Tarea liviana</option>
+        <option value="411">411-Revisión por cambio de categoría</option>
+        <option value="412">412-Fuera de la operatoria ferroviaria</option>
+        <option value="413">413-Suspensión precaucional</option>
+        <option value="500">500-Suspensión precaucional</option>
+        <option value="501">501-Reserva de puesto</option>
+        <option value="502">502-Citado por RR.HH</option>
+        <option value="503">503-Pluriaccidentados</option>
+        <option value="504">504-Licencia por maternidad sin goce</option>
+        <option value="505">505-Declaración policial (DIV MITRE)</option>
+        <option value="519">519-Artículo 19 feriados acumulados (L.F)</option>
+        <option value="530">530-Artículo 30 feriados acumulados (ASFA)</option>
+        <option value="531">531-Feriados acumulados (U.F)</option>
+        <option value="600">600-Curso escuela fraternidad</option>
+        <option value="601">601-Cursos varios (solicitados por gremio o empresa)</option>
+        <option value="700">700-Cambio de base</option>
+        <option value="701">701-Baja por acuerdo voluntario</option>
+        <option value="702">702-Baja por desvinculamiento</option>
+        <option value="703">703-Suspensión de contrato temporal</option>
+        <option value="800">800-Baja por fallecimiento</option>
                  </Form.Control>
                         </FloatingLabel>
 
@@ -502,6 +537,9 @@ export const Sabana = () => {
                             </Col>
                             <Col xs="auto">
                                 <Button type="submit" className="mt-3">Agregar Novedad</Button>
+                                </Col>
+                            <Col xs="auto">
+                                <Button variant="secondary" className="mt-3" onClick={handleShowImage}>Ver Códigos</Button>
                             </Col>
                         </Row>
                     </Form>
@@ -511,7 +549,9 @@ export const Sabana = () => {
                     <thead>
                         <tr>
                             
-                            <th>Desde</th>
+                            <th onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}>
+    Desde {sortDirection === 'asc' ? '▲' : '▼'}
+</th>
                             <th>Hasta</th>
                             <th>Disponible</th>
                             <th>H.de Disp.</th>
