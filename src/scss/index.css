@@ -13,6 +13,27 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.custom-card {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.custom-card-header {
+  background-color: #f8f9fa;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 0;
+}
+
+.custom-card-body {
+  padding: 1.25rem;
+}
+
+.custom-card-body li {
+  margin-bottom: 0.5rem;
+}
   body{
     background-image: url('../imagen_torre_futuro.jpeg');
     background-size: cover;

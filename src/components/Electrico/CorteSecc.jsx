@@ -1,264 +1,397 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Polyline, Tooltip, Marker } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import { Form, Table, Button, FloatingLabel, Row, Col, Pagination } from 'react-bootstrap';
-import Container from 'react-bootstrap/Container';
+import React, { useState, useEffect, useRef } from 'react';
+import { db } from '../../firebaseConfig/firebase'; // Asegúrate de configurar Firebase
+import { collection, addDoc, onSnapshot, query, doc, deleteDoc, updateDoc } from "firebase/firestore"; 
+import { Form, Table, Button,Row, Col,FloatingLabel, Card} from 'react-bootstrap';
 import Swal from 'sweetalert2';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig/firebase';
-import queryString from 'query-string';
-
 
 
 export const CorteSecc = () => {
+  const [secciones, setSecciones] = useState([]);
+  const [horaInicio, setHoraInicio] = useState('');
+  const [responsable, setResponsable] = useState('');
   const [trabajos, setTrabajos] = useState([]);
-  const [nuevoTrabajo, setNuevoTrabajo] = useState({
-    sector: '',
-    kmInicio: '',
-    paloInicio: '',
-    kmFinal: '',
-    paloFinal: '',
-    responsable: '',
-  });
-  const [hitos, setHitos] = useState([]);
+  const [editId, setEditId] = useState(null);
+  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const trabajoImg = new Image();
+  trabajoImg.src = '/trabajo.png'; // Cambia esta ruta a la imagen que deseas usar para representar los trabajos
+  const trabajoImg2 = new Image();
+  trabajoImg2.src = '/trabajo2.png';
 
   useEffect(() => {
-    const fetchHitos = () => {
-      const query = `
-        [out:json];
-        (
-          node["railway"="milestone"]["railway:position"~"^\\d+/\\d+ pkm$"](-34.7,-59,-34.5,-58.5);
-        );
-        out body;
-      `;
-      const encodedQuery = encodeURIComponent(query);
+    const q = query(collection(db, "trabajos"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const trabajosData = [];
+      querySnapshot.forEach((doc) => {
+        trabajosData.push({ id: doc.id, ...doc.data() });
+      });
+      setTrabajos(trabajosData);
+    });
+    return () => unsubscribe();
+  }, []);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    const ctx = canvas.getContext('2d');
+    const image = new Image();
+    image.src = '/diagramaN.png';
+
+    const resizeCanvas = () => {
+      const { width } = container.getBoundingClientRect();
+      const height = width * (600 / 900); // Mantiene la proporción original
       
-      fetch(`https://overpass-api.de/api/interpreter?data=${encodedQuery}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.elements) {
-            setHitos(data.elements);
-          }
-        })
-        .catch(error => console.error("Error fetching hitos: ", error));
+      canvas.width = width;
+      canvas.height = height;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      
+      drawCanvas();
     };
-  
-    fetchHitos();
-  }, []);
-  
 
-  useEffect(() => {
-    const fetchTrabajos = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'trabajos'));
-        const trabajosList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setTrabajos(trabajosList);
-      } catch (error) {
-        console.error("Error cargando trabajos: ", error);
-      }
-    }});
+    const drawCanvas = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-    const fetchHitos = () => {
-      const query = `
-        [out:json];
-        (
-          node["railway"="milestone"]["railway:position"~"^\\d+/\\d+ pkm$"](-34.7,-59,-34.5,-58.5);
-        );
-        out body;
-      `;
-      const encodedQuery = encodeURIComponent(query);
-      
-      console.log("Fetching hitos with query:", `https://overpass-api.de/api/interpreter?data=${encodedQuery}`);
-    
-      fetch(`https://overpass-api.de/api/interpreter?data=${encodedQuery}`)
-        .then(response => response.json())
-        .then(data => {
-          console.log("Datos de hitos recibidos:", data);
-          if (data.elements) {
-            setHitos(data.elements);
-          } else {
-            console.error("No elements found in data");
+      // Renderizar los trabajos sobre la imagen
+      trabajos.forEach(trabajo => {
+          // Ajusta las coordenadas proporcionalmente
+          const secciones = trabajo.secciones;
+          secciones.forEach(seccion => {
+          const scaleX = canvas.width / 900;
+          const scaleY = canvas.height / 600;
+          switch (seccion) {
+            case "8":
+              ctx.drawImage(trabajoImg, 0 * scaleX, 120 * scaleY ,25 * scaleX, 25 * scaleY);
+              break;
+            case "7":
+              ctx.drawImage(trabajoImg, 0 * scaleX, 130 * scaleY ,25 * scaleX, 25 * scaleY);
+              break;
+            case "6":
+              ctx.drawImage(trabajoImg, 0 * scaleX, 140 * scaleY ,25 * scaleX, 25 * scaleY);
+              break;
+            case "5":
+              ctx.drawImage(trabajoImg, 0 * scaleX, 150 * scaleY, 25 * scaleX, 25 * scaleY);
+              break;
+            case "4":
+              ctx.drawImage(trabajoImg, 0 * scaleX, 170 * scaleY, 25 * scaleX, 25 * scaleY);
+              break;
+            case "3":
+              ctx.drawImage(trabajoImg, 0 * scaleX, 180 * scaleY, 25 * scaleX, 25 * scaleY);
+              break;
+            case "2":
+              ctx.drawImage(trabajoImg, 0 * scaleX, 190 * scaleY, 25* scaleX, 25 * scaleY);
+              break;
+            case "1":
+              ctx.drawImage(trabajoImg, 0 * scaleX, 200 * scaleY, 25* scaleX, 25 * scaleY);
+              break;
+            case "10/14":
+              ctx.drawImage(trabajoImg, 190 * scaleX, 190 * scaleY, 35 * scaleX, 35 * scaleY);
+              break;
+            case "11/15":
+              ctx.drawImage(trabajoImg, 190 * scaleX, 180 * scaleY, 35 * scaleX, 35 * scaleY);
+              break;
+            case "13/17":
+              ctx.drawImage(trabajoImg, 190 * scaleX, 160 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "12/16":
+              ctx.drawImage(trabajoImg, 180 * scaleX, 170 * scaleY, 35 * scaleX, 35 * scaleY);
+              break;
+            case "18/19":
+              ctx.drawImage(trabajoImg, 280 * scaleX, 190 * scaleY, 35 * scaleX, 35 * scaleY);
+              break;
+            case "40/41":
+              ctx.drawImage(trabajoImg, 265 * scaleX, 160 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(trabajoImg, 50 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "20/21":
+              ctx.drawImage(trabajoImg, 550 * scaleX, 190 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "42/43":
+              ctx.drawImage(trabajoImg, 200 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "22/23":
+              ctx.drawImage(trabajoImg, 700 * scaleX, 190 * scaleY, 35 * scaleX, 35 * scaleY);
+              ctx.drawImage(trabajoImg, 200 * scaleX, 280 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "44/45":
+              ctx.drawImage(trabajoImg, 275 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "24/25":
+              ctx.drawImage(trabajoImg, 375 * scaleX, 280 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "46/47":
+              ctx.drawImage(trabajoImg, 450 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "26/27":
+              ctx.drawImage(trabajoImg, 500 * scaleX, 280 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "48/49":
+              ctx.drawImage(trabajoImg, 650 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "28/29":
+              ctx.drawImage(trabajoImg, 625 * scaleX, 290 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "60/61":
+              ctx.drawImage(trabajoImg, 775 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "50/51":
+              ctx.drawImage(trabajoImg, 350 * scaleX, 480 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "52/53":
+              ctx.drawImage(trabajoImg, 550 * scaleX, 480 * scaleY, 35* scaleX, 35 * scaleY);
+              break;
+            case "Dep. Victoria":
+              ctx.drawImage(trabajoImg, 450 * scaleX, 250 * scaleY, 50* scaleX, 50 * scaleY);
+              break;
+            case "Dep. Suárez":
+              ctx.drawImage(trabajoImg, 850 * scaleX, 395 * scaleY, 50* scaleX, 50 * scaleY);
+              break;
+              case "Vía Puerto":
+              ctx.drawImage(trabajoImg, 80 * scaleX, 200 * scaleY, 50* scaleX, 50 * scaleY);
+              break;
+              case "Todas las Plataformas":
+                ctx.drawImage(trabajoImg2, 0 * scaleX, 130 * scaleY, 75* scaleX, 75 * scaleY);
+                break;
+            default:
+              break;
           }
-        })
-        .catch(error => console.error("Error fetching hitos:", error));
-  };
+        });
+      });
+    };
+    image.onload = () => {
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+    };
 
-    
-  useEffect(() => {
-    fetchHitos();
-  }, []);
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, [trabajos]);
 
-  const handleInputChange = (e) => {
-    setNuevoTrabajo({ ...nuevoTrabajo, [e.target.name]: e.target.value });
+  const handleCheckboxChange = (e) => {
+    const { value, checked } = e.target;
+    setSecciones((prevSecciones) =>
+      checked ? [...prevSecciones, value] : prevSecciones.filter((sec) => sec !== value)
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!nuevoTrabajo.sector || !nuevoTrabajo.kmInicio || !nuevoTrabajo.paloInicio || 
-        !nuevoTrabajo.kmFinal || !nuevoTrabajo.paloFinal || !nuevoTrabajo.responsable) {
-      Swal.fire('Error', 'Todos los campos son obligatorios', 'error');
+    if (secciones.length === 0 || !horaInicio || !responsable) {
+      Swal.fire('Error', 'Por favor complete todos los campos', 'error');
       return;
     }
 
-    console.log("Trabajos actuales: ", trabajos);
-    console.log("Nuevo trabajo: ", nuevoTrabajo);
+    const conflictingJobs = trabajos.filter(trabajo =>
+      trabajo.secciones.some(sec => secciones.includes(sec))
+    );
+
+    if (conflictingJobs.length > 0) {
+      Swal.fire('Alerta', 'Hay trabajos en las mismas secciones', 'warning');
+    }
 
     try {
-      const hitoInicio = encontrarHito(nuevoTrabajo.kmInicio, nuevoTrabajo.paloInicio);
-      const hitoFinal = encontrarHito(nuevoTrabajo.kmFinal, nuevoTrabajo.paloFinal);
-
-      if (!hitoInicio || !hitoFinal) {
-        Swal.fire('Error', 'No se encontraron los hitos especificados', 'error');
-        return;
+      if (editId) {
+        await updateDoc(doc(db, "trabajos", editId), {
+          secciones,
+          horaInicio,
+          responsable,
+        });
+        setEditId(null);
+      } else {
+        await addDoc(collection(db, "trabajos"), {
+          secciones,
+          horaInicio,
+          responsable,
+        });
       }
-
-      const nuevoTrabajoData = {
-        ...nuevoTrabajo,
-        horaInicio: new Date().toISOString(),
-        numeroTrabajo: trabajos.length + 1,
-        secciones: calcularSecciones(nuevoTrabajo),
-        viaExpedita: null,
-        latInicio: hitoInicio.lat,
-        lngInicio: hitoInicio.lon,
-        latFinal: hitoFinal.lat,
-        lngFinal: hitoFinal.lon,
-      };
-
-      await addDoc(collection(db, 'trabajos'), nuevoTrabajoData);
-      setTrabajos([...trabajos, nuevoTrabajoData]);
-      setNuevoTrabajo({
-        sector: '',
-        kmInicio: '',
-        paloInicio: '',
-        kmFinal: '',
-        paloFinal: '',
-        responsable: '',
-      });
-      Swal.fire('Éxito', 'Trabajo añadido correctamente', 'success');
+      setSecciones([]);
+      setHoraInicio('');
+      setResponsable('');
+      Swal.fire('Éxito', 'Trabajo guardado con éxito', 'success');
     } catch (error) {
-      console.error("Error agregando trabajo: ", error);
-      Swal.fire('Error', 'No se pudo añadir el trabajo', 'error');
+      Swal.fire('Error', 'No se pudo guardar el trabajo', 'error');
     }
   };
 
-  const calcularSecciones = (trabajo) => {
-    return `${trabajo.kmInicio}/${trabajo.paloInicio} - ${trabajo.kmFinal}/${trabajo.paloFinal}`;
+  const handleEdit = (trabajo) => {
+    setSecciones(trabajo.secciones);
+    setHoraInicio(trabajo.horaInicio);
+    setResponsable(trabajo.responsable);
+    setEditId(trabajo.id);
   };
 
-  const encontrarHito = (km, palo) => {
-    return hitos.find(hito => hito.tags['railway:position'] === `${km}/${palo} pkm`);
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: "No podrás revertir esto",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, bórralo',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+      await deleteDoc(doc(db, "trabajos", id));
+      Swal.fire('Borrado', 'La vía se encuentra expedita', 'success');
+    }
   };
-  
+  const getConflictingSections = () => {
+    const sectionCount = {};
+    trabajos.forEach(trabajo => {
+      trabajo.secciones.forEach(seccion => {
+        sectionCount[seccion] = (sectionCount[seccion] || 0) + 1;
+      });
+    });
+    return Object.keys(sectionCount).filter(seccion => sectionCount[seccion] >= 2);
+  };
+
+  const conflictingSections = getConflictingSections();
+
+
   return (
-    <div className="container mt-4">
-      <h2>Corte de Secciones</h2>
-     
-      
+    <div>
+      <h1>Corte de Secciones</h1>
       <Form onSubmit={handleSubmit}>
-        <Row>
-          <Col>
-        <Form.Group>
-          <Form.Label>Sector</Form.Label>
-          <Form.Select name="sector" value={nuevoTrabajo.sector} onChange={handleInputChange} >
-            <option value="">Seleccione un sector</option>
-            <option value="AP">AP</option>
-            <option value="BP">BP</option>
-            <option value="CP">CP</option>
-          </Form.Select>
-        </Form.Group>
-        </Col>
-        <Col>
-        <Form.Group>
-          <Form.Label>KM Inicio</Form.Label>
-          <Form.Control type="number" name="kmInicio" value={nuevoTrabajo.kmInicio} onChange={handleInputChange} required />
-        </Form.Group>
-        </Col>
-        <Col>
-        <Form.Group>
-          <Form.Label>Palo Inicio</Form.Label>
-          <Form.Control type="number" name="paloInicio" value={nuevoTrabajo.paloInicio} onChange={handleInputChange} required />
-        </Form.Group>
-        </Col>
-        </Row>
+      <Row>
           
+        <Form.Group>
+          <legend>Seleccione las secciones</legend>
+          <Row className="d-flex justify-content-start">
+          <Col>
+  <Card className=" mb-3">
+    <Card.Header as="h3">Retiro</Card.Header>
+    <Card.Body>
+      <Form.Group>
+        {[1, 2, 3, 4, 5, 6, 7, 8, "Todas las Plataformas", "Vía Puerto"].map(sec => (
+          <Form.Check
+            key={sec}
+            type="checkbox"
+            id={`checkbox-${sec}`}
+            label={sec}
+            value={sec}
+            onChange={handleCheckboxChange}
+            checked={secciones.includes(`${sec}`)}
+            className="mb-2"
+          />
+        ))}
+      </Form.Group>
+    </Card.Body>
+  </Card>
+</Col>
+<Col>
+  <Card className="mb-3">
+    <Card.Header as="h3">BP-CP</Card.Header>
+    <Card.Body>
+      <Form.Group>
+        {["12/16", "13/17", "40/41", "42/43", "44/45", "46/47", "48/49", "60/61", "50/51", "52/53", "Dep. Suárez"].map(sec => (
+          <Form.Check
+            key={sec}
+            type="checkbox"
+            id={`checkbox-${sec.replace(/\//g, '')}`}
+            label={sec}
+            value={sec}
+            onChange={handleCheckboxChange}
+            checked={secciones.includes(sec)}
+            className="mb-2"
+          />
+        ))}
+      </Form.Group>
+    </Card.Body>
+  </Card>
+</Col>
+
+<Col>
+  <Card className="mb-3">
+    <Card.Header as="h3">AP</Card.Header>
+    <Card.Body>
+      <Form.Group>
+        {["10/14", "11/15", "18/19", "20/21", "22/23", "24/25", "26/27", "28/29", "Dep. Victoria"].map(sec => (
+          <Form.Check
+            key={sec}
+            type="checkbox"
+            id={`checkbox-${sec.replace(/\//g, '')}`}
+            label={sec}
+            value={sec}
+            onChange={handleCheckboxChange}
+            checked={secciones.includes(sec)}
+            className="mb-2"
+          />
+        ))}
+      </Form.Group>
+    </Card.Body>
+  </Card>
+</Col>
+            
+            </Row>
+        </Form.Group>
         <Row>
-        <Col>
-        <Form.Group>
-          <Form.Label>KM Final</Form.Label>
-          <Form.Control type="number" name="kmFinal" value={nuevoTrabajo.kmFinal} onChange={handleInputChange} required />
-        </Form.Group>
-        </Col>
-        <Col>
-        <Form.Group>
-          <Form.Label>Palo Final</Form.Label>
-          <Form.Control type="number" name="paloFinal" value={nuevoTrabajo.paloFinal} onChange={handleInputChange} required />
-        </Form.Group>
-        </Col>
           <Col>
         <Form.Group>
-          <Form.Label>Responsable</Form.Label>
-          <Form.Control type="text" name="responsable" value={nuevoTrabajo.responsable} onChange={handleInputChange} required />
+          <legend>Ingrese Hora de Inicio</legend>
+          <Form.Group controlId='fromhoraInicio'>
+            <Form.Label htmlFor="horaInicio">Hora de Inicio:</Form.Label>
+            <Form.Control
+              type="time"
+              id="horaInicio"
+              name="horaInicio"
+              value={horaInicio}
+              onChange={(e) => setHoraInicio(e.target.value)}
+              />
+          </Form.Group>
         </Form.Group>
-          </Col>
+              </Col>
+              <Col>
+        <Form.Group>
+          <legend>Ingrese Responsable</legend>
+          <Form.Group controlId= "fromresponsable">
+            <Form.Label htmlFor="responsable">Responsable:</Form.Label>
+            <Form.Control
+              type="text"
+              id="responsable"
+              name="responsable"
+              value={responsable}
+              onChange={(e) => setResponsable(e.target.value)}
+              />
+          </Form.Group>
+        </Form.Group>
+              </Col>
+              </Row> 
+        <Button type="submit" className="btn btn-success mt-3">Responsable</Button>
         </Row>
-        <Row>
-          <Col>
-        <Button variant="primary" type="submit">Agregar Trabajo</Button>
-          </Col>
-        </Row>
-        
-        
       </Form>
-     
-      
 
-      <MapContainer center={[-34.6037, -58.3816]} zoom={13} style={{ height: '400px', width: '100%', marginTop: '20px' }}>
-  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-  console.log("Rendering hitos:", hitos)
-  {hitos.map(hito => (
-    <Marker 
-      key={hito.id} 
-      position={[hito.lat, hito.lon]}
-    >
-      <Tooltip>{hito.tags['railway:position']}</Tooltip>
-    </Marker>
-  ))}
-   
-  {hitos.map(hito => (
-    <Marker 
-      key={hito.id} 
-      position={[hito.lat, hito.lon]}
-    >
-      <Tooltip>{hito.tags['railway:position']}</Tooltip>
-    </Marker>
-  ))}
-</MapContainer>
-
-      <Table striped bordered hover className="mt-4">
+      <Table striped bordered hover responsive className="mt-4">
         <thead>
           <tr>
-            <th>Nº Trabajo</th>
-            <th>Sector</th>
-            <th>Responsable</th>
             <th>Secciones</th>
-            <th>Hora Inicio</th>
-            <th>Via Expedita</th>
+            <th>Hora de Inicio</th>
+            <th>Responsable</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {trabajos.map(trabajo => (
-            <tr key={trabajo.id}>
-              <td>{trabajo.numeroTrabajo}</td>
-              <td>{trabajo.sector}</td>
-              <td>{trabajo.responsable}</td>
-              <td>{trabajo.secciones}</td>
-              <td>{new Date(trabajo.horaInicio).toLocaleString()}</td>
-              <td>{trabajo.viaExpedita ? new Date(trabajo.viaExpedita).toLocaleString() : '-'}</td>
-            </tr>
-          ))}
+        {trabajos.map((trabajo) => {
+            const hasConflict = trabajo.secciones.some(seccion => conflictingSections.includes(seccion));
+            return (
+              <tr key={trabajo.id} style={hasConflict ? { backgroundColor: 'red', color: 'black' } : {}}>
+                <td>{trabajo.secciones.join(", ")}</td>
+                <td>{trabajo.horaInicio}</td>
+                <td>{trabajo.responsable}</td>
+                <td>
+                  <Button variant="warning" onClick={() => handleEdit(trabajo)}><i className="fas fa-edit"></i></Button>
+                  <Button variant="danger" onClick={() => handleDelete(trabajo.id)}><i className="fas fa-trash-alt"></i></Button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
+
+      <div ref={containerRef} style={{ width: '100%', maxWidth: '100vw', margin: '0 auto' }}>
+        <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: 'auto' }} />
+      </div>
     </div>
   );
 };
-
