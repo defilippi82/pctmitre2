@@ -10,6 +10,7 @@ import { UserContext } from '../Services/UserContext';
 import {NovedadesContext} from "../Services/NovedadesContext";
 import { faListCheck } from '@fortawesome/free-solid-svg-icons/faListCheck';
 
+
 export const NavbarComponent = ({ handleLogout }) => {
   const { userData } = useContext(UserContext);
   const { novedades } = useContext(NovedadesContext);
@@ -20,7 +21,9 @@ export const NavbarComponent = ({ handleLogout }) => {
   {[ false, ].map((expand) => (
     <Navbar collapseOnSelect  key={expand} expand={expand} fixed="top" className="bg-body-tertiary xxl-3">
       <Container fluid>
-        <Navbar.Brand href="#"><strong>PCT Mitre ||</strong> {userData && userData.nombre && <> ¡Hola <em fluid>{userData.nombre}!</em> </>}</Navbar.Brand>
+        <Navbar.Brand href="#"><strong>PCT Mitre ||</strong> {userData && userData.nombre && <> ¡Hola <em fluid>{userData.nombre}!</em>   || </>}
+        <Button href='#/emergencia' variant="danger" > Emergencia<i className="fas fa-circle-dot"></i></Button>
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${expand}`} />
         <Navbar.Offcanvas  id={`offcanvasNavbar-expand-${expand}`} aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`} style={{ backgroundColor: '#3b9cc2de' }} placement="end">
           <Offcanvas.Header closeButton>
@@ -51,6 +54,8 @@ export const NavbarComponent = ({ handleLogout }) => {
             {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'emergencia')  && (
               <NavDropdown title="Emergencias" id={`offcanvasNavbarDropdown-expand-${expand}`} >
               
+              <NavDropdown.Item href="#/pendientes">Pendientes</NavDropdown.Item>
+
               <NavDropdown.Item href="#/partes">Partes Regularidad</NavDropdown.Item>
               
               <NavDropdown.Item href="#/barreras">Barreras</NavDropdown.Item>

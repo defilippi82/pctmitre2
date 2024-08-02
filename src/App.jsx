@@ -11,12 +11,12 @@ import {EditarConductores} from "./components/Admin/EditarConductores";
 import {EditarGuardaTren} from "./components/Admin/EditarGuardaTren";
 import {Padron} from "./Services/Padron";
 import {Pool} from "./components/Personal/Pool";
-import {Pool2} from "./components/Personal/Pool2.jsx";
 import {Corrida} from "./components/Personal/Corrida";
 import {Sabana} from "./components/Personal/Sabana.jsx";
 import {Novedades} from "./components/Personal/Novedades.jsx"
 import {RegistrarTarjetas} from "./components/Personal/RegistrarTarjetas.jsx";
-import { Emergencias} from "./components/Emergencia/Emergencias"
+import { Direcciones} from "./components/Emergencia/Direcciones"
+import { Pendientes } from './components/Emergencia/Pendientes.jsx';
 import { NavbarComponent } from './Views/Navbar';
 import {UserProvider} from "./Services/UserContext";
 import {Footer} from './Views/Footer';
@@ -41,7 +41,8 @@ export const App = () => {
           <Route path="/operadores/create" element={<RegistrarOperadores/>} />
           <Route path="/operadores/edit/:id" element={<EditarOperadores/>} />
           <Route path="/administracion" element={<Administracion/>} />
-          <Route path="/emergencias" element={<Emergencias />} />
+          <Route path="/direcciones" element={<Direcciones />} />
+          <Route path="/pendientes" element={<Pendientes/>} />
           <Route path="/partes" element="Aca se ven los partes de Regularidad" />
           <Route path="/art" element="Formulario para ARTs " />
           <Route path="/barreras" element="Aca se ven los pendientes de barreras" />
@@ -50,12 +51,12 @@ export const App = () => {
           <Route path="/guardatren/create" element={<RegistroGuardaTren/>} />
           <Route path="/guardatren/edit/:id" element={<EditarGuardaTren/>} />
           <Route path="/pool" element={<Pool/>} />
-          <Route path="/pool2" element={<Pool2/>} />
           <Route path="/sabana" element={<Sabana/>} />
           <Route path="/tarjetas" element={<RegistrarTarjetas/>} />
           <Route path="/padron" element={<Padron/>} />
           <Route path="/corrida" element={<Corrida/>} />
           <Route path="/listaspersonal" element="aca SE VE COMPONENTE LISTAS DE PERSONAL" />
+          <Route path="/emergencia" element="Aca se busca info cuando hay un ACCIDENTE" />
           <Route path="/privacidad" element={<Privacidad/>} />
 
 

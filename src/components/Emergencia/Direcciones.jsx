@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState } from 'react';
 
-export const Emergencias = () => {
+export const Direcciones = () => {
   const [calle, setCalle] = useState('');
   const [altura, setAltura] = useState('');
   const [datos, setDatos] = useState([]);
