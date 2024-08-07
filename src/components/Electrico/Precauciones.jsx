@@ -6,18 +6,32 @@ import Swal from 'sweetalert2';
 import { UserContext } from '../../Services/UserContext';
 
 export const Precauciones = () => {
-  const { userData } = useContext(UserContext);
+  const [responsable, setResponsable] = useState('');
+  const [userData, setUserData] = useState();
   const [precauciones, setPrecauciones] = useState([]);
   const [cabin, setCabin] = useState('');
   const [currentView, setCurrentView] = useState('');
   const [secciones, setSecciones] = useState([]);
   const [newPrecaucion, setNewPrecaucion] = useState({
-    user: userData?.name || '',
+    user: userData?.apellido || '',
     date: new Date().toISOString().split('T')[0],
     cabin: '',
     section: '',
     cause: '',
   });
+
+  useEffect(() => {
+    const userDataFromStorage = localStorage.getItem('userData');
+    if (userDataFromStorage) {
+      setUserData(JSON.parse(userDataFromStorage));
+    }
+  }, []);
+  // Otros efectos que dependan de userData
+  useEffect(() => {
+    if (userData && userData.nombre) {
+        setResponsable(userData.apellido);
+    }
+  }, [userData]);
 
   useEffect(() => {
     const q = query(collection(db, 'precauciones'));
@@ -58,7 +72,7 @@ export const Precauciones = () => {
       await addDoc(collection(db, 'precauciones'), updatedPrecaucion);
       Swal.fire('Agregado!', 'La precaución ha sido agregada.', 'success');
       setNewPrecaucion({
-        user: userData?.name || '',
+        user: userData?.apellido || '',
         date: new Date().toISOString().split('T')[0],
         cabin: '',
         section: '',
