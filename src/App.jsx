@@ -8,6 +8,7 @@ import {RegistrarOperadores} from "./components/Admin/RegistrarOperadores";
 import {EditarOperadores} from "./components/Admin/EditarOperadores";
 import { RegistroConductores } from "./components/Admin/RegistroConductores";
 import { RegistroGuardaTren } from "./components/Admin/RegistroGuardaTren";
+import { RegistroDiagrama } from "./components/Admin/RegistroDiagrama.jsx";
 import {EditarConductores} from "./components/Admin/EditarConductores";
 import {EditarGuardaTren} from "./components/Admin/EditarGuardaTren";
 import {Padron} from "./Services/Padron";
@@ -20,6 +21,7 @@ import { Direcciones} from "./components/Emergencia/Direcciones"
 import { Pendientes } from './components/Emergencia/Pendientes.jsx';
 import { NavbarComponent } from './Views/Navbar';
 import {UserProvider} from "./Services/UserContext";
+import {Emergencia} from "./Services/Emergencia";
 import {Footer} from './Views/Footer';
 import {Privacidad} from "./Views/Privacidad";
 import './scss/App.css'
@@ -52,13 +54,14 @@ export const App = () => {
           <Route path="/conductores/edit/:id" element={<EditarConductores/>} />
           <Route path="/guardatren/create" element={<RegistroGuardaTren/>} />
           <Route path="/guardatren/edit/:id" element={<EditarGuardaTren/>} />
+          <Route path="/registrodiagrama" element={<RegistroDiagrama/>} />
           <Route path="/pool" element={<Pool/>} />
           <Route path="/sabana" element={<Sabana/>} />
           <Route path="/tarjetas" element={<RegistrarTarjetas/>} />
           <Route path="/padron" element={<Padron/>} />
           <Route path="/corrida" element={<Corrida/>} />
           <Route path="/listaspersonal" element="aca SE VE COMPONENTE LISTAS DE PERSONAL" />
-          <Route path="/emergencia" element="Aca se busca info cuando hay un ACCIDENTE" />
+          <Route path="/emergencia" element={<Emergencia/>} />
           <Route path="/privacidad" element={<Privacidad/>} />
 
 
