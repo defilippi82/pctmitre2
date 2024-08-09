@@ -2,73 +2,192 @@ import React, { useState, useEffect } from 'react';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
 
 export const Emergencia = () => {
-    const [personalABordo, setPersonalABordo] = useState([]);
+    const [horaActual, setHoraActual] = useState("05:50");
+    const [linea, setLinea] = useState("Suarez Elect");
+    const [dia, setDia] = useState("L a V");
+    const [conductores, setConductores] = useState([]);
+    const [guardas, setGuardas] = useState([]);
 
     const db = getFirestore();
 
     useEffect(() => {
         const obtenerDatos = async () => {
-            const ahora = new Date();
-            const horaActual =  "05:50";
-            //ahora.toISOString().slice(0, 16);
-            const cuarentaMinutosAntes = new Date(ahora.getTime() - 40 * 60 * 1000).toISOString().slice(0, 16);
-            const cuarentaMinutosDespues = new Date(ahora.getTime() + 40 * 60 * 1000).toISOString().slice(0, 16);
+            const horaPartidaLimit = new Date(`1970-01-01T${horaActual}`).getTime() - 60 * 60 * 1000; // 1 hora antes
 
-            const q = query(collection(db, 'diagramaSuarez'), 
-                where('horaPartida', '>=', cuarentaMinutosAntes),
-                where('horaPartida', '<=', cuarentaMinutosDespues)
-            );
-
-            const querySnapshot = await getDocs(q);
-            const datos = [];
-
-            for (const doc of querySnapshot.docs) {
-                const data = doc.data();
-
-                // Obtener el apellido del conductor desde la colección conductores
-                const conductorRef = query(
-                    collection(db, 'conductores'),
-                    where('servicio', '==', data.servicio)
-                );
-                const conductorSnapshot = await getDocs(conductorRef);
-                const conductorData = conductorSnapshot.docs[0]?.data();
-
-                datos.push({
-                    servicio: data.servicio,
-                    tren: doc.id,
-                    conductor: conductorData?.apellido || 'Desconocido',
-                    horaPartida: data.horaPartida,
-                    horaLlegada: data.horaLlegada,
-                });
+            let collectionSuffix = '';
+            if (linea.includes("Elect")) {
+                if (dia === "L a V") collectionSuffix = "Lav";
+                else if (dia === "Sab") collectionSuffix = "Sab";
+                else collectionSuffix = "Dom";
             }
 
-            setPersonalABordo(datos);
+            const condCollectionName = `servicioElecCond${collectionSuffix}`;
+            const guardCollectionName = `servicioElecGuard${collectionSuffix}`;
+            const diagramaCollectionName = `diagramaSuarez${collectionSuffix}Cond`;
+
+            // Obtener datos de Conductores
+            const qCond = query(collection(db, condCollectionName));
+            const condSnapshot = await getDocs(qCond);
+            const conductoresData = [];
+
+            for (const doc of condSnapshot.docs) {
+                const condData = doc.data();
+                const trenDataQuery = query(
+                    collection(db, diagramaCollectionName),
+                    where('servicio', '==', condData.servicio)
+                );
+                const trenDataSnapshot = await getDocs(trenDataQuery);
+                const trenData = trenDataSnapshot.docs[0]?.data();
+
+                if (trenData) {
+                    const horaPartida = new Date(`1970-01-01T${trenData.horaPartida}`).getTime();
+                    if (horaPartida >= horaPartidaLimit) {
+                        const conductorQuery = query(
+                            collection(db, 'conductores'),
+                            where('servicio', '==', condData.servicio)
+                        );
+                        const conductorSnapshot = await getDocs(conductorQuery);
+                        const conductor = conductorSnapshot.docs[0]?.data();
+
+                        conductoresData.push({
+                            servicio: condData.servicio,
+                            tren: trenData.tren || 'Desconocido',
+                            horaPartida: trenData.horaPartida || 'Desconocido',
+                            horaLlegada: trenData.horaLlegada || 'Desconocido',
+                            personal: conductor?.apellido || 'Desconocido',
+                            horaTomada: condData.horaTomada || 'Desconocido',
+                            horaDejada: condData.horaDejada || 'Desconocido',
+                        });
+                    }
+                }
+            }
+            setConductores(conductoresData);
+
+            // Obtener datos de Guardas
+            const qGuard = query(collection(db, guardCollectionName));
+            const guardSnapshot = await getDocs(qGuard);
+            const guardasData = [];
+
+            for (const doc of guardSnapshot.docs) {
+                const guardData = doc.data();
+                const trenDataQuery = query(
+                    collection(db, diagramaCollectionName),
+                    where('servicio', '==', guardData.servicio)
+                );
+                const trenDataSnapshot = await getDocs(trenDataQuery);
+                const trenData = trenDataSnapshot.docs[0]?.data();
+
+                if (trenData) {
+                    const horaPartida = new Date(`1970-01-01T${trenData.horaPartida}`).getTime();
+                    if (horaPartida >= horaPartidaLimit) {
+                        const guardaQuery = query(
+                            collection(db, 'conductores'),
+                            where('servicio', '==', guardData.servicio)
+                        );
+                        const guardaSnapshot = await getDocs(guardaQuery);
+                        const guarda = guardaSnapshot.docs[0]?.data();
+
+                        guardasData.push({
+                            servicio: guardData.servicio,
+                            tren: trenData.tren || 'Desconocido',
+                            horaPartida: trenData.horaPartida || 'Desconocido',
+                            horaLlegada: trenData.horaLlegada || 'Desconocido',
+                            personal: guarda?.apellido || 'Desconocido',
+                            horaTomada: guardData.horaTomada || 'Desconocido',
+                            horaDejada: guardData.horaDejada || 'Desconocido',
+                        });
+                    }
+                }
+            }
+            setGuardas(guardasData);
         };
 
         obtenerDatos();
-    }, [db]);
+    }, [horaActual, linea, dia, db]);
 
     return (
         <div>
-            <h2>Personal a Bordo</h2>
+            <h2>Emergencia - Personal a Bordo</h2>
+
+            <div>
+                <label>Hora Actual: </label>
+                <input
+                    type="time"
+                    value={horaActual}
+                    onChange={(e) => setHoraActual(e.target.value)}
+                />
+            </div>
+
+            <div>
+                <label>Línea: </label>
+                <select value={linea} onChange={(e) => setLinea(e.target.value)}>
+                    <option value="Suarez Elect">Suarez Elect</option>
+                    <option value="Suarez Diesel">Suarez Diesel</option>
+                    <option value="Tigre Elect">Tigre Elect</option>
+                    <option value="Tigre Diesel">Tigre Diesel</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Día: </label>
+                <select value={dia} onChange={(e) => setDia(e.target.value)}>
+                    <option value="L a V">L a V</option>
+                    <option value="Sab">Sáb</option>
+                    <option value="Dom y Feriados">Dom y Feriados</option>
+                </select>
+            </div>
+
+            <h3>Conductores</h3>
             <table>
                 <thead>
                     <tr>
                         <th>Servicio</th>
                         <th>Tren</th>
-                        <th>Conductor</th>
                         <th>Hora Partida</th>
                         <th>Hora Llegada</th>
+                        <th>Personal</th>
+                        <th>Hora Tomada</th>
+                        <th>Hora Dejada</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {personalABordo.map((item, index) => (
+                    {conductores.map((item, index) => (
                         <tr key={index}>
                             <td>{item.servicio}</td>
                             <td>{item.tren}</td>
-                            <td>{item.conductor}</td>
                             <td>{item.horaPartida}</td>
                             <td>{item.horaLlegada}</td>
+                            <td>{item.personal}</td>
+                            <td>{item.horaTomada}</td>
+                            <td>{item.horaDejada}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            <h3>Guardas</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Servicio</th>
+                        <th>Tren</th>
+                        <th>Hora Partida</th>
+                        <th>Hora Llegada</th>
+                        <th>Personal</th>
+                        <th>Hora Tomada</th>
+                        <th>Hora Dejada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {guardas.map((item, index) => (
+                        <tr key={index}>
+                            <td>{item.servicio}</td>
+                            <td>{item.tren}</td>
+                            <td>{item.horaPartida}</td>
+                            <td>{item.horaLlegada}</td>
+                            <td>{item.personal}</td>
+                            <td>{item.horaTomada}</td>
+                            <td>{item.horaDejada}</td>
                         </tr>
                     ))}
                 </tbody>
