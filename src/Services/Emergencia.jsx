@@ -6,13 +6,14 @@ export const Emergencia = () => {
     const [linea, setLinea] = useState("Suarez Elect");
     const [dia, setDia] = useState("L a V");
     const [conductores, setConductores] = useState([]);
-    const [guardas, setGuardas] = useState([]);
+    const [guardasTren, setGuardatrenes] = useState([]);
+    
 
     const db = getFirestore();
 
     useEffect(() => {
         const obtenerDatos = async () => {
-            const horaPartidaLimit = new Date(`1970-01-01T${horaActual}`).getTime() - 60 * 60 * 1000; // 1 hora antes
+            const horaPartidaLimit = new Date(`1970-01-01T${horaActual}`).getTime() - 40 * 60 * 1000; // 40 minutos antes
 
             let collectionSuffix = '';
             if (linea.includes("Elect")) {
@@ -81,7 +82,7 @@ export const Emergencia = () => {
                     const horaPartida = new Date(`1970-01-01T${trenData.horaPartida}`).getTime();
                     if (horaPartida >= horaPartidaLimit) {
                         const guardaQuery = query(
-                            collection(db, 'conductores'),
+                            collection(db, 'guardatren'),
                             where('servicio', '==', guardData.servicio)
                         );
                         const guardaSnapshot = await getDocs(guardaQuery);
@@ -99,7 +100,7 @@ export const Emergencia = () => {
                     }
                 }
             }
-            setGuardas(guardasData);
+            setGuardatrenes(guardasData);
         };
 
         obtenerDatos();
@@ -179,7 +180,7 @@ export const Emergencia = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {guardas.map((item, index) => (
+                    {guardasTren.map((item, index) => (
                         <tr key={index}>
                             <td>{item.servicio}</td>
                             <td>{item.tren}</td>
