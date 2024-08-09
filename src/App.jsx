@@ -22,6 +22,7 @@ import { Pendientes } from './components/Emergencia/Pendientes.jsx';
 import { NavbarComponent } from './Views/Navbar';
 import {UserProvider} from "./Services/UserContext";
 import {Emergencia} from "./Services/Emergencia";
+import {CargarColecciones} from "./Services/CargarColecciones";
 import {Footer} from './Views/Footer';
 import {Privacidad} from "./Views/Privacidad";
 import './scss/App.css'
@@ -62,6 +63,7 @@ export const App = () => {
           <Route path="/corrida" element={<Corrida/>} />
           <Route path="/listaspersonal" element="aca SE VE COMPONENTE LISTAS DE PERSONAL" />
           <Route path="/emergencia" element={<Emergencia/>} />
+          <Route path="/colecciones" element={<CargarColecciones/>} />
           <Route path="/privacidad" element={<Privacidad/>} />
 
 

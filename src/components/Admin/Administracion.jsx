@@ -95,6 +95,7 @@ export const Administracion = () => {
                             <button className="btn btn-secondary mt-2 mb-2" onClick={() => setCurrentView('conductores')}>Ver Conductores</button>
                             <button className="btn btn-secondary mt-2 mb-2" onClick={() => setCurrentView('guardatren')}>Ver GuardaTrenes</button>
                             <button className="btn btn-secondary mt-2 mb-2" onClick={() => setCurrentView('operadores')}>Ver Operadores</button>
+                            <Link className="btn btn-secondary mt-2 mb-2" to='/colecciones'>Cargar Base de Datos</Link>
                             
                         </div>
                         {currentView === 'conductores' && (

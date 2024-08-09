@@ -97,6 +97,7 @@ export const NavbarComponent = ({ handleLogout }) => {
               {userData && userData.nombre && userData.rol.valor === 'administrador' && (
               <NavDropdown.Item href="#/administracion"> Administracion </NavDropdown.Item>)}
               
+              
             <NavDropdown.Item href="#/registrodiagrama"> Registro Diagrama </NavDropdown.Item>
              </NavDropdown>
             )}
