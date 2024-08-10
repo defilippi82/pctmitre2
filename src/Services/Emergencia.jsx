@@ -138,35 +138,36 @@ export const Emergencia = () => {
                 </select>
             </div>
 
-            <h3>Conductores</h3>
+            <h3>Personal en Circulacion</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>Servicio</th>
                         <th>Tren</th>
                         <th>Hora Partida</th>
                         <th>Hora Llegada</th>
-                        <th>Personal</th>
-                        <th>Hora Tomada</th>
+                        <th>Servicio</th>
+                        <th>Conductor</th>
+                        <th>Hora Dejada</th>
+                        <th>Servicio</th>
+                        <th>Guarda</th>
                         <th>Hora Dejada</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {conductores.map((item, index) => (
+                    {conductores.map((conductor, index) => (
                         <tr key={index}>
-                            <td>{item.servicio}</td>
-                            <td>{item.tren}</td>
-                            <td>{item.horaPartida}</td>
-                            <td>{item.horaLlegada}</td>
-                            <td>{item.personal}</td>
-                            <td>{item.horaTomada}</td>
-                            <td>{item.horaDejada}</td>
+                            <td>{conductor.tren}</td>
+                            <td>{conductor.horaPartida}</td>
+                            <td>{conductor.horaLlegada}</td>
+                            <td>{conductor.servicio}</td>
+                            <td>{conductor.personal}</td>
+                            <td>{conductor.horaDejada}</td>
                         </tr>
                     ))}
                 </tbody>
             </table>
 
-            <h3>Guardas</h3>
+            <h3>Personal a Ordenes</h3>
             <table>
                 <thead>
                     <tr>
@@ -180,15 +181,15 @@ export const Emergencia = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {guardasTren.map((item, index) => (
+                    {guardasTren.map((guarda, index) => (
                         <tr key={index}>
-                            <td>{item.servicio}</td>
-                            <td>{item.tren}</td>
-                            <td>{item.horaPartida}</td>
-                            <td>{item.horaLlegada}</td>
-                            <td>{item.personal}</td>
-                            <td>{item.horaTomada}</td>
-                            <td>{item.horaDejada}</td>
+                            <td>{guarda.servicio}</td>
+                            <td>{guarda.tren}</td>
+                            <td>{guarda.horaPartida}</td>
+                            <td>{guarda.horaLlegada}</td>
+                            <td>{guarda.personal}</td>
+                            <td>{guarda.horaTomada}</td>
+                            <td>{guarda.horaDejada}</td>
                         </tr>
                     ))}
                 </tbody>
