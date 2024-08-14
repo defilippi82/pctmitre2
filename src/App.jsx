@@ -14,6 +14,7 @@ import {EditarGuardaTren} from "./components/Admin/EditarGuardaTren";
 import {Padron} from "./Services/Padron";
 import {Pool} from "./components/Personal/Pool";
 import {Corrida} from "./components/Personal/Corrida";
+import {Lista} from "./components/Personal/Lista.jsx";
 import {Sabana} from "./components/Personal/Sabana.jsx";
 import {Novedades} from "./components/Personal/Novedades.jsx"
 import {RegistrarTarjetas} from "./components/Personal/RegistrarTarjetas.jsx";
@@ -61,7 +62,7 @@ export const App = () => {
           <Route path="/tarjetas" element={<RegistrarTarjetas/>} />
           <Route path="/padron" element={<Padron/>} />
           <Route path="/corrida" element={<Corrida/>} />
-          <Route path="/listaspersonal" element="aca SE VE COMPONENTE LISTAS DE PERSONAL" />
+          <Route path="/listaspersonal" element={<Lista/>} />
           <Route path="/emergencia" element={<Emergencia/>} />
           <Route path="/colecciones" element={<CargarColecciones/>} />
           <Route path="/privacidad" element={<Privacidad/>} />
