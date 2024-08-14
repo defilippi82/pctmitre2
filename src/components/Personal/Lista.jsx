@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Form, Table, Button, Row, Col, Card } from 'react-bootstrap';
 import SweetAlert from 'sweetalert2';
 import jsPDF from 'jspdf';
 
@@ -14,10 +16,11 @@ export const Lista = () => {
 
     const handleSearch = async () => {
         let coleccion = '';
+    
         if (linea === 'Suarez' && servicio === 'Electrico' && personal === 'Conductores') {
             if (dias.includes('Sabado')) {
                 coleccion = 'servicioSuarezElecCondSab';
-            } else if (dias.includes('Domingo')) {
+            } else if (dias.includes('Domingo y Feriados')) {
                 coleccion = 'servicioSuarezElecCondDom';
             } else {
                 coleccion = 'servicioSuarezElecCondLav';
@@ -25,12 +28,64 @@ export const Lista = () => {
         } else if (linea === 'Suarez' && servicio === 'Electrico' && personal === 'Guardas') {
             if (dias.includes('Sabado')) {
                 coleccion = 'servicioSuarezElecGuarSab';
-            } else if (dias.includes('Domingo')) {
+            } else if (dias.includes('Domingo y Feriados')) {
                 coleccion = 'servicioSuarezElecGuarDom';
             } else {
                 coleccion = 'servicioSuarezElecGuarLav';
             }
-        }
+        } else if (linea === 'Suarez' && servicio === 'Diesel' && personal === 'Conductores') {
+            if (dias.includes('Sabado')) {
+                coleccion = 'servicioSuarezDiesCondSab';
+            } else if (dias.includes('Domingo y Feriados')) {
+                coleccion = 'servicioSuarezDiesCondDom';
+            } else {
+                coleccion = 'servicioSuarezDiesCondLav';
+            }
+        } else if (linea === 'Suarez' && servicio === 'Diesel' && personal === 'Guardas') {
+            if (dias.includes('Sabado')) {
+                coleccion = 'servicioSuarezDiesGuarSab';
+            } else if (dias.includes('Domingo y Feriados')) {
+                coleccion = 'servicioSuarezDiesGuarDom';
+            } else {
+                coleccion = 'servicioSuarezDiesGuarLav';
+            }
+        } else if (linea === 'Tigre' && servicio === 'Electrico' && personal === 'Conductores') {
+            if (dias.includes('Sabado')) {
+                coleccion = 'servicioTigreElecCondSab';
+            } else if (dias.includes('Domingo y Feriados')) {
+                coleccion = 'servicioTigreElecCondDom';
+            } else {
+                coleccion = 'servicioTigreElecCondLav';
+            }
+        } else if (linea === 'Tigre' && servicio === 'Electrico' && personal === 'Guardas') {
+            if (dias.includes('Sabado')) {
+                coleccion = 'servicioTigreElecGuarSab';
+            } else if (dias.includes('Domingo y Feriados')) {
+                coleccion = 'servicioTigreElecGuarDom';
+            } else {
+                coleccion = 'servicioTigreElecGuarLav';
+            }
+        } else if (linea === 'Tigre' && servicio === 'Diesel' && personal === 'Conductores') {
+            if (dias.includes('Sabado')) {
+                coleccion = 'servicioTigreDiesCondSab';
+            } else if (dias.includes('Domingo y Feriados')) {
+                coleccion = 'servicioTigreDiesCondDom';
+            } else {
+                coleccion = 'servicioTigreDiesCondLav';
+            }
+        } else if (linea === 'Tigre' && servicio === 'Diesel' && personal === 'Guardas') {
+            if (dias.includes('Sabado')) {
+                coleccion = 'servicioTigreDiesGuarSab';
+            } else if (dias.includes('Domingo y Feriados')) {
+                coleccion = 'servicioTigreDiesGuarDom';
+            } else {
+                coleccion = 'servicioTigreDiesGuarLav';
+            }
+        
+    
+        // Lógica para utilizar la variable `coleccion`
+    };
+    
 
         const q = query(collection(db, coleccion));
         const querySnapshot = await getDocs(q);
@@ -82,7 +137,7 @@ export const Lista = () => {
 
     return (
         <div>
-            <h2>Lista de Personal</h2>
+            <h2>Lista de Personal a bordo</h2>
             <div>
                 <label>Linea:</label>
                 <select value={linea} onChange={(e) => setLinea(e.target.value)}>
@@ -105,7 +160,7 @@ export const Lista = () => {
             </div>
             <div>
                 <label>Días de la Semana:</label>
-                {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map((dia) => (
+                {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo y Feriados'].map((dia) => (
                     <div key={dia}>
                         <input
                             type="checkbox"
@@ -116,9 +171,9 @@ export const Lista = () => {
                     </div>
                 ))}
             </div>
-            <button onClick={handleSearch}>Buscar</button>
-            <button onClick={handleGeneratePDF}>Generar PDF</button>
-            <table>
+            <Button variant='success' onClick={handleSearch}>Generar Lista</Button>
+            <Button variant='warning' onClick={handleGeneratePDF}>imprimir</Button>
+            <Table variant='dark'>
                 <thead>
                     <tr>
                         <th>Servicio</th>
@@ -152,7 +207,7 @@ export const Lista = () => {
                             <td>{item.horaTomada}</td>
                             <td>{item.horaDejada}</td>
                             <td>
-                                <button
+                                <Button variant='secondary'
                                     onClick={() => {
                                         SweetAlert.fire({
                                             title: 'Editar Observaciones',
@@ -171,13 +226,13 @@ export const Lista = () => {
                                         });
                                     }}
                                 >
-                                    Editar
-                                </button>
+                                    <FontAwesomeIcon icon={faEdit}/>
+                                </Button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
-            </table>
+            </Table>
         </div>
     );
 };
