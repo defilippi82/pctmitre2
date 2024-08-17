@@ -12,8 +12,8 @@ export const Emergencia = () => {
     useEffect(() => {
         const obtenerDatos = async () => {
             const horaActualDate = new Date(`1970-01-01T${horaActual}`);
-            const horaInicioRango = horaActualDate.getTime() - 50 * 60 * 1000; // 40 minutos antes
-            const horaFinRango = horaActualDate.getTime() + 50 * 60 * 1000; // 30 minutos después
+            const horaInicioRango = horaActualDate.getTime() - 30 * 60 * 1000; // 30 minutos antes
+            const horaFinRango = horaActualDate.getTime() + 30 * 60 * 1000; // 30 minutos después
 
              // Determinar los sufijos para las colecciones
             let Suffix1 = linea;

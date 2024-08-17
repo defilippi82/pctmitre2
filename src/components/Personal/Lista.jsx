@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { Form, Table, Button, Row, Col, Card } from 'react-bootstrap';
 import SweetAlert from 'sweetalert2';
 import jsPDF from 'jspdf';
@@ -159,18 +160,21 @@ export const Lista = () => {
                 </select>
             </div>
             <div>
-                <label>Días de la Semana:</label>
-                {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo y Feriados'].map((dia) => (
-                    <div key={dia}>
-                        <input
-                            type="checkbox"
-                            value={dia}
-                            onChange={handleCheckboxChange}
-                        />
-                        <label>{dia}</label>
-                    </div>
-                ))}
-            </div>
+                            
+            </div><div style={{ display: 'flex', alignItems: 'center' }}>
+    <label>Días de la Semana:</label>
+    {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo y Feriados'].map((dia) => (
+        <div key={dia} style={{ display: 'flex', alignItems: 'center', marginLeft: '10px' }}>
+            <input
+                type="checkbox"
+                value={dia}
+                onChange={handleCheckboxChange}
+            />
+            <label style={{ marginLeft: '5px' }}>{dia}</label>
+        </div>
+    ))}
+</div>
+
             <Button variant='success' onClick={handleSearch}>Generar Lista</Button>
             <Button variant='warning' onClick={handleGeneratePDF}>imprimir</Button>
             <Table variant='dark'>
