@@ -60,6 +60,7 @@ export const CorteSecc = () => {
           secciones.forEach(seccion => {
           const scaleX = canvas.width / 900;
           const scaleY = canvas.height / 600;
+          
           switch (seccion) {
             case "8":
               ctx.drawImage(trabajoImg, 0 * scaleX, 120 * scaleY ,25 * scaleX, 25 * scaleY);
@@ -171,9 +172,20 @@ export const CorteSecc = () => {
 
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
-    setSecciones((prevSecciones) =>
-      checked ? [...prevSecciones, value] : prevSecciones.filter((sec) => sec !== value)
-    );
+  
+    if (value === "Todas las Plataformas") {
+      if (checked) {
+        // Selecciona todas las secciones
+        setSecciones([...secciones, "1", "2", "3", "4", "5", "6", "7", "8"]);
+      } else {
+        // Desmarca todas las secciones
+        setSecciones(secciones.filter(sec => sec !== "Todas las Plataformas" && !["1", "2", "3", "4", "5", "6", "7", "8"].includes(sec)));
+      }
+    } else {
+      setSecciones((prevSecciones) =>
+        checked ? [...prevSecciones, value] : prevSecciones.filter((sec) => sec !== value)
+      );
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -188,7 +200,7 @@ export const CorteSecc = () => {
     );
 
     if (conflictingJobs.length > 0) {
-      Swal.fire('Alerta', 'Hay trabajos en las mismas secciones', 'warning');
+      await Swal.fire('Alerta', 'Hay trabajos en las mismas secciones', 'warning');
     }
 
     try {
@@ -238,16 +250,29 @@ export const CorteSecc = () => {
     }
   };
   const getConflictingSections = () => {
-    const sectionCount = {};
+    const sectionMap = {}; // Mapea secciones a arrays de IDs de trabajos
+  
     trabajos.forEach(trabajo => {
       trabajo.secciones.forEach(seccion => {
-        sectionCount[seccion] = (sectionCount[seccion] || 0) + 1;
+        if (!sectionMap[seccion]) {
+          sectionMap[seccion] = [];
+        }
+        sectionMap[seccion].push(trabajo.id);
       });
     });
-    return Object.keys(sectionCount).filter(seccion => sectionCount[seccion] >= 2);
+  
+    // Filtra secciones que tienen más de un trabajo asociado
+    const conflictingSections = Object.keys(sectionMap).filter(seccion => sectionMap[seccion].length > 1);
+  
+    // Devuelve un objeto que mapea cada sección conflictiva a los IDs de los trabajos
+    return conflictingSections.reduce((result, seccion) => {
+      result[seccion] = sectionMap[seccion];
+      return result;
+    }, {});
   };
-
+  
   const conflictingSections = getConflictingSections();
+  
 
 
   return (
@@ -330,7 +355,7 @@ export const CorteSecc = () => {
           <Col>
         <Form.Group>
           <legend>Ingrese Hora de Inicio</legend>
-          <Form.Group controlId='fromhoraInicio'>
+          <Form.Group Id='fromhoraInicio'>
             <Form.Label htmlFor="horaInicio">Hora de Inicio:</Form.Label>
             <Form.Control
               type="time"
@@ -345,7 +370,7 @@ export const CorteSecc = () => {
               <Col>
         <Form.Group>
           <legend>Ingrese Responsable</legend>
-          <Form.Group controlId= "fromresponsable">
+          <Form.Group Id= "fromresponsable">
             <Form.Label htmlFor="responsable">Responsable:</Form.Label>
             <Form.Control
               type="text"
@@ -363,23 +388,23 @@ export const CorteSecc = () => {
       </Form>
 
       <Table striped bordered hover responsive className="mt-4">
-        <thead>
-          <tr>
-            <th>Secciones</th>
-            <th>Hora de Inicio</th>
-            <th>Responsable</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-        {trabajos.map((trabajo) => {
-            const hasConflict = trabajo.secciones.some(seccion => conflictingSections.includes(seccion));
-            return (
-              <tr key={trabajo.id} style={hasConflict ? { backgroundColor: 'red', color: 'black' } : {}}>
-                <td>{trabajo.secciones.join(", ")}</td>
-                <td>{trabajo.horaInicio}</td>
-                <td>{trabajo.responsable}</td>
-                <td>
+  <thead>
+    <tr>
+      <th>Secciones</th>
+      <th>Hora de Inicio</th>
+      <th>Responsable</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {trabajos.map(trabajo => {
+      const isConflicting = trabajo.secciones.some(sec => conflictingSections[sec]);
+      return (
+        <tr key={trabajo.id} className={isConflicting ? 'table-danger' : ''}>
+          <td>{trabajo.secciones.join(', ')}</td>
+          <td>{trabajo.horaInicio}</td>
+          <td>{trabajo.responsable}</td>
+          <td>
                   <Button variant="warning" onClick={() => handleEdit(trabajo)}><i className="fas fa-edit"></i></Button>
                   <Button variant="danger" onClick={() => handleDelete(trabajo.id)}><i className="fas fa-trash-alt"></i></Button>
                 </td>
