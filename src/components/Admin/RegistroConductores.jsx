@@ -191,25 +191,30 @@ export const RegistroConductores = () => {
                              </Col>
                         </Row>
                         <Row className="mb-3">
+                            <Col>
                         <div>
                         <div className="container elem-group form-floating mb-3">
                         <input  type="date" id="nacimiento" name="nacimiento" className="form-control input-number" required value={formData.nacimiento} onChange={handleChange} />
                         <label htmlFor="nacimiento">Fecha Nac.</label>
                         </div>
                         </div>
+                            </Col>
+                            <Col>
                         <div>
                         <div className="container elem-group form-floating mb-3">
                             <input  type="date" id="ingreso" name="ingreso" className="form-control input-number" required value={formData.ingreso} onChange={handleChange} />
                             <label htmlFor="ingreso">Fecha Ingreso</label>
                         </div>
                         </div>
-
+                            </Col>
+                            <Col>
                         <div>
                         <div className="container elem-group form-floating mb-3">
                             <input className='form-control' type="email" id="email" name="email" placeholder="ejemplo@email.com" required value={formData.email} onChange={handleChange} />
                             <label htmlFor="email" for="floatingInputDisabled">Correo electrónico</label>
                         </div>
                         </div>
+                            </Col>
                         </Row>
                         <Row className="mb-3">
                             <Col>
