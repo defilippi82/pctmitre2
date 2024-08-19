@@ -285,7 +285,7 @@ export const CorteSecc = () => {
           <legend>Seleccione las secciones</legend>
           <Row className="d-flex justify-content-start">
           <Col>
-  <Card style={{ width: '18rem' }} variant="dark" className=" mb-3">
+  <Card style={{ width: '18rem' }} bg='info' className=" mb-3">
     <Card.Header as="h3">Retiro</Card.Header>
     <Card.Body>
       <Form.Group>
@@ -306,7 +306,7 @@ export const CorteSecc = () => {
   </Card>
 </Col>
 <Col>
-  <Card className="bg-dark mb-3">
+  <Card bg="dark" className="mb-3">
     <Card.Header as="h3">BP-CP</Card.Header>
     <Card.Body>
       <Form.Group>
