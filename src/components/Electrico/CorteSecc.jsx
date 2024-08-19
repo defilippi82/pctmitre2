@@ -333,7 +333,7 @@ export const CorteSecc = () => {
     <Card.Body>
       <Form.Group>
         {["10/14", "11/15", "18/19", "20/21", "22/23", "24/25", "26/27", "28/29", "Dep. Victoria"].map(sec => (
-          <Form.switch
+          <Form.Check
             key={sec}
             type="switch"
             id={`switch-${sec.replace(/\//g, '')}`}
