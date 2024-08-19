@@ -306,7 +306,7 @@ export const CorteSecc = () => {
   </Card>
 </Col>
 <Col>
-  <Card bg='info' className="mb-3">
+  <Card bg='info' border='dark' className="mb-3">
     <Card.Header as="h3">BP-CP</Card.Header>
     <Card.Body>
       <Form.Group>
@@ -328,7 +328,7 @@ export const CorteSecc = () => {
 </Col>
 
 <Col>
-  <Card bg='info' className="mb-3">
+  <Card bg='info' border='dark' className="mb-3">
     <Card.Header as="h3">AP</Card.Header>
     <Card.Body>
       <Form.Group>
