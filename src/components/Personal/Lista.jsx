@@ -5,6 +5,10 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { Form, Table, Button, Row, Col, Card } from 'react-bootstrap';
 import SweetAlert from 'sweetalert2';
 import jsPDF from 'jspdf';
+// import 'jspdf-autotable';
+// import PDF, { Text, AddPage, Line, Image, Table, Html } from 'jspdf-react'
+// npm install --save jspdf-react
+// npm install jspdf jspdf-autotable
 
 export const Lista = () => {
     const [linea, setLinea] = useState('');
@@ -124,6 +128,33 @@ export const Lista = () => {
     const handleGeneratePDF = () => {
         const doc = new jsPDF();
         doc.text('Personal a Bordo', 20, 20);
+        /*
+        // Definimos las columnas de la tabla
+        const columns = [
+            { title: "Servicio", dataKey: "servicio" },
+            { title: "Tren", dataKey: "tren" },
+            { title: "Conductor", dataKey: "conductor" },
+            { title: "Observaciones", dataKey: "observaciones" },
+            { title: "Toma Serv.", dataKey: "horaTomada" },
+            { title: "Deja Serv.", dataKey: "horaDejada" }
+        ];
+
+        // Insertamos los datos en filas
+        const rows = resultados.map(item => ({
+            servicio: item.servicio,
+            tren: item.tren,
+            conductor: item.conductor,
+            observaciones: item.observaciones || '', // Observaciones pueden estar vacías
+            horaTomada: item.horaTomada,
+            horaDejada: item.horaDejada,
+        }));
+
+        // Generamos la tabla con jsPDF-AutoTable
+        doc.autoTable({
+            head: [columns.map(col => col.title)], // Encabezados de la tabla
+            body: rows.map(row => columns.map(col => row[col.dataKey])), // Datos de la tabla
+            startY: 30, // Espacio donde comienza la tabla en el eje Y
+        });*/
         let y = 30;
         resultados.forEach((item, index) => {
             doc.text(
