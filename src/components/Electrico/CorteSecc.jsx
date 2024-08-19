@@ -292,8 +292,8 @@ export const CorteSecc = () => {
         {[1, 2, 3, 4, 5, 6, 7, 8, "Todas las Plataformas", "Vía Puerto"].map(sec => (
           <Form.Check
             key={sec}
-            type="checkbox"
-            id={`checkbox-${sec}`}
+            type="switch"
+            id={`switch-${sec}`}
             label={sec}
             value={sec}
             onChange={handleCheckboxChange}
@@ -313,8 +313,8 @@ export const CorteSecc = () => {
         {["12/16", "13/17", "40/41", "42/43", "44/45", "46/47", "48/49", "60/61", "50/51", "52/53", "Dep. Suárez"].map(sec => (
           <Form.Check
             key={sec}
-            type="checkbox"
-            id={`checkbox-${sec.replace(/\//g, '')}`}
+            type="switch"
+            id={`switch-${sec.replace(/\//g, '')}`}
             label={sec}
             value={sec}
             onChange={handleCheckboxChange}
@@ -333,10 +333,10 @@ export const CorteSecc = () => {
     <Card.Body>
       <Form.Group>
         {["10/14", "11/15", "18/19", "20/21", "22/23", "24/25", "26/27", "28/29", "Dep. Victoria"].map(sec => (
-          <Form.Check
+          <Form.switch
             key={sec}
-            type="checkbox"
-            id={`checkbox-${sec.replace(/\//g, '')}`}
+            type="switch"
+            id={`switch-${sec.replace(/\//g, '')}`}
             label={sec}
             value={sec}
             onChange={handleCheckboxChange}
