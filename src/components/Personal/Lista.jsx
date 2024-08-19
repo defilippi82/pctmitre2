@@ -5,10 +5,10 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { Form, Table, Button, Row, Col, Card } from 'react-bootstrap';
 import SweetAlert from 'sweetalert2';
 import jsPDF from 'jspdf';
-// import 'jspdf-autotable';
-// import PDF, { Text, AddPage, Line, Image, Table, Html } from 'jspdf-react'
-// npm install --save jspdf-react
-// npm install jspdf jspdf-autotable
+import 'jspdf-autotable';
+import { auto } from '@popperjs/core';
+//import PDF, { Text, AddPage, Line, Image, Table, Html } from 'jspdf-react'
+
 
 export const Lista = () => {
     const [linea, setLinea] = useState('');
@@ -16,6 +16,8 @@ export const Lista = () => {
     const [personal, setPersonal] = useState('');
     const [dias, setDias] = useState([]);
     const [resultados, setResultados] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(''); // Nuevo estado para la fecha
+
 
     const db = getFirestore();
 
@@ -127,8 +129,25 @@ export const Lista = () => {
 
     const handleGeneratePDF = () => {
         const doc = new jsPDF();
-        doc.text('Personal a Bordo', 20, 20);
-        /*
+        doc.setFontSize(12);
+        doc.text('Personal a Bordo', 80, 10);
+       // Formatear la fecha seleccionada
+       doc.setFontSize(10);
+       const dateObj = new Date(selectedDate + 'T00:00:00'); // Agregar la hora para evitar la conversión de UTC
+
+       //const selectedDay = dias.length > 0 ? dias[0] : 'No seleccionado';
+       const formattedDate = dateObj.toLocaleDateString('es-ES', {
+           weekday: 'long',
+           year: 'numeric',
+           month: 'long',
+           day: 'numeric'
+       });
+
+       // Agregar la fecha y selección al PDF
+       doc.text(`Personal: ${personal}- Serv: ${servicio} -Línea: ${linea}`, 60, 15);
+         doc.text(`Fecha:  ${formattedDate}`, 80, 18);
+
+
         // Definimos las columnas de la tabla
         const columns = [
             { title: "Servicio", dataKey: "servicio" },
@@ -153,17 +172,25 @@ export const Lista = () => {
         doc.autoTable({
             head: [columns.map(col => col.title)], // Encabezados de la tabla
             body: rows.map(row => columns.map(col => row[col.dataKey])), // Datos de la tabla
-            startY: 30, // Espacio donde comienza la tabla en el eje Y
-        });*/
-        let y = 30;
-        resultados.forEach((item, index) => {
-            doc.text(
-                `${index + 1}. Servicio: ${item.servicio}, Tren: ${item.tren}, Conductor: ${item.conductor}, Toma Serv.: ${item.horaTomada}, Deja Serv.: ${item.horaDejada}`,
-                20,
-                y
-            );
-            y += 10;
+            startY: 20, // Espacio donde comienza la tabla en el eje Y
+            theme: 'grid',
+            headStyles: {
+                fillColor: [100, 100, 100]  // Dark gray color for header
+            },
+            styles: {
+                cellPadding: auto,
+                cellWidth: auto,
+                cellHeight: auto,
+                fontSize: 8,
+                halign: 'center',
+                valign: 'middle',
+                lineWidth: 0.25,
+                textColor: 20,
+                lineColor: [0, 0, 0],  // Black color for borders
+            }
         });
+        
+       
         doc.save('personal_a_bordo.pdf');
     };
 
@@ -189,6 +216,12 @@ export const Lista = () => {
                     <option value="Conductores">Conductores</option>
                     <option value="Guardas">Guardas</option>
                 </select>
+                <label>Fecha:</label>
+                <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                />
             </div>
             <div>
                             

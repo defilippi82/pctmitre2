@@ -19,6 +19,7 @@
     "firebase": "^10.12.1",
     "firebase-admin": "^10.3.0",
     "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2",
     "node-firestore-import-export": "^1.1.0",
     "qs": "^6.12.1",
     "query-overpass": "^1.5.5",
