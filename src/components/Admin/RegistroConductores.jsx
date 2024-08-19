@@ -227,29 +227,40 @@ export const RegistroConductores = () => {
                             <label htmlFor="provincia" for="floatingInputDisabled">Provincia</label></div></div>
                                  </Col>
                             </Row>
+                            <Row>
+                                <Col>
                             <div>
                         <div className="container elem-group form-floating mb-3">
                             <input className='form-control input-number' type="number" id="piso" name="piso" maxLength="2" value={formData.piso} onChange={handleChange} />
                             <label htmlFor="piso" for="floatingInputDisabled">Piso</label></div></div>
+                                </Col>
+                                <Col>
                             
                             <div>
                         <div className="container elem-group form-floating mb-3">
                             <input className='form-control' type="text" id="dpto" name="dpto" placeholder="Departamento"
                                 pattern="[A-Z\s-a-z]{3,20}" value={formData.dpto} onChange={handleChange} />
                             <label htmlFor="dpto" for="floatingInputDisabled">Dpto</label></div></div>
-                            
+                                </Col>
+                            <Col>
                             <div>
                         <div className="container elem-group form-floating mb-3">
                             <input className='form-control input-number' type="text" id="cp" name="cp" maxLength="6"  value={formData.cp} onChange={handleChange} />
                             <label htmlFor="cp" for="floatingInputDisabled">Codigo Postal</label>
                         </div>
                         </div>
+                            </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
                         <div>
                         <div className="container elem-group form-floating mb-3">
                             <input className='form-control' type="text" id="tel" name="tel" placeholder="11-XXXX-XXXX" value={formData.tel} onChange={handleChange} />
                             <label htmlFor="tel" for="floatingInputDisabled">Teléfono</label>
                         </div>
                         </div>
+                                    </Col>
+                                    <Col>
                         <div className="elem-group">
                         <div className='form-floating mb-3'>
 
@@ -257,13 +268,18 @@ export const RegistroConductores = () => {
                         <label for="floatingInputDisabled" htmlFor="servicio">Servicio</label>
                         </div>
                         </div>
+                                    </Col>
+                                    <Col>
                         <div className="elem-group">
                             <div className='form-floating mb-3'>
                                 <input type="number" id="orden" name="orden" maxLength="6" className='form-control input-number' value={formData.orden} onChange={handleChange} />
                                 <label htmlFor="orden">Numero de Orden</label>
                             </div>
                         </div>
-
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
                         <div>
                         <div className="container elem-group form-floating mb-3">
                             <select name="tarea" id="tarea" className="form-select" value={formData.tarea} onChange={handleChange}>
@@ -275,18 +291,27 @@ export const RegistroConductores = () => {
                         </select>
                         <label htmlFor="tarea">Tarea</label>
                         </div></div>
+                                    </Col>
+                                    <Col>
                         <div>
                         <div className="container elem-group form-floating mb-3">
                             <input  type="date" id="apto" name="apto" className="form-control input-number" value={formData.apto} onChange={handleChange} />
                             <label htmlFor="apto">Apto Físico</label>
                         </div>
                         </div>
+                                    </Col>
+                                    <Col>
+                                    
                         <div>
                         <div className="container elem-group form-floating mb-3">
                             <input  type="date" id="cupon" name="cupon" className="form-control input-number" value={formData.cupon} onChange={handleChange} />
                             <label htmlFor="cupon">Venc. Cupón</label>
                         </div>
                         </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
                         <div>
                         <div className="container elem-group form-floating mb-6">
                             <h3>Conocimiento de Vías</h3>
@@ -295,13 +320,13 @@ export const RegistroConductores = () => {
                                     <ul className="lista1 form-check-inline form-switch">
                                         {['ap ', 'bp ', 'cp ', 'dp ', 'ep ', 'rosario ', 'ug ', 'e1 ', 'e2 ', 'puerto '].map((seccion) => (
                                             <li key={seccion}>
-                                                <label htmlFor={`checkbox-${seccion}`}>
+                                                <label htmlFor={`switch-${seccion}`}>
                                                     <input
                                                         className="form-check-input"
-                                                        type="checkbox"
+                                                        type="switch"
                                                         name="secciones"
                                                         value={seccion}
-                                                        id={`checkbox-${seccion}`}
+                                                        id={`switch-${seccion}`}
                                                         checked={formData.secciones.includes(seccion)}
                                                         onChange={handleChange}
                                                         /> {seccion.toUpperCase()}
@@ -313,6 +338,8 @@ export const RegistroConductores = () => {
                             </fieldset>
                             </div>
                             </div>
+                                        </Col>
+                                    </Row>
                        
                         <div style={{ display: 'inline' }}>
                             <input type="submit" className="btn btn-success" value="Registrar" />
