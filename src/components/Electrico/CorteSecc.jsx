@@ -286,7 +286,7 @@ export const CorteSecc = () => {
           <Row className="d-flex justify-content-start">
           <Col>
   <Card style={{ width: '18rem' }} bg='info' border='dark' className=" mb-3">
-    <Card.Header as="h3">Retiro</Card.Header>
+    <Card.Header border='dark' as="h3">Retiro</Card.Header>
     <Card.Body>
       <Form.Group>
         {[1, 2, 3, 4, 5, 6, 7, 8, "Todas las Plataformas", "Vía Puerto"].map(sec => (
