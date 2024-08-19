@@ -122,6 +122,7 @@ export const RegistroConductores = () => {
             <div className="d-flex justify-content-start">
                 <form onSubmit={crearconductor} className="card card-body shadow-lg">
                 <Row className="mb-3">
+                    <Col>
                         <div>
                         <div as={Col} md="4" className="container elem-group form-floating mb-3">
                          <select name="base" id="base" className="form-select" value={formData.base} onChange={handleChange}>
@@ -132,6 +133,8 @@ export const RegistroConductores = () => {
                         <label htmlFor="base">Base perteneciente</label>
                         </div>
                         </div>
+                    </Col>
+                    <Col>
                      
                      <div>
                     <div as={Col} md="4" className="container elem-group form-floating mb-3">
@@ -147,15 +150,18 @@ export const RegistroConductores = () => {
                         <label htmlFor="categoria">Categoría</label>
                         </div>
                         </div>
-                        
+                    </Col>
+                    <Col>
                         <div className="elem-group">
                         <div as={Col} md="4" className='form-floating mb-2'>
                         <input  type="number" id="legajo" name="legajo" maxLength="6" className="form-control input-number" required value={formData.legajo} onChange={handleChange} />
                         <label htmlFor="legajo" for="floatingInputDisabled">Legajo</label>
                         </div>
                         </div>
+                    </Col>    
                         </Row>
                         <Row className="mb-3">
+                            <Col>
                         <div className="elem-group">
                         <div  as={Col} md="4" className='form-floating mb-3'>
                         <input className='form-control' type="text" id="nombre" name="nombre" placeholder="Nombre"
@@ -163,6 +169,8 @@ export const RegistroConductores = () => {
                         <label htmlFor="nombre">Nombre </label>
                         </div>
                         </div>
+                             </Col>
+                             <Col>
 
                         <div className="elem-group">
                         <div as={Col} md="4" className='form-floating mb-3'>
@@ -171,6 +179,8 @@ export const RegistroConductores = () => {
                         <label htmlFor="apellido" for="floatingInputDisabled" >Apellido</label>
                         </div>
                         </div>
+                             </Col>
+                             <Col>
 
                         <div>
                         <div as={Col} md="4" className="container elem-group form-floating mb-3">
@@ -178,6 +188,7 @@ export const RegistroConductores = () => {
                         <label htmlFor="dni">DNI</label>
                         </div>
                         </div>
+                             </Col>
                         </Row>
                         <Row className="mb-3">
                         <div>
