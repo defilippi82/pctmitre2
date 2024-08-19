@@ -324,13 +324,36 @@ export const Precauciones = () => {
   </Card>
   )}
 </Col>
+          <Col>
+          {currentView === '1rn' && 'adv' (
+            <Card className="mb-3">
+              <Card.Header as="h3">ADV</Card.Header>
+              <Card.Body>
+                <Form.Group>
+                  {["6A", "6B", "6B",  "30A", "30B", "34A","34B","25B", "20B", "20A", "20C","19C","19B","19A","8B","8A","10A","10B","12A","12B","14A","14B","16A","16B","18.", "36A","36B","23A","23B","31A","31B","37A","37B","28A","28B","21A","21B","27.","22.","33.","35.","42A","42B", "39A","39B","41A","41B","40A","40B","43.","44.","46.","47A","47B","48A","48B","49."].map(sec => (
+                    <Form.Check
+                      key={sec}
+                      type="checkbox"
+                      id={`checkbox-${sec.replace(/\//g, '')}`}
+                      label={sec}
+                      value={sec}
+                      onChange={handleCheckboxChange}
+                      checked={secciones.includes(sec)}
+                      className="mb-2"
+                    />
+                    ))}
+                </Form.Group>
+              </Card.Body>
+            </Card>
+          )}
+          </Col>
 <Col>
-{currentView === '1rn' && 'adv' (
+{currentView === '2rn' && 'adv' (
   <Card className="mb-3">
     <Card.Header as="h3">ADV</Card.Header>
     <Card.Body>
       <Form.Group>
-        {["6A", "6B", "6B",  "30A", "30B", "34A","34B","25B", "20B", "20A", "20C","19C","19B","19A","8B","8A","10A","10B","12A","12B","14A","14B","16A","16B","18.", "36A","36B","23A","23B","31A","31B","37A","37B","28A","28B","21A","21B","27.","22.","33.","35.","42A","42B", "39A","39B","41A","41B","40A","40B","43.","44.","46.","47A","47B","48A","48B","49."].map(sec => (
+        {["RN Carga"].map(sec => (
           <Form.Check
             key={sec}
             type="checkbox"
@@ -346,6 +369,128 @@ export const Precauciones = () => {
     </Card.Body>
   </Card>
 )}
+</Col>
+<Form.Group>
+          <Row className="d-flex justify-content-start">
+          <Col>
+                {currentView === '2rn' && 'senales' (
+  <Card className=" mb-3">
+    <Card.Header as="h3">Señales</Card.Header>
+    <Card.Body>
+      <Form.Group>
+        {[11,9,6,7].map(sec => (
+          <Form.Check
+            key={sec}
+            type="checkbox"
+            id={`checkbox-${sec}`}
+            label={sec}
+            value={sec}
+            onChange={handleCheckboxChange}
+            checked={secciones.includes(`${sec}`)}
+            className="mb-2"
+          />
+        ))}
+      </Form.Group>
+    </Card.Body>
+  </Card>
+  )}
+</Col>
+<Form.Group>
+          <Row className="d-flex justify-content-start">
+          <Col>
+                {currentView === 'empMaldonado' && 'senales' (
+  <Card className=" mb-3">
+    <Card.Header as="h3">Señales</Card.Header>
+    <Card.Body>
+      <Form.Group>
+        {["E1","E5","N5","N6","F1","O5","F5","P2/A","P2/B","P6",24,28,25,27,21,5,6,4,7,8,3,1,23,29,"SLA129","A101","A102",].map(sec => (
+          <Form.Check
+            key={sec}
+            type="checkbox"
+            id={`checkbox-${sec}`}
+            label={sec}
+            value={sec}
+            onChange={handleCheckboxChange}
+            checked={secciones.includes(`${sec}`)}
+            className="mb-2"
+          />
+        ))}
+      </Form.Group>
+    </Card.Body>
+  </Card>
+  )}
+</Col>
+
+<Col>
+{currentView === 'empMaldonado' && 'adv' (
+  <Card className="mb-3">
+    <Card.Header as="h3">ADV</Card.Header>
+    <Card.Body>
+      <Form.Group>
+        {["17a","17b","16b","16a",18,19,15,14,11,12].map(sec => (
+          <Form.Check
+            key={sec}
+            type="checkbox"
+            id={`checkbox-${sec.replace(/\//g, '')}`}
+            label={sec}
+            value={sec}
+            onChange={handleCheckboxChange}
+            checked={secciones.includes(sec)}
+            className="mb-2"
+          />
+          ))}
+      </Form.Group>
+    </Card.Body>
+  </Card>
+)}
+</Col>
+<Col>
+{currentView === 'tf' && 'adv' (
+  <Card className="mb-3">
+    <Card.Header as="h3">ADV</Card.Header>
+    <Card.Body>
+      <Form.Group>
+        {[].map(sec => (
+          <Form.Check
+            key={sec}
+            type="checkbox"
+            id={`checkbox-${sec.replace(/\//g, '')}`}
+            label={sec}
+            value={sec}
+            onChange={handleCheckboxChange}
+            checked={secciones.includes(sec)}
+            className="mb-2"
+          />
+          ))}
+      </Form.Group>
+    </Card.Body>
+  </Card>
+)}
+</Col>
+<Form.Group>
+          <Row className="d-flex justify-content-start">
+          <Col>
+                {currentView === 'tf' && 'senales' (
+  <Card className=" mb-3">
+    <Card.Header as="h3">Señales</Card.Header>
+    <Card.Body>
+      <Form.Group>
+        {[32,19].map(sec => (
+          <Form.Check
+            key={sec}
+            type="checkbox"
+            id={`checkbox-${sec}`}
+            label={sec}
+            value={sec}
+            onChange={handleCheckboxChange}
+            checked={secciones.includes(`${sec}`)}
+            className="mb-2"
+          />
+        ))}
+      </Form.Group>
+    </Card.Body>
+  </Card>
+  )}
 </Col>
 
 <Col>
