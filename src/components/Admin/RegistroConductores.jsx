@@ -201,12 +201,15 @@ export const RegistroConductores = () => {
                         </div>
                         </Row>
                         <Row className="mb-3">
+                            <Col>
                         <div>
                         <div className="container elem-group form-floating mb-3">
                             <input className='form-control' type="text" id="direccion" name="direccion" placeholder="Dirección"
                                  required value={formData.direccion} onChange={handleChange} />
                             <label htmlFor="direccion" for="floatingInputDisabled">Calle</label>
                             </div></div>
+                                 </Col>
+                                 <Col>
 
                             <div>
                         <div className="container elem-group form-floating mb-3">
@@ -214,12 +217,15 @@ export const RegistroConductores = () => {
                                  required value={formData.localidad} onChange={handleChange} />
                             <label htmlFor="localidad" for="floatingInputDisabled">Localidad</label>
                             </div></div>
+                                 </Col>
+                                 <Col>
 
                             <div>
                         <div className="container elem-group form-floating mb-3">
                             <input className='form-control' type="text" id="provincia" name="provincia" placeholder="Provincia"
                                  required value={formData.provincia} onChange={handleChange} />
                             <label htmlFor="provincia" for="floatingInputDisabled">Provincia</label></div></div>
+                                 </Col>
                             </Row>
                             <div>
                         <div className="container elem-group form-floating mb-3">

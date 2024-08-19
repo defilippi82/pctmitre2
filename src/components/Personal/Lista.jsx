@@ -166,7 +166,7 @@ export const Lista = () => {
     {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo y Feriados'].map((dia) => (
         <div key={dia} style={{ display: 'flex', alignItems: 'center', marginLeft: '10px' }}>
             <input
-                type="checkbox"
+                type="switch"
                 value={dia}
                 onChange={handleCheckboxChange}
             />
