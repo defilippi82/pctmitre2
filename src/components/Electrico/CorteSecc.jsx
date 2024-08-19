@@ -306,7 +306,7 @@ export const CorteSecc = () => {
   </Card>
 </Col>
 <Col>
-  <Card className="bg-'dark' mb-3">
+  <Card className="bg-dark mb-3">
     <Card.Header as="h3">BP-CP</Card.Header>
     <Card.Body>
       <Form.Group>
