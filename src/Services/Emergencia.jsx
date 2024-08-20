@@ -61,35 +61,41 @@ export const Emergencia = () => {
             for (const doc of condSnapshot.docs) {
                 const condData = doc.data();
             
-                const trenDataQuery = query(
+                // Consultar los datos del tren usando el servicio del conductor
+                const trenDataQueryCond = query(
                     collection(db, diagramaCondCollectionName),
                     where('servicio', '==', condData.servicio)
                 );
-                const trenDataSnapshot = await getDocs(trenDataQuery);
-                const trenData = trenDataSnapshot.docs[0]?.data();
+                const trenDataSnapshotCond = await getDocs(trenDataQueryCond);
+                const trenDataCond = trenDataSnapshotCond.docs[0]?.data();
+            
+                // Obtener datos del guarda desde la colección de guardas
+                const guardaCollection = collection(db, 'guardatren'); // Cambié aquí para asegurar que se consulta la colección correcta
+                const guardaQuery = query(guardaCollection, where('servicio', '==', condData.servicio));
+                const guardaSnapshot = await getDocs(guardaQuery);
+                const guardaData = guardaSnapshot.docs[0]?.data();
+            
+                // Consultar los datos del tren usando el servicio del guarda
+                const trenDataQueryGuarda = query(
+                    collection(db, diagramaGuardaCollectionName),
+                    where('servicio', '==', guardaData?.servicio)
+                );
+                const trenDataSnapshotGuarda = await getDocs(trenDataQueryGuarda);
+                const trenDataGuarda = trenDataSnapshotGuarda.docs[0]?.data();
+            
+                // Utilizar los datos disponibles del tren, preferentemente del conductor
+                const trenData = trenDataCond || trenDataGuarda;
             
                 if (trenData) {
                     const horaPartidaDate = new Date(`1970-01-01T${trenData.horaPartida}`).getTime();
                     if (horaPartidaDate >= horaInicioRango && horaPartidaDate <= horaFinRango) {
+                        // Obtener datos del conductor
                         const conductorQuery = query(
                             collection(db, 'conductores'),
                             where('servicio', '==', condData.servicio)
                         );
                         const conductorSnapshot = await getDocs(conductorQuery);
                         const conductor = conductorSnapshot.docs[0]?.data();
-            
-                        // Obtener datos del guarda desde la colección de guardas
-                        const guardaCollection = collection(db, guardCollectionName); // Usando la colección correcta para los guardas
-                        const guardaSnapshot = await getDocs(query(guardaCollection, where('servicio', '==', condData.servicio)));
-                        const guardaData = guardaSnapshot.docs[0]?.data();
-            
-                        // Obtener el nombre del guarda
-                        const guardaQuery = query(
-                            collection(db, 'guardatren'),
-                            where('servicio', '==', guardaData?.servicio)
-                        );
-                        const guardaSnapshotFinal = await getDocs(guardaQuery);
-                        const guarda = guardaSnapshotFinal.docs[0]?.data();
             
                         datosFinales.push({
                             servicio: condData.servicio,
@@ -100,13 +106,15 @@ export const Emergencia = () => {
                             horaTomada: condData.horaTomada || 'Desconocido',
                             horaDejada: condData.horaDejada || 'Desconocido',
                             serviciog: guardaData?.servicio || 'Desconocido',
-                            guarda: guarda?.apellido || 'Desconocido',
+                            guarda: guardaData?.apellido || 'Desconocido',
                             horaTomadaGuarda: guardaData?.horaTomada || 'Desconocido',
                             horaDejadaGuarda: guardaData?.horaDejada || 'Desconocido',
                         });
                     }
                 }
             }
+            
+            
             
         }
 
