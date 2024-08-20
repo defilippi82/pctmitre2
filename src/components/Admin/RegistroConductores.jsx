@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, setDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -14,6 +14,7 @@ export const RegistroConductores = () => {
     const [formData, setFormData] = useState({
         rol: '',
         nombre: '',
+        nombre2: "",
         apellido: '',
         legajo: '',
         servicio: '',
@@ -27,6 +28,7 @@ export const RegistroConductores = () => {
         base: '',
         email: '',
         direccion: '',
+        altura: '',
         localidad: '',
         provincia: '',
         piso: '',
@@ -61,7 +63,7 @@ export const RegistroConductores = () => {
         e.preventDefault();
         try {
             // Guardar los datos en Firebase
-            await addDoc(conductoresCollection, formData);
+            await setDoc(doc(conductoresCollection, formData.legajo), formData);
 
             // Mostrar alerta de éxito
             MySwal.fire({
@@ -78,6 +80,7 @@ export const RegistroConductores = () => {
             setFormData({
                 rol: '',
                 nombre: '',
+                nombre2: '',
                 apellido: '',
                 legajo: '',
                 servicio: '',
@@ -171,6 +174,15 @@ export const RegistroConductores = () => {
                         </div>
                              </Col>
                              <Col>
+                        <div className="elem-group">
+                        <div  as={Col} md="4" className='form-floating mb-3'>
+                        <input className='form-control' type="text" id="nombre2" name="nombre2" placeholder="Segundo Nombre"
+                             value={formData.nombre2} onChange={handleChange} />
+                        <label htmlFor="nombre2">Segundo Nombre </label>
+                        </div>
+                        </div>
+                             </Col>
+                             <Col>
 
                         <div className="elem-group">
                         <div as={Col} md="4" className='form-floating mb-3'>
@@ -225,6 +237,15 @@ export const RegistroConductores = () => {
                             <label htmlFor="direccion" for="floatingInputDisabled">Calle</label>
                             </div></div>
                                  </Col>
+                                 <Col>
+
+<div>
+<div as={Col} md="4" className="container elem-group form-floating mb-3">
+<input className='form-control input-number' type="number" id="altura" name="altura" maxLength="7" placeholder="XXXXX" value={formData.altura} onChange={handleChange} />
+<label htmlFor="dni">Altura</label>
+</div>
+</div>
+     </Col>
                                  <Col>
 
                             <div>
@@ -332,26 +353,29 @@ export const RegistroConductores = () => {
                         <div className="container elem-group form-floating mb-6">
                             <h3>Conocimiento de Vías</h3>
                             <fieldset>
-                                <div className="form-control content">
-                                    <ul className="lista1 form-check-inline form-switch">
-                                        {['ap ', 'bp ', 'cp ', 'dp ', 'ep ', 'rosario ', 'ug ', 'e1 ', 'e2 ', 'puerto '].map((seccion) => (
-                                            <li key={seccion}>
-                                                <label htmlFor={`switch-${seccion}`}>
-                                                    <input
-                                                        className="form-check-input"
-                                                        type="switch"
-                                                        name="secciones"
-                                                        value={seccion}
-                                                        id={`switch-${seccion}`}
-                                                        checked={formData.secciones.includes(seccion)}
-                                                        onChange={handleChange}
-                                                        /> {seccion.toUpperCase()}
-                                                </label>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </fieldset>
+        <div className="content">
+            <ul className="lista1">
+                {['ap ', 'bp ', 'cp ', 'dp ', 'ep ', 'rosario ', 'ug ', 'e1 ', 'e2 ', 'puerto '].map((seccion) => (
+                    <li key={seccion}>
+                        <div className="form-switch">
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                name="secciones"
+                                value={seccion}
+                                id={`switch-${seccion}`}
+                                checked={formData.secciones.includes(seccion)}
+                                onChange={handleChange}
+                            />
+                            <label className="form-check-label" htmlFor={`switch-${seccion}`}>
+                                {seccion.toUpperCase()}
+                            </label>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    </fieldset>
                             </div>
                             </div>
                                         </Col>

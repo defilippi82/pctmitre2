@@ -107,6 +107,7 @@ export const Administracion = () => {
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
+                                            <th>Segundo Nombre</th>
                                             <th>Apellido</th>
                                             <th>Legajo</th>
                                             <th>Servicio</th>
@@ -120,6 +121,7 @@ export const Administracion = () => {
                                             <th>Base</th>
                                             <th>Email</th>
                                             <th>Dirección</th>
+                                            <th>Altura</th>
                                             <th>Localidad</th>
                                             <th>Provincia</th>
                                             <th>Piso</th>
@@ -134,6 +136,7 @@ export const Administracion = () => {
                                         {conductores.map((conductor) => (
                                             <tr key={conductor.id}>
                                                 <td>{conductor.nombre}</td>
+                                                <td>{conductor.nombre2}</td>
                                                 <td>{conductor.apellido}</td>
                                                 <td>{conductor.legajo}</td>
                                                 <td>{conductor.servicio}</td>
@@ -147,6 +150,7 @@ export const Administracion = () => {
                                                 <td>{conductor.base}</td>
                                                 <td>{conductor.email}</td>
                                                 <td>{conductor.direccion}</td>
+                                                <td>{conductor.altura}</td>
                                                 <td>{conductor.localidad}</td>
                                                 <td>{conductor.provincia}</td>
                                                 <td>{conductor.piso}</td>
@@ -173,11 +177,13 @@ export const Administracion = () => {
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
+                                            <th>Segundo Nombre</th>
                                             <th>Apellido</th>
                                             <th>Legajo</th>
                                             <th>Servicio</th>
                                             <th>Email</th>
                                             <th>Dirección</th>
+                                            <th>Altura</th>
                                             <th>Localidad</th>
                                             <th>Provincia</th>
                                             <th>Piso</th>
@@ -194,11 +200,13 @@ export const Administracion = () => {
                                         {guardatrenes.map((guardatren) => (
                                             <tr key={guardatren.id}>
                                                 <td>{guardatren.nombre}</td>
+                                                <td>{guardatren.nombre2}</td>
                                                 <td>{guardatren.apellido}</td>
                                                 <td>{guardatren.legajo}</td>
                                                 <td>{guardatren.servicio}</td>
                                                 <td>{guardatren.email}</td>
                                                 <td>{guardatren.direccion}</td>
+                                                <td>{guardatren.altura}</td>
                                                 <td>{guardatren.localidad}</td>
                                                 <td>{guardatren.provincia}</td>
                                                 <td>{guardatren.piso}</td>
@@ -227,6 +235,7 @@ export const Administracion = () => {
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
+                                            <th>Segundo Nombre</th>
                                             <th>Apellido</th>
                                             <th>Legajo</th>
                                             <th>Email</th>
@@ -238,6 +247,7 @@ export const Administracion = () => {
                                         {operadores.map((operador) => (
                                             <tr key={operador.id}>
                                                 <td>{operador.nombre}</td>
+                                                <td>{operador.nombre2}</td>
                                                 <td>{operador.apellido}</td>
                                                 <td>{operador.legajo}</td>
                                                 <td>{operador.email}</td>
