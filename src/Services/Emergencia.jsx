@@ -111,12 +111,15 @@ export const Emergencia = () => {
             
                         datosFinales.push({
                             servicio: condData.servicio,
-                            tren: trenDataGuarda.tren || 'Desconocido',
+                            tren: trenDataCond.tren || 'Desconocido',
                             horaPartida: trenDataGuarda.horaPartida || 'Desconocido',
                             horaLlegada: trenDataGuarda.horaLlegada || 'Desconocido',
                             conductor: conductor?.apellido || 'Desconocido',
                             horaTomada: condData.horaTomada || 'Desconocido',
                             horaDejada: condData.horaDejada || 'Desconocido',
+                            trenGuarda: trenDataGuarda.tren || 'Desconocido',
+                            horaPartidaGuarda: trenDataGuarda.horaPartida || 'Desconocido',
+                            horaLlegadaGuarda: trenDataGuarda.horaLlegada || 'Desconocido',
                             serviciog: guardaData?.servicio || 'Desconocido',
                             guarda: guardaData?.apellido || 'Desconocido',
                             horaTomadaGuarda: guardaData?.horaTomada || 'Desconocido',
