@@ -102,6 +102,12 @@ export const Emergencia = () => {
                         );
                         const conductorSnapshot = await getDocs(conductorQuery);
                         const conductor = conductorSnapshot.docs[0]?.data();
+                        const guardaQuery = query(
+                            collection(db, 'guardas'),
+                            where('servicio', '==', guardaData?.servicio)  // Asegúrate de que guardaData ya tenga datos
+                        );
+                        const guardaSnapshot = await getDocs(guardaQuery);
+                        const guarda = guardaSnapshot.docs[0]?.data();
             
                         datosFinales.push({
                             servicio: condData.servicio,
