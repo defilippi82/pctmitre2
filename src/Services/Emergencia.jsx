@@ -78,13 +78,13 @@ export const Emergencia = () => {
                 // Consultar los datos del tren usando el servicio del guarda
                 const trenDataQueryGuarda = query(
                     collection(db, diagramaGuardaCollectionName),
-                    where('servicio', '==', guardaData?.servicio)
+                    where('servicio', '==', guardaData.servicio)
                 );
                 const trenDataSnapshotGuarda = await getDocs(trenDataQueryGuarda);
                 const trenDataGuarda = trenDataSnapshotGuarda.docs[0]?.data();
             
                 // Utilizar los datos disponibles del tren, preferentemente del conductor
-                const trenData = trenDataCond || trenDataGuarda;
+                const trenData = trenDataCond && trenDataGuarda;
             
                 if (trenData) {
                     const horaPartidaDate = new Date(`1970-01-01T${trenData.horaPartida}`).getTime();
