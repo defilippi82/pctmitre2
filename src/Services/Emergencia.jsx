@@ -102,6 +102,8 @@ export const Emergencia = () => {
                         );
                         const conductorSnapshot = await getDocs(conductorQuery);
                         const conductor = conductorSnapshot.docs[0]?.data();
+                
+                        // Obtener datos del guarda
                         const guardaQuery = query(
                             collection(db, 'guardas'),
                             where('servicio', '==', guardaData?.servicio)  // Asegúrate de que guardaData ya tenga datos
