@@ -84,11 +84,17 @@ export const Emergencia = () => {
                 const trenDataGuarda = trenDataSnapshotGuarda.docs[0]?.data();
             
                 // Utilizar los datos disponibles del tren, preferentemente del conductor
-                const trenData = trenDataCond && trenDataGuarda;
+               // const trenData = trenDataCond && trenDataGuarda;
             
-                if (trenData) {
-                    const horaPartidaDate = new Date(`1970-01-01T${trenData.horaPartida}`).getTime();
-                    if (horaPartidaDate >= horaInicioRango && horaPartidaDate <= horaFinRango) {
+                if (trenDataCond && trenDataGuarda) {
+                    const horaPartidaCondDate = new Date(`1970-01-01T${trenDataCond.horaPartida}`).getTime();
+                    const horaPartidaGuardaDate = new Date(`1970-01-01T${trenDataGuarda.horaPartida}`).getTime();
+                
+                    // Asegurarse de que la hora de partida esté dentro del rango
+                    if (
+                        (horaPartidaCondDate >= horaInicioRango && horaPartidaCondDate <= horaFinRango) ||
+                        (horaPartidaGuardaDate >= horaInicioRango && horaPartidaGuardaDate <= horaFinRango)
+                    ) {
                         // Obtener datos del conductor
                         const conductorQuery = query(
                             collection(db, 'conductores'),
