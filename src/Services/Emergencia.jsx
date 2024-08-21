@@ -33,55 +33,50 @@ export const Emergencia = () => {
         const horaActualDate = new Date(`1970-01-01T${horaActual}`);
         const horaInicioRango = horaActualDate.getTime() - 30 * 60 * 1000; // 30 minutos antes
         const horaFinRango = horaActualDate.getTime() + 30 * 60 * 1000; // 30 minutos después
-
+    
         let dias = Object.keys(diasSeleccionados).filter(dia => diasSeleccionados[dia]);
-
+    
         let datosFinales = [];
         for (const dia of dias) {
             let Suffix1 = linea;
             let Suffix2 = dia;
-
+    
             const condCollectionName = `servicio${Suffix1}Cond${Suffix2}`;
-            const guardCollectionName = `servicio${Suffix1}Guar${Suffix2}`;
-            const diagramaCondCollectionName = `diagrama${Suffix1}${Suffix2}Cond`;
-            const diagramaGuardaCollectionName = `diagrama${Suffix1}${Suffix2}Guarda`;
-
+            const diagramaCollectionName = `diagrama${Suffix1}${Suffix2}`;
+    
             const condSnapshot = await getDocs(collection(db, condCollectionName));
-            
+    
             for (const doc of condSnapshot.docs) {
                 const condData = doc.data();
+                
+                // Obtener los datos del tren para el conductor
                 const trenDataQueryCond = query(
-                    collection(db, diagramaCondCollectionName),
+                    collection(db, diagramaCollectionName),
                     where('servicio', '==', condData.servicio)
                 );
                 const trenDataSnapshotCond = await getDocs(trenDataQueryCond);
-                const trenDataCond = trenDataSnapshotCond.docs[0]?.data();
+                const trenData = trenDataSnapshotCond.docs[0]?.data();
                 
-                const guardaCollection = collection(db, 'guardatren');
-                const guardaQuery = query(guardaCollection, where('servicio', '==', condData.servicio));
-                const guardaSnapshot = await getDocs(guardaQuery);
-                const guardaData = guardaSnapshot.docs[0]?.data();
+                if (trenData?.servicioG) { // Verificar que servicioG no es undefined
+                    // Obtener los datos del guardatren utilizando el servicioG
+                    const guardaCollection = collection(db, 'guardatren');
+                    const guardaQuery = query(guardaCollection, where('servicio', '==', trenData.servicioG));
+                    const guardaSnapshot = await getDocs(guardaQuery);
+                    const guardaData = guardaSnapshot.docs[0]?.data();
 
-                const trenDataQueryGuarda = query(
-                    collection(db, diagramaGuardaCollectionName),
-                    where('servicio', '==', guardaData.servicio)
-                );
-                const trenDataSnapshotGuarda = await getDocs(trenDataQueryGuarda);
-                const trenDataGuarda = trenDataSnapshotGuarda.docs[0]?.data();
+                      // Convertir horaPartida a timestamp para la comparación
+                const horaPartidaDate = new Date(`1970-01-01T${trenData.horaPartida}`).getTime();
 
-                if (trenDataCond && trenDataGuarda) {
+                if (horaPartidaDate >= horaInicioRango && horaPartidaDate <= horaFinRango) {
                     datosFinales.push({
                         servicio: condData.servicio,
-                        tren: trenDataCond.tren || 'Desconocido',
-                        horaPartida: trenDataGuarda.horaPartida || 'Desconocido',
-                        horaLlegada: trenDataGuarda.horaLlegada || 'Desconocido',
+                        tren: trenData.tren || 'Desconocido',
+                        horaPartida: trenData.horaPartida || 'Desconocido',
+                        horaLlegada: trenData.horaLlegada || 'Desconocido',
                         conductor: condData.apellido || 'Desconocido',
                         horaTomada: condData.horaTomada || 'Desconocido',
                         horaDejada: condData.horaDejada || 'Desconocido',
-                        trenGuarda: trenDataGuarda.tren || 'Desconocido',
-                        horaPartidaGuarda: trenDataGuarda.horaPartida || 'Desconocido',
-                        horaLlegadaGuarda: trenDataGuarda.horaLlegada || 'Desconocido',
-                        serviciog: guardaData?.servicio || 'Desconocido',
+                        serviciog: trenData.servicioG || 'Desconocido',
                         guarda: guardaData?.apellido || 'Desconocido',
                         horaTomadaGuarda: guardaData?.horaTomada || 'Desconocido',
                         horaDejadaGuarda: guardaData?.horaDejada || 'Desconocido',
@@ -89,14 +84,16 @@ export const Emergencia = () => {
                 }
             }
         }
-
+    }
+    
         setDatos(datosFinales);
         setLoading(false); // Desactivar la carga
     };
+    
 
     useEffect(() => {
-        obtenerDatos(linea);
-    }, [horaActual, diasSeleccionados]);
+        //obtenerDatos(linea);
+    }, []);
 
     return (
         <div>
@@ -197,6 +194,39 @@ export const Emergencia = () => {
                             ))}
                         </tbody>
                     </Table>
+
+                    <h3>Emergencia - Personal a Ordenes</h3>
+
+<Table striped bordered hover responsive variant='dark'>
+    <thead>
+        <tr>
+            <th>Base</th>
+             <th>Serv. Cond.</th>
+            <th>Conductor</th>
+            <th>Tomada Cond.</th>
+            <th>Dejada Cond.</th>
+            <th>Serv. Guarda.</th>
+            <th>Guarda</th>
+            <th>Tomada Guarda</th>
+            <th>Dejada Guarda</th>
+        </tr>
+    </thead>
+    <tbody>
+        {datos.map((fila, index) => (
+            <tr key={index}>
+                <td>{fila.tren}</td>
+                <td>{fila.servicio}</td>
+                <td>{fila.conductor}</td>
+                <td>{fila.horaTomada}</td>
+                <td>{fila.horaDejada}</td>
+                <td>{fila.serviciog}</td>
+                <td>{fila.guarda}</td>
+                <td>{fila.horaTomadaGuarda}</td>
+                <td>{fila.horaDejadaGuarda}</td>
+            </tr>
+        ))}
+    </tbody>
+</Table>
                 </>
             )}
         </div>

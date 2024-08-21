@@ -32,9 +32,9 @@ export const CargarColecciones = () => {
                 const jsonData = JSON.parse(event.target.result);
 
                 jsonData.forEach(async (docData) => {
-                    const legajoId = docData.legajo; // Usa el campo "legajo" como ID del documento
-                    await setDoc(doc(db, collectionName, legajoId), docData);
-                    console.log(`Documento con ID ${legajoId} añadido a la colección ${collectionName}.`);
+                    const trenId = docData.tren; // Usa el campo "tren" como ID del documento
+                    await setDoc(doc(db, collectionName, trenId), docData);
+                    console.log(`Documento con ID ${trenId} añadido a la colección ${collectionName}.`);
                 });
 
                 Swal.fire({
