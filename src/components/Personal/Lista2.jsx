@@ -254,7 +254,7 @@ export const Lista = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {resultados.map((item, index) => (
+                    {resultados.filter(item => item.servicio >= 101 && item.servicio <= 172).map((item, index) => (
                         <tr key={index}>
                             <td>{item.servicio}</td>
                             <td>{item.tren}</td>
