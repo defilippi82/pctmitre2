@@ -53,6 +53,10 @@ export const CorteSecc = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
+       // Mapa de conflictos
+       const conflictingSections = getConflictingSections();
+
+
       // Renderizar los trabajos sobre la imagen
       trabajos.forEach(trabajo => {
           // Ajusta las coordenadas proporcionalmente
@@ -60,6 +64,8 @@ export const CorteSecc = () => {
           secciones.forEach(seccion => {
           const scaleX = canvas.width / 900;
           const scaleY = canvas.height / 600;
+          const imgToUse = conflictingSections[seccion] ? trabajoImg2 : trabajoImg; // Usa la imagen correspondiente
+
           
           switch (seccion) {
             case "8":
@@ -143,16 +149,16 @@ export const CorteSecc = () => {
               ctx.drawImage(trabajoImg, 550 * scaleX, 480 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "Dep. Victoria":
-              ctx.drawImage(trabajoImg, 450 * scaleX, 250 * scaleY, 50* scaleX, 50 * scaleY);
+              ctx.drawImage(imgToUse, 450 * scaleX, 250 * scaleY, 50* scaleX, 50 * scaleY);
               break;
             case "Dep. Suárez":
-              ctx.drawImage(trabajoImg, 850 * scaleX, 395 * scaleY, 50* scaleX, 50 * scaleY);
+              ctx.drawImage(imgToUse, 850 * scaleX, 395 * scaleY, 50* scaleX, 50 * scaleY);
               break;
               case "Vía Puerto":
-              ctx.drawImage(trabajoImg, 80 * scaleX, 200 * scaleY, 50* scaleX, 50 * scaleY);
+              ctx.drawImage(imgToUse, 80 * scaleX, 200 * scaleY, 50* scaleX, 50 * scaleY);
               break;
               case "Todas las Plataformas":
-                ctx.drawImage(trabajoImg2, 0 * scaleX, 130 * scaleY, 75* scaleX, 75 * scaleY);
+                ctx.drawImage(imgToUse, 0 * scaleX, 130 * scaleY, 75* scaleX, 75 * scaleY);
                 break;
             default:
               break;
