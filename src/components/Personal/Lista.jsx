@@ -7,11 +7,13 @@ import SweetAlert from 'sweetalert2';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { auto } from '@popperjs/core';
+import loadingGif from '/loading.gif';
 //import PDF, { Text, AddPage, Line, Image, Table, Html } from 'jspdf-react'
 
 
 export const Lista = () => {
     const [linea, setLinea] = useState('');
+    const [loading, setLoading] = useState(false);
     const [servicio, setServicio] = useState('');
     const [personal, setPersonal] = useState('');
     const [dias, setDias] = useState([]);
@@ -22,6 +24,7 @@ export const Lista = () => {
     const db = getFirestore();
 
     const handleSearch = async () => {
+        setLoading(true);
         let coleccion = '';
     
         if (linea === 'Suarez' && servicio === 'Electrico' && personal === 'Conductores') {
@@ -118,6 +121,7 @@ export const Lista = () => {
         }
 
         setResultados(data);
+        setLoading(false);
     };
 
     const handleCheckboxChange = (e) => {
@@ -241,6 +245,14 @@ export const Lista = () => {
 
             <Button variant='success' onClick={handleSearch}>Generar Lista</Button>
             <Button variant='warning' onClick={handleGeneratePDF}>imprimir</Button>
+
+            {loading ? (
+                <div style={{ textAlign: 'center' }}>
+                    <img src={loadingGif} alt="Cargando..." style={{ width: '100px', height: '100px' }} />
+                    <p>Cargando datos...</p>
+                </div>
+            ) : (
+                <>
             <Table variant='dark'>
                 <thead>
                     <tr>
@@ -301,6 +313,8 @@ export const Lista = () => {
                     ))}
                 </tbody>
             </Table>
+            </>
+            )}
         </div>
     );
 };
