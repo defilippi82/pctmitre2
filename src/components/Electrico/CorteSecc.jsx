@@ -69,84 +69,84 @@ export const CorteSecc = () => {
           
           switch (seccion) {
             case "8":
-              ctx.drawImage(trabajoImg, 0 * scaleX, 120 * scaleY ,25 * scaleX, 25 * scaleY);
+              ctx.drawImage(imgToUse, 0 * scaleX, 120 * scaleY ,25 * scaleX, 25 * scaleY);
               break;
             case "7":
-              ctx.drawImage(trabajoImg, 0 * scaleX, 130 * scaleY ,25 * scaleX, 25 * scaleY);
+              ctx.drawImage(imgToUse, 0 * scaleX, 130 * scaleY ,25 * scaleX, 25 * scaleY);
               break;
             case "6":
-              ctx.drawImage(trabajoImg, 0 * scaleX, 140 * scaleY ,25 * scaleX, 25 * scaleY);
+              ctx.drawImage(imgToUse, 0 * scaleX, 140 * scaleY ,25 * scaleX, 25 * scaleY);
               break;
             case "5":
-              ctx.drawImage(trabajoImg, 0 * scaleX, 150 * scaleY, 25 * scaleX, 25 * scaleY);
+              ctx.drawImage(imgToUse, 0 * scaleX, 150 * scaleY, 25 * scaleX, 25 * scaleY);
               break;
             case "4":
-              ctx.drawImage(trabajoImg, 0 * scaleX, 170 * scaleY, 25 * scaleX, 25 * scaleY);
+              ctx.drawImage(imgToUse, 0 * scaleX, 170 * scaleY, 25 * scaleX, 25 * scaleY);
               break;
             case "3":
-              ctx.drawImage(trabajoImg, 0 * scaleX, 180 * scaleY, 25 * scaleX, 25 * scaleY);
+              ctx.drawImage(imgToUse, 0 * scaleX, 180 * scaleY, 25 * scaleX, 25 * scaleY);
               break;
             case "2":
-              ctx.drawImage(trabajoImg, 0 * scaleX, 190 * scaleY, 25* scaleX, 25 * scaleY);
+              ctx.drawImage(imgToUse, 0 * scaleX, 190 * scaleY, 25* scaleX, 25 * scaleY);
               break;
             case "1":
-              ctx.drawImage(trabajoImg, 0 * scaleX, 200 * scaleY, 25* scaleX, 25 * scaleY);
+              ctx.drawImage(imgToUse, 0 * scaleX, 200 * scaleY, 25* scaleX, 25 * scaleY);
               break;
             case "10/14":
-              ctx.drawImage(trabajoImg, 190 * scaleX, 190 * scaleY, 35 * scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 190 * scaleX, 190 * scaleY, 35 * scaleX, 35 * scaleY);
               break;
             case "11/15":
-              ctx.drawImage(trabajoImg, 190 * scaleX, 180 * scaleY, 35 * scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 190 * scaleX, 180 * scaleY, 35 * scaleX, 35 * scaleY);
               break;
             case "13/17":
-              ctx.drawImage(trabajoImg, 190 * scaleX, 160 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 190 * scaleX, 160 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "12/16":
-              ctx.drawImage(trabajoImg, 180 * scaleX, 170 * scaleY, 35 * scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 180 * scaleX, 170 * scaleY, 35 * scaleX, 35 * scaleY);
               break;
             case "18/19":
-              ctx.drawImage(trabajoImg, 280 * scaleX, 190 * scaleY, 35 * scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 280 * scaleX, 190 * scaleY, 35 * scaleX, 35 * scaleY);
               break;
             case "40/41":
-              ctx.drawImage(trabajoImg, 265 * scaleX, 160 * scaleY, 35* scaleX, 35 * scaleY);
-              ctx.drawImage(trabajoImg, 50 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 265 * scaleX, 160 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 50 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "20/21":
-              ctx.drawImage(trabajoImg, 550 * scaleX, 190 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 550 * scaleX, 190 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "42/43":
-              ctx.drawImage(trabajoImg, 200 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 200 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "22/23":
-              ctx.drawImage(trabajoImg, 700 * scaleX, 190 * scaleY, 35 * scaleX, 35 * scaleY);
-              ctx.drawImage(trabajoImg, 200 * scaleX, 280 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 700 * scaleX, 190 * scaleY, 35 * scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 200 * scaleX, 280 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "44/45":
-              ctx.drawImage(trabajoImg, 275 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 275 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "24/25":
-              ctx.drawImage(trabajoImg, 375 * scaleX, 280 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 375 * scaleX, 280 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "46/47":
-              ctx.drawImage(trabajoImg, 450 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 450 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "26/27":
-              ctx.drawImage(trabajoImg, 500 * scaleX, 280 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 500 * scaleX, 280 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "48/49":
-              ctx.drawImage(trabajoImg, 650 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 650 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "28/29":
-              ctx.drawImage(trabajoImg, 625 * scaleX, 290 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 625 * scaleX, 290 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "60/61":
-              ctx.drawImage(trabajoImg, 775 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 775 * scaleX, 390 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "50/51":
-              ctx.drawImage(trabajoImg, 350 * scaleX, 480 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 350 * scaleX, 480 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "52/53":
-              ctx.drawImage(trabajoImg, 550 * scaleX, 480 * scaleY, 35* scaleX, 35 * scaleY);
+              ctx.drawImage(imgToUse, 550 * scaleX, 480 * scaleY, 35* scaleX, 35 * scaleY);
               break;
             case "Dep. Victoria":
               ctx.drawImage(imgToUse, 450 * scaleX, 250 * scaleY, 50* scaleX, 50 * scaleY);
