@@ -23,6 +23,7 @@ import { Pendientes } from './components/Emergencia/Pendientes.jsx';
 import { NavbarComponent } from './Views/Navbar';
 import {UserProvider} from "./Services/UserContext";
 import {Emergencia} from "./Services/Emergencia";
+import {Partes} from "./components/Emergencia/Partes.jsx";
 import {CargarColecciones} from "./Services/CargarColecciones";
 import {Footer} from './Views/Footer';
 import {Privacidad} from "./Views/Privacidad";
@@ -49,7 +50,7 @@ export const App = () => {
           <Route path="/administracion" element={<Administracion/>} />
           <Route path="/direcciones" element={<Direcciones />} />
           <Route path="/pendientes" element={<Pendientes/>} />
-          <Route path="/partes" element="Aca se ven los partes de Regularidad" />
+          <Route path="/partes" element={<Partes/>} />
           <Route path="/art" element="Formulario para ARTs " />
           <Route path="/barreras" element="Aca se ven los pendientes de barreras" />
           <Route path="/conductores/create" element={<RegistroConductores/>} />

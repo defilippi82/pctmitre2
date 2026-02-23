@@ -1,39 +1,55 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { db } from "../../firebaseConfig/firebase";
+import { collection, addDoc, onSnapshot, query } from "firebase/firestore";
+import { Form, Table, Button, Row, Col, Card } from "react-bootstrap";
+import Swal from "sweetalert2";
 
-const franjasHorarias = [
-  "00:00 - 06:00",
-  "06:00 - 08:30",
-  "08:30 - 12:00",
-  "12:00 - 16:00",
-  "16:00 - 18:30"
-];
+export const Partes = () => {
+  const franjasHorarias = [
+    "00:00 - 06:00",
+    "06:00 - 08:30",
+    "08:30 - 12:00",
+    "12:00 - 16:00",
+    "16:00 - 18:30",
+  ];
 
-const sectoresBase = [
-  { nombre: "AP", programados: 0 },
-  { nombre: "BP", programados: 0 },
-  { nombre: "CP", programados: 0 },
-  { nombre: "DP", programados: 0 },
-  { nombre: "EP", programados: 0 },
-  { nombre: "Tren de la Costa", programados: 0 }
-];
+  const sectoresBase = ["AP", "BP", "CP", "DP", "EP", "Tren de la Costa"];
 
-export default function Partes() {
-  const [data, setData] = useState(
-    franjasHorarias.map((franja) => ({
-      franja,
-      sectores: sectoresBase.map((s) => ({
-        ...s,
-        circulacion: 0,
-        demorados: 0,
-        cancelados: 0
-      }))
-    }))
-  );
+  const [franjaSeleccionada, setFranjaSeleccionada] = useState("");
+  const [sectores, setSectores] = useState([]);
+  const [partes, setPartes] = useState([]);
 
-  const handleChange = (franjaIndex, sectorIndex, field, value) => {
-    const updated = [...data];
-    updated[franjaIndex].sectores[sectorIndex][field] = Number(value);
-    setData(updated);
+  useEffect(() => {
+    const q = query(collection(db, "partes"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = [];
+      snapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() });
+      });
+      setPartes(data);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (franjaSeleccionada) {
+      setSectores(
+        sectoresBase.map((nombre) => ({
+          nombre,
+          programados: 0,
+          circulacion: 0,
+          demorados: 0,
+          cancelados: 0,
+        }))
+      );
+    }
+  }, [franjaSeleccionada]);
+
+  const handleChange = (index, field, value) => {
+    const updated = [...sectores];
+    updated[index][field] = Number(value);
+    setSectores(updated);
   };
 
   const calcularRegularidad = (programados, cancelados) => {
@@ -41,117 +57,157 @@ export default function Partes() {
     return (((programados - cancelados) / programados) * 100).toFixed(2);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!franjaSeleccionada) {
+      Swal.fire("Error", "Seleccione una franja horaria", "error");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "partes"), {
+        franja: franjaSeleccionada,
+        sectores,
+        fecha: new Date(),
+      });
+
+      Swal.fire("Éxito", "Parte guardado correctamente", "success");
+      setFranjaSeleccionada("");
+    } catch (error) {
+      Swal.fire("Error", "No se pudo guardar el parte", "error");
+    }
+  };
+
+  // 🔴 Cálculo acumulativo
+  const calcularAcumulado = (franjaActual) => {
+    let totalProg = 0;
+    let totalCancel = 0;
+
+    partes.forEach((parte) => {
+      if (
+        franjasHorarias.indexOf(parte.franja) <=
+        franjasHorarias.indexOf(franjaActual)
+      ) {
+        parte.sectores.forEach((sec) => {
+          totalProg += sec.programados;
+          totalCancel += sec.cancelados;
+        });
+      }
+    });
+
+    return calcularRegularidad(totalProg, totalCancel);
+  };
+
   return (
     <div>
-      <h2>TF04 - Puesto Control Trenes</h2>
+      <h1>Partes de Regularidad</h1>
 
-      {data.map((franjaData, franjaIndex) => {
-        let totalProgramados = 0;
-        let totalCancelados = 0;
+      <Form onSubmit={handleSubmit}>
+        <Row>
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label>Seleccione Franja Horaria</Form.Label>
+              <Form.Select
+                value={franjaSeleccionada}
+                onChange={(e) => setFranjaSeleccionada(e.target.value)}
+              >
+                <option value="">Seleccione...</option>
+                {franjasHorarias.map((fr) => (
+                  <option key={fr}>{fr}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Col>
+        </Row>
 
-        return (
-          <div key={franjaIndex} style={{ marginBottom: "40px" }}>
-            <h3>Franja: {franjaData.franja}</h3>
-
-            <table border="1" cellPadding="5">
-              <thead>
-                <tr>
-                  <th>Sector</th>
-                  <th>Programados</th>
-                  <th>En circulación</th>
-                  <th>Demorados</th>
-                  <th>Cancelados</th>
-                  <th>Regularidad %</th>
+        {sectores.length > 0 && (
+          <Table striped bordered hover className="mt-4">
+            <thead>
+              <tr>
+                <th>Sector</th>
+                <th>Programados</th>
+                <th>Circulación</th>
+                <th>Demorados</th>
+                <th>Cancelados</th>
+                <th>Regularidad %</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sectores.map((sector, i) => (
+                <tr key={i}>
+                  <td>{sector.nombre}</td>
+                  <td>
+                    <Form.Control
+                      type="number"
+                      onChange={(e) =>
+                        handleChange(i, "programados", e.target.value)
+                      }
+                    />
+                  </td>
+                  <td>
+                    <Form.Control
+                      type="number"
+                      onChange={(e) =>
+                        handleChange(i, "circulacion", e.target.value)
+                      }
+                    />
+                  </td>
+                  <td>
+                    <Form.Control
+                      type="number"
+                      onChange={(e) =>
+                        handleChange(i, "demorados", e.target.value)
+                      }
+                    />
+                  </td>
+                  <td>
+                    <Form.Control
+                      type="number"
+                      onChange={(e) =>
+                        handleChange(i, "cancelados", e.target.value)
+                      }
+                    />
+                  </td>
+                  <td>
+                    {calcularRegularidad(
+                      sector.programados,
+                      sector.cancelados
+                    )} %
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {franjaData.sectores.map((sector, sectorIndex) => {
-                  totalProgramados += sector.programados;
-                  totalCancelados += sector.cancelados;
+              ))}
+            </tbody>
+          </Table>
+        )}
 
-                  return (
-                    <tr key={sectorIndex}>
-                      <td>{sector.nombre}</td>
+        {sectores.length > 0 && (
+          <Button type="submit" className="btn btn-success">
+            Guardar Parte
+          </Button>
+        )}
+      </Form>
 
-                      <td>
-                        <input
-                          type="number"
-                          value={sector.programados}
-                          onChange={(e) =>
-                            handleChange(
-                              franjaIndex,
-                              sectorIndex,
-                              "programados",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </td>
+      <hr />
 
-                      <td>
-                        <input
-                          type="number"
-                          value={sector.circulacion}
-                          onChange={(e) =>
-                            handleChange(
-                              franjaIndex,
-                              sectorIndex,
-                              "circulacion",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </td>
+      <h3>Reportes Guardados</h3>
 
-                      <td>
-                        <input
-                          type="number"
-                          value={sector.demorados}
-                          onChange={(e) =>
-                            handleChange(
-                              franjaIndex,
-                              sectorIndex,
-                              "demorados",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </td>
-
-                      <td>
-                        <input
-                          type="number"
-                          value={sector.cancelados}
-                          onChange={(e) =>
-                            handleChange(
-                              franjaIndex,
-                              sectorIndex,
-                              "cancelados",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </td>
-
-                      <td>
-                        {calcularRegularidad(
-                          sector.programados,
-                          sector.cancelados
-                        )} %
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-
-            <h4>
-              Total Regularidad Franja:{" "}
-              {calcularRegularidad(totalProgramados, totalCancelados)} %
-            </h4>
-          </div>
-        );
-      })}
+      <Table striped bordered hover responsive>
+        <thead>
+          <tr>
+            <th>Franja</th>
+            <th>Regularidad Acumulada %</th>
+          </tr>
+        </thead>
+        <tbody>
+          {partes.map((parte) => (
+            <tr key={parte.id}>
+              <td>{parte.franja}</td>
+              <td>{calcularAcumulado(parte.franja)} %</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </div>
   );
-}
+};
