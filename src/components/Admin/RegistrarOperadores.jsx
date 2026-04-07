@@ -19,13 +19,14 @@ export const RegistrarOperadores = () => {
   const [legajo, setlegajo] = useState('');
   
   const roles = new Map([
-    ['administrador', { valor: 'administrador', administrador: true, electrico: true, personal: true, emergencia: true,diesel: true, usuario: true }],
-    ['electrico', { valor: 'electrico', administrador: false, electrico: true, personal: false, emergencia: false,diesel: false, usuario: false }],
-    ['diesel', { valor: 'diesel', administrador: false, electrico: false, personal: false, emergencia: false,diesel: true, usuario: false }],
-    ['personal', { valor: 'personal', administrador: false, electrico: false, personal: true, emergencia: false,diesel: false, usuario: false }],
-    ['emergencia', { valor: 'emergencia', administrador: false, electrico: false, personal: false, emergencia: true,diesel: false, usuario: false }],
-    ['usuario', { valor: 'usuario', administrador: false, electrico: false, personal: false, emergencia: false,diesel: false, usuario: true }],
-    ['relevante', { valor: 'relevante', administrador: false, electrico: true, personal: true, emergencia: true, diesel: true, usuario: true }],
+    ['administrador', { valor: 'administrador', administrador: true, electrico: true, personal: true, emergencia: true,diesel: true, usuario: true, gde: true }],
+    ['gde', { valor: 'gde', administrador: false, electrico: true, personal: false, emergencia: true,diesel: true, usuario: true, gde: true }],
+    ['electrico', { valor: 'electrico', administrador: false, electrico: true, personal: false, emergencia: false,diesel: false, usuario: false, gde: false }],
+    ['diesel', { valor: 'diesel', administrador: false, electrico: false, personal: false, emergencia: false,diesel: true, usuario: false,gde: false }],
+    ['personal', { valor: 'personal', administrador: false, electrico: false, personal: true, emergencia: false,diesel: false, usuario: false,gde: false }],
+    ['emergencia', { valor: 'emergencia', administrador: false, electrico: false, personal: false, emergencia: true,diesel: false, usuario: false,gde: false }],
+    ['usuario', { valor: 'usuario', administrador: false, electrico: false, personal: false, emergencia: false,diesel: false, usuario: true,gde: false }],
+    ['relevante', { valor: 'relevante', administrador: false, electrico: true, personal: true, emergencia: true, diesel: true, usuario: true,gde: false }],
   ]);
   const [rol, setRol] = useState(roles.get('personal')); // Valor inicial del rol
  
