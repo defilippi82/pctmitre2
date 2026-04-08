@@ -8,6 +8,15 @@ import withReactContent from 'sweetalert2-react-content';
 
 const MySwal = withReactContent(Swal);
 
+// LISTAS PREDEFINIDAS: Reemplaza estos valores con los que tienes en tu Excel
+const ESTACIONES = [
+  "Retiro", "Zárate", "Rosario", "San Lorenzo", "Córdoba", "Tucumán"
+];
+
+const EMPRESAS = [
+  "NCA", "Ferrosur Roca", "Belgrano Cargas", "Ferroexpreso Pampeano", "Fepasa"
+];
+
 export const Tarjetas = () => {
   const { userData } = useContext(UserContext);
   
@@ -16,13 +25,15 @@ export const Tarjetas = () => {
     fecha: '',
     tren: '',
     locomotora: '',
-    toneladas: '',
+    empresa: '',
     origen: '',
     destino: '',
+    toneladasNetas: '',
+    tara: '',
+    toneladasBrutas: '', // Este campo se calcula solo
     operador: userData?.nombre || ''
   });
 
-  // Filtros
   const [filtroFecha, setFiltroFecha] = useState('');
   const [filtroTren, setFiltroTren] = useState('');
 
@@ -42,7 +53,20 @@ export const Tarjetas = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNuevaTarjeta({ ...nuevaTarjeta, [name]: value });
+    
+    // Copiamos el estado actual
+    let estadoActualizado = { ...nuevaTarjeta, [name]: value };
+
+    // Lógica de cálculo automático para Toneladas Brutas
+    if (name === 'toneladasNetas' || name === 'tara') {
+      const netas = name === 'toneladasNetas' ? parseFloat(value) || 0 : parseFloat(estadoActualizado.toneladasNetas) || 0;
+      const tara = name === 'tara' ? parseFloat(value) || 0 : parseFloat(estadoActualizado.tara) || 0;
+      
+      // Calculamos el total y lo guardamos
+      estadoActualizado.toneladasBrutas = (netas + tara).toString();
+    }
+
+    setNuevaTarjeta(estadoActualizado);
   };
 
   const handleAddTarjeta = async (e) => {
@@ -53,14 +77,16 @@ export const Tarjetas = () => {
       
       MySwal.fire('Guardado', 'La tarjeta ha sido registrada', 'success');
       
-      // Limpiamos campos específicos manteniendo los de referencia
       setNuevaTarjeta({
         ...nuevaTarjeta,
         tren: '',
         locomotora: '',
-        toneladas: '',
+        empresa: '', // Puedes decidir si limpiar este campo o dejarlo fijo
         origen: '',
-        destino: ''
+        destino: '',
+        toneladasNetas: '',
+        tara: '',
+        toneladasBrutas: ''
       });
     } catch (error) {
       console.error("Error al guardar: ", error);
@@ -75,9 +101,9 @@ export const Tarjetas = () => {
   });
 
   const exportarCSV = () => {
-    const encabezados = ["Fecha", "Tren", "Locomotora", "Toneladas", "Origen", "Destino", "Operador"];
+    const encabezados = ["Fecha", "Tren", "Locomotora", "Empresa", "Origen", "Destino", "Tn Netas", "Tara", "Tn Brutas", "Operador"];
     const filas = registrosFiltrados.map(r => 
-      [r.fecha, r.tren, r.locomotora, r.toneladas, r.origen, r.destino, r.operador].join(",")
+      [r.fecha, r.tren, r.locomotora, r.empresa, r.origen, r.destino, r.toneladasNetas, r.tara, r.toneladasBrutas, r.operador].join(",")
     );
 
     const contenido = [encabezados.join(","), ...filas].join("\n");
@@ -97,7 +123,7 @@ export const Tarjetas = () => {
       <Card className="mb-4 shadow-sm">
         <Card.Body>
           <Form onSubmit={handleAddTarjeta}>
-            <Row className="g-3">
+            <Row className="g-3 mb-3">
               <Col md={2}>
                 <Form.Group>
                   <Form.Label>Fecha</Form.Label>
@@ -116,26 +142,69 @@ export const Tarjetas = () => {
                   <Form.Control type="text" name="locomotora" placeholder="ID Loco" value={nuevaTarjeta.locomotora} onChange={handleInputChange} required />
                 </Form.Group>
               </Col>
-              <Col md={2}>
+              <Col md={3}>
                 <Form.Group>
-                  <Form.Label>Toneladas</Form.Label>
-                  <Form.Control type="number" name="toneladas" placeholder="Tn" value={nuevaTarjeta.toneladas} onChange={handleInputChange} required />
+                  <Form.Label>Empresa</Form.Label>
+                  <Form.Select name="empresa" value={nuevaTarjeta.empresa} onChange={handleInputChange} required>
+                    <option value="">Seleccionar...</option>
+                    {EMPRESAS.map((empresa, idx) => (
+                      <option key={idx} value={empresa}>{empresa}</option>
+                    ))}
+                  </Form.Select>
                 </Form.Group>
               </Col>
-              <Col md={2}>
+              <Col md={3}>
                 <Form.Group>
-                  <Form.Label>Origen</Form.Label>
-                  <Form.Control type="text" name="origen" placeholder="Estación" value={nuevaTarjeta.origen} onChange={handleInputChange} required />
-                </Form.Group>
-              </Col>
-              <Col md={2}>
-                <Form.Group>
-                  <Form.Label>Destino</Form.Label>
-                  <Form.Control type="text" name="destino" placeholder="Estación" value={nuevaTarjeta.destino} onChange={handleInputChange} required />
+                  <Form.Label>Operador</Form.Label>
+                  <Form.Control type="text" name="operador" placeholder="Nombre" value={nuevaTarjeta.operador} onChange={handleInputChange} required />
                 </Form.Group>
               </Col>
             </Row>
-            <Button variant="primary" type="submit" className="mt-3 w-100">Registrar Tarjeta</Button>
+
+            <Row className="g-3">
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Origen</Form.Label>
+                  <Form.Select name="origen" value={nuevaTarjeta.origen} onChange={handleInputChange} required>
+                    <option value="">Seleccionar...</option>
+                    {ESTACIONES.map((est, idx) => (
+                      <option key={idx} value={est}>{est}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Destino</Form.Label>
+                  <Form.Select name="destino" value={nuevaTarjeta.destino} onChange={handleInputChange} required>
+                    <option value="">Seleccionar...</option>
+                    {ESTACIONES.map((est, idx) => (
+                      <option key={idx} value={est}>{est}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={2}>
+                <Form.Group>
+                  <Form.Label>Tn Netas</Form.Label>
+                  <Form.Control type="number" name="toneladasNetas" placeholder="Neto" value={nuevaTarjeta.toneladasNetas} onChange={handleInputChange} required />
+                </Form.Group>
+              </Col>
+              <Col md={2}>
+                <Form.Group>
+                  <Form.Label>Tara</Form.Label>
+                  <Form.Control type="number" name="tara" placeholder="Tara" value={nuevaTarjeta.tara} onChange={handleInputChange} required />
+                </Form.Group>
+              </Col>
+              <Col md={2}>
+                <Form.Group>
+                  <Form.Label>Tn Brutas (Auto)</Form.Label>
+                  <Form.Control type="number" name="toneladasBrutas" placeholder="Bruto" value={nuevaTarjeta.toneladasBrutas} readOnly className="bg-light" />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Button variant="primary" type="submit" className="mt-4 w-100">Registrar Tarjeta</Button>
           </Form>
         </Card.Body>
       </Card>
@@ -161,11 +230,12 @@ export const Tarjetas = () => {
           <tr>
             <th>Fecha</th>
             <th>Tren</th>
-            <th>Loco</th>
-            <th>Tn</th>
+            <th>Empresa</th>
             <th>Origen</th>
             <th>Destino</th>
-            <th>Operador</th>
+            <th>Neto</th>
+            <th>Tara</th>
+            <th>Bruto</th>
           </tr>
         </thead>
         <tbody>
@@ -173,11 +243,12 @@ export const Tarjetas = () => {
             <tr key={reg.id}>
               <td>{reg.fecha}</td>
               <td>{reg.tren}</td>
-              <td>{reg.locomotora}</td>
-              <td>{reg.toneladas}</td>
+              <td>{reg.empresa}</td>
               <td>{reg.origen}</td>
               <td>{reg.destino}</td>
-              <td>{reg.operador}</td>
+              <td>{reg.toneladasNetas}</td>
+              <td>{reg.tara}</td>
+              <td><strong>{reg.toneladasBrutas}</strong></td>
             </tr>
           ))}
         </tbody>
