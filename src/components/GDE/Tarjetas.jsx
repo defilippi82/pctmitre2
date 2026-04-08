@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig/firebase'; // Ajusta la ruta si es diferente
+import { db } from '../../firebaseConfig/firebase';
 import { UserContext } from '../../Services/UserContext';
 import { Form, Table, Button, Row, Col, Container, Card } from 'react-bootstrap';
 import Swal from 'sweetalert2';
@@ -11,87 +11,73 @@ const MySwal = withReactContent(Swal);
 export const Tarjetas = () => {
   const { userData } = useContext(UserContext);
   
-  // Estado para la lista de registros traídos de Firebase
   const [registros, setRegistros] = useState([]);
-  
-  // Estado para el formulario (Pre-cargamos el operador si existe en el context)
-  const [nuevoRegistro, setNuevoRegistro] = useState({
+  const [nuevaTarjeta, setNuevaTarjeta] = useState({
     fecha: '',
     tren: '',
-    equipo: '',
-    ubicacion: '',
-    hora: '',
+    locomotora: '',
+    toneladas: '',
+    origen: '',
+    destino: '',
     operador: userData?.nombre || ''
   });
 
-  // Estados para filtros
+  // Filtros
   const [filtroFecha, setFiltroFecha] = useState('');
-  const [filtroOperador, setFiltroOperador] = useState('');
+  const [filtroTren, setFiltroTren] = useState('');
 
-  // Cargar datos de Firebase al montar el componente
   useEffect(() => {
-    const fetchPeditinas = async () => {
+    const fetchTarjetas = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'Peditinas'));
+        const querySnapshot = await getDocs(collection(db, 'Tarjetas'));
         const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        // Opcional: ordenar por fecha (asumiendo formato YYYY-MM-DD del input type="date")
         data.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-        
         setRegistros(data);
       } catch (error) {
-        console.error("Error al obtener documentos: ", error);
+        console.error("Error al obtener tarjetas: ", error);
       }
     };
-
-    fetchPeditinas();
+    fetchTarjetas();
   }, []);
 
-  // Manejar cambios en los inputs del formulario
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNuevoRegistro({ ...nuevoRegistro, [name]: value });
+    setNuevaTarjeta({ ...nuevaTarjeta, [name]: value });
   };
 
-  // Guardar nuevo registro en Firebase
-  const handleAddRegistro = async (e) => {
+  const handleAddTarjeta = async (e) => {
     e.preventDefault();
-    
     try {
-      // Agregamos a la colección 'Peditinas' en Firestore
-      const docRef = await addDoc(collection(db, 'Peditinas'), nuevoRegistro);
+      const docRef = await addDoc(collection(db, 'Tarjetas'), nuevaTarjeta);
+      setRegistros([{ id: docRef.id, ...nuevaTarjeta }, ...registros]);
       
-      // Actualizamos la tabla localmente sin tener que recargar la página
-      setRegistros([{ id: docRef.id, ...nuevoRegistro }, ...registros]);
+      MySwal.fire('Guardado', 'La tarjeta ha sido registrada', 'success');
       
-      MySwal.fire('Guardado', 'El registro ha sido agregado correctamente', 'success');
-      
-      // Limpiamos los campos (dejamos fecha y operador por si hay cargas consecutivas)
-      setNuevoRegistro({
-        ...nuevoRegistro,
+      // Limpiamos campos específicos manteniendo los de referencia
+      setNuevaTarjeta({
+        ...nuevaTarjeta,
         tren: '',
-        equipo: '',
-        ubicacion: '',
-        hora: ''
+        locomotora: '',
+        toneladas: '',
+        origen: '',
+        destino: ''
       });
     } catch (error) {
-      console.error("Error adding document: ", error);
-      MySwal.fire('Error', 'Hubo un problema al guardar el registro', 'error');
+      console.error("Error al guardar: ", error);
+      MySwal.fire('Error', 'No se pudo guardar la tarjeta', 'error');
     }
   };
 
-  // Lógica de filtrado para la tabla y el CSV
   const registrosFiltrados = registros.filter(reg => {
     const coincideFecha = filtroFecha === '' || reg.fecha === filtroFecha;
-    const coincideOperador = reg.operador.toLowerCase().includes(filtroOperador.toLowerCase());
-    return coincideFecha && coincideOperador;
+    const coincideTren = reg.tren.toLowerCase().includes(filtroTren.toLowerCase());
+    return coincideFecha && coincideTren;
   });
 
-  // Función para exportar a CSV
   const exportarCSV = () => {
-    const encabezados = ["Fecha", "Tren", "Equipo", "Ubicación", "Hora", "Operador"];
+    const encabezados = ["Fecha", "Tren", "Locomotora", "Toneladas", "Origen", "Destino", "Operador"];
     const filas = registrosFiltrados.map(r => 
-      [r.fecha, r.tren, r.equipo, r.ubicacion, r.hora, r.operador].join(",")
+      [r.fecha, r.tren, r.locomotora, r.toneladas, r.origen, r.destino, r.operador].join(",")
     );
 
     const contenido = [encabezados.join(","), ...filas].join("\n");
@@ -100,120 +86,100 @@ export const Tarjetas = () => {
     
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `peditina_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
+    link.setAttribute("download", `tarjetas_${new Date().toISOString().slice(0,10)}.csv`);
     link.click();
-    document.body.removeChild(link);
   };
 
   return (
     <Container className="mt-4">
-      <h2 className="mb-4">Registro de Peditina</h2>
+      <h2 className="mb-4">Registro de Tarjetas</h2>
 
-      {/* Formulario de Entrada */}
       <Card className="mb-4 shadow-sm">
         <Card.Body>
-          <Form onSubmit={handleAddRegistro}>
-            <Row className="g-3 align-items-end">
+          <Form onSubmit={handleAddTarjeta}>
+            <Row className="g-3">
               <Col md={2}>
                 <Form.Group>
                   <Form.Label>Fecha</Form.Label>
-                  <Form.Control type="date" name="fecha" value={nuevoRegistro.fecha} onChange={handleInputChange} required />
+                  <Form.Control type="date" name="fecha" value={nuevaTarjeta.fecha} onChange={handleInputChange} required />
                 </Form.Group>
               </Col>
               <Col md={2}>
                 <Form.Group>
                   <Form.Label>Tren</Form.Label>
-                  <Form.Control type="text" name="tren" placeholder="N° Tren" value={nuevoRegistro.tren} onChange={handleInputChange} required />
+                  <Form.Control type="text" name="tren" placeholder="N°" value={nuevaTarjeta.tren} onChange={handleInputChange} required />
                 </Form.Group>
               </Col>
               <Col md={2}>
                 <Form.Group>
-                  <Form.Label>Equipo</Form.Label>
-                  <Form.Control type="text" name="equipo" placeholder="Material" value={nuevoRegistro.equipo} onChange={handleInputChange} required />
+                  <Form.Label>Locomotora</Form.Label>
+                  <Form.Control type="text" name="locomotora" placeholder="ID Loco" value={nuevaTarjeta.locomotora} onChange={handleInputChange} required />
                 </Form.Group>
               </Col>
               <Col md={2}>
                 <Form.Group>
-                  <Form.Label>Ubicación</Form.Label>
-                  <Form.Control type="text" name="ubicacion" placeholder="KM / Estación" value={nuevoRegistro.ubicacion} onChange={handleInputChange} required />
+                  <Form.Label>Toneladas</Form.Label>
+                  <Form.Control type="number" name="toneladas" placeholder="Tn" value={nuevaTarjeta.toneladas} onChange={handleInputChange} required />
                 </Form.Group>
               </Col>
               <Col md={2}>
                 <Form.Group>
-                  <Form.Label>Hora</Form.Label>
-                  <Form.Control type="time" name="hora" value={nuevoRegistro.hora} onChange={handleInputChange} required />
+                  <Form.Label>Origen</Form.Label>
+                  <Form.Control type="text" name="origen" placeholder="Estación" value={nuevaTarjeta.origen} onChange={handleInputChange} required />
                 </Form.Group>
               </Col>
               <Col md={2}>
                 <Form.Group>
-                  <Form.Label>Operador</Form.Label>
-                  <Form.Control type="text" name="operador" placeholder="Nombre" value={nuevoRegistro.operador} onChange={handleInputChange} required />
+                  <Form.Label>Destino</Form.Label>
+                  <Form.Control type="text" name="destino" placeholder="Estación" value={nuevaTarjeta.destino} onChange={handleInputChange} required />
                 </Form.Group>
               </Col>
             </Row>
-            <Row className="mt-3">
-              <Col className="text-end">
-                <Button variant="primary" type="submit">Cargar Registro</Button>
-              </Col>
-            </Row>
+            <Button variant="primary" type="submit" className="mt-3 w-100">Registrar Tarjeta</Button>
           </Form>
         </Card.Body>
       </Card>
 
-      {/* Filtros y Exportación */}
       <Row className="mb-3 align-items-end">
         <Col md={3}>
-          <Form.Group>
-            <Form.Label>Filtrar por Fecha</Form.Label>
-            <Form.Control type="date" value={filtroFecha} onChange={(e) => setFiltroFecha(e.target.value)} />
-          </Form.Group>
+          <Form.Label>Filtrar por Fecha</Form.Label>
+          <Form.Control type="date" value={filtroFecha} onChange={(e) => setFiltroFecha(e.target.value)} />
         </Col>
         <Col md={3}>
-          <Form.Group>
-            <Form.Label>Filtrar por Operador</Form.Label>
-            <Form.Control type="text" placeholder="Buscar operador..." value={filtroOperador} onChange={(e) => setFiltroOperador(e.target.value)} />
-          </Form.Group>
+          <Form.Label>Filtrar por Tren</Form.Label>
+          <Form.Control type="text" placeholder="Buscar N° Tren..." value={filtroTren} onChange={(e) => setFiltroTren(e.target.value)} />
         </Col>
         <Col md={6} className="text-end">
           <Button variant="success" onClick={exportarCSV} disabled={registrosFiltrados.length === 0}>
-            Exportar a Excel (CSV)
+            Exportar CSV
           </Button>
         </Col>
       </Row>
 
-      {/* Tabla de Visualización */}
       <Table responsive striped bordered hover variant="secondary">
         <thead className="table-dark">
           <tr>
             <th>Fecha</th>
             <th>Tren</th>
-            <th>Equipo</th>
-            <th>Ubicación</th>
-            <th>Hora</th>
+            <th>Loco</th>
+            <th>Tn</th>
+            <th>Origen</th>
+            <th>Destino</th>
             <th>Operador</th>
           </tr>
         </thead>
         <tbody>
-          {registrosFiltrados.length > 0 ? (
-            registrosFiltrados.map((reg) => (
-              <tr key={reg.id}>
-                <td>{reg.fecha}</td>
-                <td>{reg.tren}</td>
-                <td>{reg.equipo}</td>
-                <td>{reg.ubicacion}</td>
-                <td>{reg.hora}</td>
-                <td>{reg.operador}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6" className="text-center text-muted">
-                No hay registros cargados o no coinciden con la búsqueda.
-              </td>
+          {registrosFiltrados.map((reg) => (
+            <tr key={reg.id}>
+              <td>{reg.fecha}</td>
+              <td>{reg.tren}</td>
+              <td>{reg.locomotora}</td>
+              <td>{reg.toneladas}</td>
+              <td>{reg.origen}</td>
+              <td>{reg.destino}</td>
+              <td>{reg.operador}</td>
             </tr>
-          )}
+          ))}
         </tbody>
       </Table>
     </Container>
