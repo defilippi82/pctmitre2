@@ -118,7 +118,8 @@ export const Tarjetas = () => {
 
   return (
     <Container className="mt-4">
-      <h2 className="mb-4">Registro de Tarjetas</h2>
+      <h2 className="mb-4">Trenes de Carga </h2>
+      <h4 className="mb-4">Tablero de terceros</h4>
 
       <Card className="mb-4 shadow-sm">
         <Card.Body>
