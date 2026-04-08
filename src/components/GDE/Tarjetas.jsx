@@ -139,7 +139,7 @@ export const Tarjetas = () => {
               <Col md={2}>
                 <Form.Group>
                   <Form.Label>Locomotora</Form.Label>
-                  <Form.Control type="text" name="locomotora" placeholder="ID Loco" value={nuevaTarjeta.locomotora} onChange={handleInputChange} required />
+                  <Form.Control type="text" name="locomotora" placeholder="Loc. N°" value={nuevaTarjeta.locomotora} onChange={handleInputChange} required />
                 </Form.Group>
               </Col>
               <Col md={3}>
