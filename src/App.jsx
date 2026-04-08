@@ -20,8 +20,8 @@ import {Novedades} from "./components/Personal/Novedades.jsx"
 import {RegistrarTarjetas} from "./components/Personal/RegistrarTarjetas.jsx";
 import { Direcciones} from "./components/Emergencia/Direcciones"
 import { Pendientes } from './components/Emergencia/Pendientes.jsx';
-import {Peditina} from "./components/GDE/Peditina.jsx";
-import {Tarjetas} from "./components/GDE/Tarjetas.jsx";
+import { Peditina } from "./components/GDE/Peditina.jsx";
+import { Tarjetas } from "./components/GDE/Tarjetas.jsx";
 import { NavbarComponent } from './Views/Navbar';
 import {UserProvider} from "./Services/UserContext";
 import {Emergencia} from "./Services/Emergencia";

@@ -38,19 +38,19 @@ export const NavbarComponent = ({ handleLogout }) => {
             {novedades.length > 0 && (
                    <span className="badge bg-danger text-red lg-1">{novedades.length}</span>
             )}</Nav.Link>)}
-            {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'gde')  && (
-                <NavDropdown title="Grupo de Estudio" id={`offcanvasNavbarDropdown-expand-${expand}`} >
-                
-                <NavDropdown.Item href="#/peditina">Peditina</NavDropdown.Item>
-                <NavDropdown.Item href="#/tarjetas">Tarjetas</NavDropdown.Item>
-                </NavDropdown>
-            )}
             {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'electrico')  && (
               <NavDropdown title="Electrica" id={`offcanvasNavbarDropdown-expand-${expand}`} >
               
               <NavDropdown.Item href="#/cortesecc">Corte Secciones</NavDropdown.Item>
               <NavDropdown.Item href="#/precauciones">Precauciones</NavDropdown.Item>
               </NavDropdown>
+            )}
+            {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'gde')  && (
+                <NavDropdown title="Grupo de Estudio" id={`offcanvasNavbarDropdown-expand-${expand}`} >
+                
+                <NavDropdown.Item href="#/peditina">Peditina</NavDropdown.Item>
+                <NavDropdown.Item href="#/tarjetas">Tarjetas</NavDropdown.Item>
+                </NavDropdown>
             )}
             {userData && userData.nombre &&  (userData.rol.valor === 'administrador'|| userData.rol.valor === 'diesel')  && (
               <NavDropdown title="Diesel" id={`offcanvasNavbarDropdown-expand-${expand}`} >
