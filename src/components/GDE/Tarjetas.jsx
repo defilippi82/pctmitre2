@@ -8,7 +8,7 @@ import withReactContent from 'sweetalert2-react-content';
 
 const MySwal = withReactContent(Swal);
 
-export const Peditina = () => {
+export const Tarjetas = () => {
   const { userData } = useContext(UserContext);
   
   // Estado para la lista de registros traídos de Firebase
