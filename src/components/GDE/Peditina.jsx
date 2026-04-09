@@ -25,7 +25,7 @@ export const Peditina = () => {
     ubicacion: '',
     hora: '',
     linea: '', 
-    operador: userData?.nombre || '' // Se precarga pero se puede editar
+    operador: '' // Se precarga pero se puede editar
   });
 
   const [filtroFecha, setFiltroFecha] = useState('');
@@ -117,20 +117,6 @@ export const Peditina = () => {
           <Row className="bg-light p-3 rounded mb-3 border">
             <Col md={4}>
               <Form.Group>
-                <Form.Label className="fw-bold"><FontAwesomeIcon icon={faUser} /> Operador de Control</Form.Label>
-                <Form.Control 
-                    type="text" 
-                    name="operador" 
-                    value={nuevoRegistro.operador} 
-                    onChange={handleChange} 
-                    required 
-                    placeholder="Nombre del operador..."
-                    className="border-primary fw-bold"
-                />
-              </Form.Group>
-            </Col>
-            <Col md={4}>
-              <Form.Group>
                 <Form.Label className="fw-bold">Línea</Form.Label>
                 <Form.Select 
                     name="linea" 
@@ -143,6 +129,20 @@ export const Peditina = () => {
                     <option value="Suárez">SUÁREZ</option>
                     <option value="Tigre">TIGRE</option>
                 </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group>
+                <Form.Label className="fw-bold"><FontAwesomeIcon icon={faUser} /> Operador de Control</Form.Label>
+                <Form.Control 
+                    type="text" 
+                    name="operador" 
+                    value={nuevoRegistro.operador} 
+                    onChange={handleChange} 
+                    required 
+                    placeholder="Nombre del operador..."
+                    className="border-primary fw-bold"
+                />
               </Form.Group>
             </Col>
             <Col md={4}>

@@ -12,6 +12,7 @@ export const EditarPeditina = () => {
         equipo: '',
         ubicacion: '',
         hora: '',
+        linea: '',
         operador: ''
     });
     
@@ -52,6 +53,20 @@ export const EditarPeditina = () => {
             <Card className="p-4 shadow">
                 <h4 className="text-danger mb-4">Editar Registro de Peditina</h4>
                 <Form onSubmit={handleSubmit}>
+                    <Form.Group>
+                <Form.Label className="fw-bold">Línea</Form.Label>
+                <Form.Select 
+                    name="linea" 
+                    value={formData.linea} 
+                    onChange={handleChange} 
+                    required 
+                    className="border-primary fw-bold"
+                >
+                    <option value="">-- SELECCIONAR --</option>
+                    <option value="Suárez">SUÁREZ</option>
+                    <option value="Tigre">TIGRE</option>
+                </Form.Select>
+              </Form.Group>
                     <Form.Group className="mb-3">
                         <label className="fw-bold">Fecha</label>
                         <Form.Control name="fecha" type="date" value={formData.fecha} onChange={handleChange} required />
@@ -71,6 +86,10 @@ export const EditarPeditina = () => {
                     <Form.Group className="mb-3">
                         <label className="fw-bold">Hora</label>
                         <Form.Control name="hora" type="time" value={formData.hora} onChange={handleChange} />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <label className="fw-bold">Operador</label>
+                        <Form.Control name="ubicacion" value={formData.operador} onChange={handleChange} />
                     </Form.Group>
                     <div className="d-flex gap-2">
                         <Button variant="danger" type="submit" className="flex-grow-1">Guardar Cambios</Button>
