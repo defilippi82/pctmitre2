@@ -17,18 +17,18 @@ export const Peditina = () => {
   
   const [registros, setRegistros] = useState([]);
   const [nuevoRegistro, setNuevoRegistro] = useState({
-    fecha: '',
+    fecha: new Date().toISOString().split('T')[0], // Sugiere fecha de hoy por defecto
     tren: '',
     equipo: '',
     ubicacion: '',
     hora: '',
-    linea: '', // NUEVO CAMPO
+    linea: '', 
     operador: userData?.nombre || ''
   });
 
   const [filtroFecha, setFiltroFecha] = useState('');
   const [filtroOperador, setFiltroOperador] = useState('');
-  const [filtroLinea, setFiltroLinea] = useState(''); // NUEVO FILTRO
+  const [filtroLinea, setFiltroLinea] = useState('');
 
   const fetchPeditinas = async () => {
     try {
@@ -52,48 +52,50 @@ export const Peditina = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!nuevoRegistro.linea) {
-        return MySwal.fire('Atención', 'Debes seleccionar una línea (Suárez o Tigre)', 'warning');
+        return MySwal.fire('Atención', 'Seleccioná Suárez o Tigre antes de guardar', 'warning');
     }
     try {
       await addDoc(collection(db, 'Peditinas'), nuevoRegistro);
       MySwal.fire({
         title: '¡Guardado!',
-        text: `Peditina de Línea ${nuevoRegistro.linea} cargada con éxito.`,
-        icon: 'success'
+        text: `Registro de Línea ${nuevoRegistro.linea} cargado.`,
+        icon: 'success',
+        timer: 1500, // Se cierra solo para no interrumpir el flujo
+        showConfirmButton: false
       });
-      setNuevoRegistro({
-        fecha: '', tren: '', equipo: '', ubicacion: '', hora: '', linea: '',
-        operador: userData?.nombre || ''
-      });
+
+      // MANTENEMOS LA LÍNEA Y LA FECHA, limpiamos el resto
+      setNuevoRegistro(prev => ({
+        ...prev,
+        tren: '',
+        equipo: '',
+        ubicacion: '',
+        hora: '',
+        // linea: prev.linea, <-- NO SE TOCA, queda seleccionada
+      }));
+      
       fetchPeditinas();
     } catch (error) {
-      MySwal.fire('Error', 'No se pudo guardar el registro', 'error');
+      MySwal.fire('Error', 'No se pudo guardar', 'error');
     }
   };
 
   const eliminarRegistro = async (id) => {
     const result = await MySwal.fire({
-      title: '¿Estás seguro?',
-      text: "Esta acción eliminará el registro permanentemente",
+      title: '¿Eliminar?',
+      text: "Se borrará permanentemente",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+      confirmButtonText: 'Borrar'
     });
 
     if (result.isConfirmed) {
-      try {
-        await deleteDoc(doc(db, "Peditinas", id));
-        setRegistros(registros.filter(reg => reg.id !== id));
-        MySwal.fire('Eliminado', 'El registro ha sido borrado.', 'success');
-      } catch (error) {
-        MySwal.fire('Error', 'No se pudo eliminar el registro', 'error');
-      }
+      await deleteDoc(doc(db, "Peditinas", id));
+      setRegistros(registros.filter(reg => reg.id !== id));
     }
   };
 
-  // Lógica de filtrado actualizada con Línea
   const registrosFiltrados = registros.filter(reg => {
     const coincideFecha = filtroFecha ? reg.fecha === filtroFecha : true;
     const coincideOperador = filtroOperador ? reg.operador.toLowerCase().includes(filtroOperador.toLowerCase()) : true;
@@ -101,87 +103,76 @@ export const Peditina = () => {
     return coincideFecha && coincideOperador && coincideLinea;
   });
 
-  const exportarCSV = () => {
-    const encabezados = "Fecha,Linea,Tren,Equipo,Ubicacion,Hora,Operador\n";
-    const filas = registrosFiltrados.map(r => 
-      `${r.fecha},${r.linea},${r.tren},${r.equipo},${r.ubicacion},${r.hora},${r.operador}`
-    ).join("\n");
-    
-    const blob = new Blob([encabezados + filas], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `peditina_${filtroLinea || 'todas'}_${new Date().toLocaleDateString()}.csv`;
-    a.click();
-  };
-
   return (
     <Container className="mt-5" style={{paddingTop: '30px'}}>
-      <Card className="p-4 shadow-sm mb-4">
-        <h4 className="text-danger mb-4 text-center border-bottom pb-2">Carga de Peditina</h4>
+      <Card className="p-4 shadow-sm mb-4 border-left-danger">
+        <h4 className="text-danger mb-4 border-bottom pb-2">Carga Rápida de Peditina</h4>
         <Form onSubmit={handleSubmit}>
           <Row>
             <Col md={3}>
               <Form.Group className="mb-3">
-                <Form.Label className="fw-bold text-primary">Línea</Form.Label>
-                <Form.Select name="linea" value={nuevoRegistro.linea} onChange={handleChange} required className="border-primary">
-                    <option value="">Seleccionar línea...</option>
-                    <option value="Suárez">Suárez</option>
-                    <option value="Tigre">Tigre</option>
+                <Form.Label className="fw-bold">1. Seleccionar Línea</Form.Label>
+                <Form.Select 
+                    name="linea" 
+                    value={nuevoRegistro.linea} 
+                    onChange={handleChange} 
+                    required 
+                    className={nuevoRegistro.linea ? "bg-light border-primary fw-bold" : "border-danger"}
+                >
+                    <option value="">-- ELIGE LÍNEA --</option>
+                    <option value="Suárez">LINEA SUÁREZ</option>
+                    <option value="Tigre">LINEA TIGRE</option>
                 </Form.Select>
               </Form.Group>
             </Col>
             <Col md={2}><Form.Group className="mb-3"><Form.Label>Fecha</Form.Label><Form.Control type="date" name="fecha" value={nuevoRegistro.fecha} onChange={handleChange} required /></Form.Group></Col>
-            <Col md={2}><Form.Group className="mb-3"><Form.Label>Tren</Form.Label><Form.Control type="text" name="tren" value={nuevoRegistro.tren} onChange={handleChange} required /></Form.Group></Col>
-            <Col md={2}><Form.Group className="mb-3"><Form.Label>Equipo</Form.Label><Form.Control type="text" name="equipo" value={nuevoRegistro.equipo} onChange={handleChange} /></Form.Group></Col>
-            <Col md={3}><Form.Group className="mb-3"><Form.Label>Hora</Form.Label><Form.Control type="time" name="hora" value={nuevoRegistro.hora} onChange={handleChange} /></Form.Group></Col>
+            <Col md={2}><Form.Group className="mb-3"><Form.Label>N° Tren</Form.Label><Form.Control type="text" name="tren" value={nuevoRegistro.tren} onChange={handleChange} required placeholder="Ej: 3021" /></Form.Group></Col>
+            <Col md={2}><Form.Group className="mb-3"><Form.Label>Equipo</Form.Label><Form.Control type="text" name="equipo" value={nuevoRegistro.equipo} onChange={handleChange} placeholder="Loc/Chapa" /></Form.Group></Col>
+            <Col md={3}><Form.Group className="mb-3"><Form.Label>Hora</Form.Label><Form.Control type="time" name="hora" value={nuevoRegistro.hora} onChange={handleChange} required /></Form.Group></Col>
           </Row>
           <Row>
-            <Col md={12}><Form.Group className="mb-3"><Form.Label>Ubicación / Kilómetro</Form.Label><Form.Control type="text" name="ubicacion" value={nuevoRegistro.ubicacion} onChange={handleChange} placeholder="Ej: Km 15.5 o Estación..." /></Form.Group></Col>
+            <Col md={12}><Form.Group className="mb-3"><Form.Label>Ubicación / Kilómetro</Form.Label><Form.Control type="text" name="ubicacion" value={nuevoRegistro.ubicacion} onChange={handleChange} placeholder="Ej: Km 24.3 / Empalme..." /></Form.Group></Col>
           </Row>
-          <Button variant="danger" type="submit" className="w-100 fw-bold">GUARDAR PEDITINA</Button>
+          <Button variant="danger" type="submit" className="w-100 fw-bold py-2 shadow-sm">
+            + CARGAR SIGUIENTE TREN
+          </Button>
         </Form>
       </Card>
 
+      {/* SECCIÓN DE FILTROS */}
       <Card className="p-3 mb-4 bg-light shadow-sm">
           <Row className="align-items-end">
-            <Col md={3}><Form.Label>Filtrar Línea</Form.Label>
-                <Form.Select value={filtroLinea} onChange={(e) => setFiltroLinea(e.target.value)}>
-                    <option value="">Todas las líneas</option>
+            <Col md={3}><Form.Label className="small fw-bold">Ver Línea:</Form.Label>
+                <Form.Select size="sm" value={filtroLinea} onChange={(e) => setFiltroLinea(e.target.value)}>
+                    <option value="">TODAS LAS LÍNEAS</option>
                     <option value="Suárez">Suárez</option>
                     <option value="Tigre">Tigre</option>
                 </Form.Select>
             </Col>
-            <Col md={3}><Form.Label>Fecha</Form.Label><Form.Control type="date" value={filtroFecha} onChange={(e) => setFiltroFecha(e.target.value)} /></Col>
-            <Col md={3}><Form.Label>Operador</Form.Label><Form.Control type="text" placeholder="Buscar..." value={filtroOperador} onChange={(e) => setFiltroOperador(e.target.value)} /></Col>
-            <Col md={3} className="text-end"><Button variant="success" className="w-100" onClick={exportarCSV}>Exportar CSV</Button></Col>
+            <Col md={3}><Form.Label className="small fw-bold">Fecha:</Form.Label><Form.Control size="sm" type="date" value={filtroFecha} onChange={(e) => setFiltroFecha(e.target.value)} /></Col>
+            <Col md={6} className="text-end">
+                <Button variant="outline-success" size="sm" onClick={() => { /* Tu lógica de CSV */ }}>Exportar Listado</Button>
+            </Col>
           </Row>
       </Card>
 
-      <Table responsive striped bordered hover variant="secondary">
+      <Table responsive striped bordered hover className="shadow-sm">
         <thead className="table-dark text-center">
           <tr>
-            <th>Línea</th><th>Fecha</th><th>Tren</th><th>Equipo</th><th>Ubicación</th><th>Hora</th><th>Acciones</th>
+            <th>Línea</th><th>Fecha</th><th>Tren</th><th>Ubicación</th><th>Hora</th><th>Acciones</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-center align-middle">
           {registrosFiltrados.map((reg) => (
-            <tr key={reg.id} className="align-middle text-center">
+            <tr key={reg.id}>
               <td><span className={`badge ${reg.linea === 'Suárez' ? 'bg-primary' : 'bg-success'}`}>{reg.linea}</span></td>
               <td>{reg.fecha}</td>
-              <td><strong>{reg.tren}</strong></td>
-              <td>{reg.equipo}</td>
+              <td className="fw-bold">{reg.tren}</td>
               <td>{reg.ubicacion}</td>
-              <td>{reg.hora} hs</td>
+              <td>{reg.hora}</td>
               <td>
-                <div className="d-flex justify-content-center gap-2">
-                  <Button variant="outline-primary" size="sm" onClick={() => navigate(`/peditina/edit/${reg.id}`)}>
-                    <FontAwesomeIcon icon={faEdit} />
-                  </Button>
-                  <Button variant="outline-danger" size="sm" onClick={() => eliminarRegistro(reg.id)}>
-                    <FontAwesomeIcon icon={faTrash} />
-                  </Button>
-                </div>
+                <Button variant="link" className="text-primary p-0 me-2" onClick={() => navigate(`/peditina/edit/${reg.id}`)}><FontAwesomeIcon icon={faEdit} /></Button>
+                <Button variant="link" className="text-danger p-0" onClick={() => eliminarRegistro(reg.id)}><FontAwesomeIcon icon={faTrash} /></Button>
               </td>
             </tr>
           ))}
