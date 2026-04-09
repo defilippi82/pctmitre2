@@ -1,223 +1,109 @@
 import React, { useState } from 'react';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase';
-
-
 import { useNavigate } from 'react-router-dom';
-
-/* SWEET ALERT*/
 import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
-
-const MySwal = withReactContent(Swal)
 
 export const RegistrarOperadores = () => {
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
-  const [legajo, setlegajo] = useState('');
-  
-  const roles = new Map([
-    ['administrador', { valor: 'administrador', administrador: true, electrico: true, personal: true, emergencia: true,diesel: true, usuario: true, gde: true }],
-    ['gde', { valor: 'gde', administrador: false, electrico: true, personal: false, emergencia: true,diesel: true, usuario: true, gde: true }],
-    ['electrico', { valor: 'electrico', administrador: false, electrico: true, personal: false, emergencia: false,diesel: false, usuario: false, gde: false }],
-    ['diesel', { valor: 'diesel', administrador: false, electrico: false, personal: false, emergencia: false,diesel: true, usuario: false,gde: false }],
-    ['personal', { valor: 'personal', administrador: false, electrico: false, personal: true, emergencia: false,diesel: false, usuario: false,gde: false }],
-    ['emergencia', { valor: 'emergencia', administrador: false, electrico: false, personal: false, emergencia: true,diesel: false, usuario: false,gde: false }],
-    ['usuario', { valor: 'usuario', administrador: false, electrico: false, personal: false, emergencia: false,diesel: false, usuario: true,gde: false }],
-    ['relevante', { valor: 'relevante', administrador: false, electrico: true, personal: true, emergencia: true, diesel: true, usuario: true,gde: false }],
-  ]);
-  const [rol, setRol] = useState(roles.get('personal')); // Valor inicial del rol
- 
+  const [legajo, setLegajo] = useState(''); // Campo Legajo
+  const [rolesSeleccionados, setRolesSeleccionados] = useState([]);
   const [contrasena, setContrasena] = useState('');
   const [repetirContrasena, setRepetirContrasena] = useState('');
- 
 
-  const auth = getAuth();
-  const operadoresCollection = collection(db, 'operadores');
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
+  // Filtramos 'administrador' para que no se pueda elegir en el registro abierto
+  const mesas = ['electrico', 'diesel', 'gde', 'emergencia', 'personal'];
 
-  const MySwal = withReactContent(Swal);
+  const handleRoleChange = (mesa) => {
+    setRolesSeleccionados(prev => 
+      prev.includes(mesa) ? prev.filter(r => r !== mesa) : [...prev, mesa]
+    );
+  };
 
-  
-
-  const crearoperador = async (e) => {
+  const registro = async (e) => {
     e.preventDefault();
-    // Validar que la contraseña tenga al menos 6 caracteres
-  if (contrasena.length < 6) {
-    MySwal.fire({
-      title: 'Error',
-      text: 'La contraseña debe tener al menos 6 caracteres',
-      icon: 'error',
-      showConfirmButton: true,
-    });
-    //return;  Salir de la función sin intentar crear el usuario
-  }
-  if (contrasena !== repetirContrasena) {
-    MySwal.fire({
-      title: 'Error',
-      text: 'Las contraseñas no coinciden',
-      icon: 'error',
-      showConfirmButton: true,
-    });
-    return;
-  }
-  try {
-    // Crear usuario en Firebase Authentication
-    const { user } = await createUserWithEmailAndPassword(auth, email, contrasena);
+    if (contrasena !== repetirContrasena) {
+      Swal.fire("Error", "Las contraseñas no coinciden", "error");
+      return;
+    }
 
-    // Agregar datos del usuario a la colección 'usuarios' en Firestore
-    await addDoc(operadoresCollection, {
-      nombre,
-      apellido,
-      email,
-      legajo,
-      rol,
-      contrasena,
-      
-    });
-
-    // Mostrar alerta de éxito
-    MySwal.fire({
-      title: 'Registro exitoso',
-      text: 'El operador ha sido registrado correctamente',
-      icon: 'success',
-      showConfirmButton: true,
-    }).then(() => {
-      // Redirigir al usuario a otra página después de la alerta
-      navigate ('/#');
-    });
-    
-    // Resetear los campos del formulario
-    setNombre('');
-    setEmail('');
-    setContrasena('');
-    
-  } catch (error) {
-    // Mostrar alerta de error
-    MySwal.fire({
-      title: 'Error',
-      text: error.message,
-      icon: 'error',
-      showConfirmButton: true,
-    });
-  }
-};
-const RolSelect = () => {
-  const handleRolChange = (e) => {
-    const nuevoRol = roles.get(e.target.value);
-    setRol(nuevoRol);
+    try {
+      await addDoc(collection(db, "operadores"), {
+        nombre,
+        apellido,
+        email,
+        legajo,
+        roles: rolesSeleccionados,
+        contrasena,
+        fechaAlta: new Date().toLocaleDateString()
+      });
+      Swal.fire("Éxito", "Operador registrado correctamente", "success");
+      navigate('/administracion');
+    } catch (error) {
+      Swal.fire("Error", "No se pudo registrar", "error");
+    }
   };
 
   return (
-    <div className="container elem-group form-floating mb-3">
-        <select
-          name="rol"
-          id="rol"
-          value={rol.valor}
-          onChange={handleRolChange}
-          className="form-select"
-        >
-          {Array.from(roles.keys()).map((key) => (
-            <option key={key} value={key} disabled={key === 'administrador'}>
-              {key}
-            </option>
-          ))}
-        </select>
-        <label htmlFor="rol">Rol</label>
-      </div>
-    );
-  };
-
-    return (
-
-        <div className="container">
-        <div className='card text-bg-primary mb-3 shadow-lg" style="max-width: 18rem;"'>
-         <h1 className='card-header'>Registrar Nueva operador</h1>
-       </div>
-       <form onSubmit={crearoperador} className="card card-body shadow-lg">
-        <div className="elem-group">
-         <div className='form-floating mb-3'>
-
-          <input className='form-control'
-            type="text"
-            id="nombre"
-            placeholder="Nombre"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            required />
-          <label for="floatingInputDisabled" htmlFor="nombre">Nombre</label>
-         </div>
+    <div className='container mt-5'>
+      <form onSubmit={registro} className='p-4 border rounded shadow bg-light'>
+        <h3 className="mb-4">Registro de Operador</h3>
+        
+        <div className='row'>
+          <div className='col-md-6 form-floating mb-3'>
+            <input type="text" required id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} className='form-control' placeholder="Nombre"/>
+            <label htmlFor="nombre" className="ms-2">Nombre</label>
+          </div>
+          <div className='col-md-6 form-floating mb-3'>
+            <input type="text" required id="apellido" value={apellido} onChange={(e) => setApellido(e.target.value)} className='form-control' placeholder="Apellido"/>
+            <label htmlFor="apellido" className="ms-2">Apellido</label>
+          </div>
         </div>
-        <div className="elem-group">
-         <div className='form-floating mb-3'>
 
-          <input className='form-control'
-            type="text"
-            id="apellido"
-            placeholder="Apellido"
-            value={apellido}
-            onChange={(e) => setNombre(e.target.value)}
-            required />
-          <label for="floatingInputDisabled" htmlFor="nombre">Apellido</label>
-         </div>
+        <div className='row'>
+          <div className='col-md-8 form-floating mb-3'>
+            <input type="email" required id="email" value={email} onChange={(e) => setEmail(e.target.value)} className='form-control' placeholder="Email"/>
+            <label htmlFor="email" className="ms-2">Correo Electrónico</label>
+          </div>
+          <div className='col-md-4 form-floating mb-3'>
+            <input type="text" required id="legajo" value={legajo} onChange={(e) => setLegajo(e.target.value)} className='form-control' placeholder="Legajo"/>
+            <label htmlFor="legajo" className="ms-2">Legajo</label>
+          </div>
         </div>
-        <div className="elem-group">
-        <div className='form-floating mb-3'>
 
-          <input className='form-control'
-            type="email"
-            id="email"
-            placeholder="ejemplo@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required/>
-          <label for="floatingInputDisabled" htmlFor="email">Correo electrónico</label>
-            </div>
-        </div>
-            <div className="elem-group">
-            <div className='form-floating mb-3'>
-              
-
-                <input type="number"required id="legajo" value={legajo} onChange={(e) => setlegajo(e.target.value)} name="legajo" maxlength="2" className='form-control'/>
-                <label for="floatingInputDisabled" htmlFor="legajo">legajo</label>
+        <div className='mb-3 p-3 border rounded bg-white shadow-sm'>
+          <label className='fw-bold mb-2 text-primary'>Asignar Mesas de Trabajo:</label>
+          <div className='row'>
+            {mesas.map(mesa => (
+              <div key={mesa} className='col-6 col-md-4'>
+                <div className="form-check form-switch">
+                  <input className="form-check-input" type="checkbox" id={mesa} 
+                    checked={rolesSeleccionados.includes(mesa)}
+                    onChange={() => handleRoleChange(mesa)} />
+                  <label className="form-check-label text-capitalize" htmlFor={mesa}>{mesa}</label>
+                </div>
               </div>
-              </div>
-             
-              
-
-                <div className="elem-group form-floating mb-3">
-                <RolSelect />
-                
-            </div>
-
-            <div className='elem-group form-floating mb-3'>
-          <input className='form-control'
-            type="password"
-            id="contrasena"
-            placeholder="XXXXXXXX"
-            value={contrasena}
-            onChange={(e) => setContrasena(e.target.value)}
-            minLength={6}
-            required />
-          <label for="floatingInputDisabled" htmlFor="contrasena">Contraseña</label>
+            ))}
+          </div>
         </div>
-        <div className='elem-group form-floating mb-3'>
-          <input className='form-control'
-            type="password"
-            id="repetirContrasena"
-            placeholder="XXXXXXXX"
-            value={repetirContrasena}
-            onChange={(e) => setRepetirContrasena(e.target.value)}
-            required />
-          <label for="floatingInputDisabled" htmlFor="repetirContrasena">Repetir Contraseña</label>
+
+        <div className='row'>
+          <div className='col-md-6 form-floating mb-3'>
+            <input type="password" required id="contrasena" value={contrasena} onChange={(e) => setContrasena(e.target.value)} className='form-control' placeholder="Contraseña"/>
+            <label htmlFor="contrasena" className="ms-2">Contraseña</label>
+          </div>
+          <div className='col-md-6 form-floating mb-3'>
+            <input type="password" required id="repetir" value={repetirContrasena} onChange={(e) => setRepetirContrasena(e.target.value)} className='form-control' placeholder="Repetir"/>
+            <label htmlFor="repetir" className="ms-2">Repetir Contraseña</label>
+          </div>
         </div>
-        <button type="submit" className="btn btn-primary">
-          Registrar
-        </button>
+
+        <button type="submit" className="btn btn-primary w-100 py-2 fw-bold">FINALIZAR REGISTRO</button>
       </form>
-    </div> 
-    );
-  }
+    </div>
+  );
+};
