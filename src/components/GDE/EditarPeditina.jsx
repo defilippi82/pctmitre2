@@ -89,7 +89,7 @@ export const EditarPeditina = () => {
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <label className="fw-bold">Operador</label>
-                        <Form.Control name="ubicacion" value={formData.operador} onChange={handleChange} />
+                        <Form.Control name="operador" value={formData.operador} onChange={handleChange} />
                     </Form.Group>
                     <div className="d-flex gap-2">
                         <Button variant="danger" type="submit" className="flex-grow-1">Guardar Cambios</Button>
