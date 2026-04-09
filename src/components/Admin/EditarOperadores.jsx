@@ -12,6 +12,7 @@ export const EditarOperadores = () => {
         legajo: '',
         roles: [],
         contrasena: ''
+
     });
     
     const { id } = useParams();
@@ -36,6 +37,7 @@ export const EditarOperadores = () => {
                         : (data.rol?.valor ? [data.rol.valor] : []);
                     
                     // Cargamos los datos en el estado para que aparezcan en los inputs
+
                     setFormData({
                         nombre: data.nombre || '',
                         apellido: data.apellido || '',
