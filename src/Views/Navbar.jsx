@@ -69,8 +69,8 @@ export const NavbarComponent = () => {
               {/* --- MESA GRUPO DE ESTUDIO (GdE) --- */}
               {tieneAcceso('gde') && (
                 <NavDropdown title="Grupo de Estudio (GdE)" id="nav-gde">
-                  <NavDropdown.Item href="#/peditina">Peditina</NavDropdown.Item>
-                  <NavDropdown.Item href="#/tarjetas">Tarjetas de Estudio</NavDropdown.Item>
+                  <NavDropdown.Item href="#/peditina">Modulaciones T y E</NavDropdown.Item>
+                  <NavDropdown.Item href="#/tarjetas">Trenes de Carga</NavDropdown.Item>
                 </NavDropdown>
               )}
 
