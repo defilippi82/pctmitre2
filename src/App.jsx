@@ -29,6 +29,7 @@ import { NavbarComponent } from './Views/Navbar';
 import {UserProvider} from "./Services/UserContext";
 import {Emergencia} from "./Services/Emergencia";
 import {Partes} from "./components/Emergencia/Partes.jsx";
+import { CargaAUV }  from "./components/Diesel/AUV.jsx";
 import {CargarColecciones} from "./Services/CargarColecciones";
 import {Footer} from './Views/Footer';
 import {Privacidad} from "./Views/Privacidad";
@@ -71,9 +72,9 @@ export const App = () => {
               <Route path="/padron" element={<Padron />} />
               <Route path="/peditina/edit/:id" element={<EditarPeditina />} />
               <Route path="/tarjetas/edit/:id" element={<EditarTarjeta />} /> {/* Ruta para editar tarjetas */}
+              <Route path="/auv" element={<CargaAUV />} />
               
               {/* Rutas de texto simple */}
-              <Route path="/auv" element={<div>Aca Puede Realizar AUV</div>} />
               <Route path="/art" element={<div>Formulario para ARTs</div>} />
               <Route path="/barreras" element={<div>Aca se ven los pendientes de barreras</div>} />
             </Route>
