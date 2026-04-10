@@ -106,7 +106,7 @@ export const RegistrarOperadores = () => {
               <option key={key} value={key}>{key.toUpperCase()}</option>
             ))}
           </select>
-          <label htmlFor="rol" className="ms-2">Rol Base (Asignación automática de permisos)</label>
+          <label htmlFor="rol" className="ms-2">Seleccione una mesa de trabajo</label>
         </div>
 
         <div className='row mt-4'>
