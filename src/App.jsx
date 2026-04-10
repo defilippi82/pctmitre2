@@ -20,6 +20,8 @@ import {Sabana} from "./components/Personal/Sabana.jsx";
 import {Novedades} from "./components/Personal/Novedades.jsx"
 import {RegistrarTarjetas} from "./components/Personal/RegistrarTarjetas.jsx";
 import { Direcciones} from "./components/Emergencia/Direcciones"
+import { Barreras } from "./components/Emergencia/Barreras.jsx";
+import { BarrerasNormalizadas } from "./components/Emergencia/Normales.jsx";
 import { Pendientes } from './components/Emergencia/Pendientes.jsx';
 import { Peditina } from "./components/GDE/Peditina.jsx";
 import { Tarjetas } from "./components/GDE/Tarjetas.jsx";
@@ -61,6 +63,8 @@ export const App = () => {
               <Route path="/cortesecc" element={<CorteSecc />} />
               <Route path="/precauciones" element={<Precauciones />} />
               <Route path="/pendientes" element={<Pendientes />} />
+              <Route path="/barrerasnormalizadas" element={<BarrerasNormalizadas />} />
+              <Route path="/barreras" element={<Barreras />} />
               <Route path="/emergencia" element={<Emergencia />} />
               <Route path="/direcciones" element={<Direcciones />} />
               <Route path="/partes" element={<Partes />} />
@@ -76,7 +80,7 @@ export const App = () => {
               
               {/* Rutas de texto simple */}
               <Route path="/art" element={<div>Formulario para ARTs</div>} />
-              <Route path="/barreras" element={<div>Aca se ven los pendientes de barreras</div>} />
+             
             </Route>
 
             {/* --- 3. RUTAS ADMINISTRATIVAS (Solo Rol Administrador) --- */}
