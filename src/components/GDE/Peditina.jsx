@@ -6,7 +6,7 @@ import { Form, Table, Button, Row, Col, Container, Card } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'; 
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { faTrash, faEdit, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faUser, faFileCsv } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const MySwal = withReactContent(Swal);
@@ -17,7 +17,6 @@ export const Peditina = () => {
   
   const [registros, setRegistros] = useState([]);
   
-  // Estado inicial: Fecha de hoy y Operador desde el contexto (si existe)
   const [nuevoRegistro, setNuevoRegistro] = useState({
     fecha: new Date().toISOString().split('T')[0],
     tren: '',
@@ -25,7 +24,7 @@ export const Peditina = () => {
     ubicacion: '',
     hora: '',
     linea: '', 
-    operador: '' // Se precarga pero se puede editar
+    operador: '' 
   });
 
   const [filtroFecha, setFiltroFecha] = useState('');
@@ -46,6 +45,44 @@ export const Peditina = () => {
     fetchPeditinas();
   }, []);
 
+  // --- FUNCIÓN PARA EXPORTAR A CSV ---
+  const exportarCSV = () => {
+    if (registrosFiltrados.length === 0) {
+      return MySwal.fire('Sin datos', 'No hay registros para exportar con los filtros actuales', 'info');
+    }
+
+    // Definir encabezados
+    const headers = ["Linea", "Fecha", "Tren", "Equipo", "Ubicacion", "Hora", "Operador"];
+    
+    // Crear las filas
+    const rows = registrosFiltrados.map(reg => [
+      reg.linea,
+      reg.fecha,
+      reg.tren,
+      reg.equipo,
+      reg.ubicacion,
+      reg.hora,
+      reg.operador
+    ]);
+
+    // Unir todo con punto y coma (común en Excel de regiones hispanas) o coma
+    const csvContent = [
+      headers.join(";"), 
+      ...rows.map(e => e.join(";"))
+    ].join("\n");
+
+    // Crear el archivo y descargar
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Modulaciones_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNuevoRegistro(prev => ({ ...prev, [name]: value }));
@@ -53,32 +90,14 @@ export const Peditina = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!nuevoRegistro.linea || !nuevoRegistro.operador) {
         return MySwal.fire('Campos incompletos', 'Por favor seleccioná la Línea y verificá el Operador', 'warning');
     }
 
     try {
       await addDoc(collection(db, 'Peditinas'), nuevoRegistro);
-      
-      MySwal.fire({
-        title: '¡Guardado!',
-        text: `Tren ${nuevoRegistro.tren} registrado con éxito`,
-        icon: 'success',
-        timer: 1200,
-        showConfirmButton: false
-      });
-
-      // MANTENEMOS: Fecha, Línea y Operador. 
-      // LIMPIAMOS: Tren, Equipo, Ubicación y Hora.
-      setNuevoRegistro(prev => ({
-        ...prev,
-        tren: '',
-        equipo: '',
-        ubicacion: '',
-        hora: ''
-      }));
-      
+      MySwal.fire({ title: '¡Guardado!', text: `Tren ${nuevoRegistro.tren} registrado con éxito`, icon: 'success', timer: 1200, showConfirmButton: false });
+      setNuevoRegistro(prev => ({ ...prev, tren: '', equipo: '', ubicacion: '', hora: '' }));
       fetchPeditinas();
     } catch (error) {
       MySwal.fire('Error', 'No se pudo guardar el registro', 'error');
@@ -86,14 +105,7 @@ export const Peditina = () => {
   };
 
   const eliminarRegistro = async (id) => {
-    const result = await MySwal.fire({
-      title: '¿Eliminar registro?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      confirmButtonText: 'Borrar'
-    });
-
+    const result = await MySwal.fire({ title: '¿Eliminar registro?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Borrar' });
     if (result.isConfirmed) {
       await deleteDoc(doc(db, "Peditinas", id));
       setRegistros(registros.filter(reg => reg.id !== id));
@@ -113,18 +125,11 @@ export const Peditina = () => {
         <h2 className="text-danger mb-4 border-bottom pb-2">Carga de Modulaciones</h2>
         <h4 className="text-danger mb-4 border-bottom pb-2">Tiempo y Espacio</h4>
         <Form onSubmit={handleSubmit}>
-          {/* Fila 1: Datos que Persisten (Configuración del Turno) */}
           <Row className="bg-light p-3 rounded mb-3 border">
             <Col md={4}>
               <Form.Group>
                 <Form.Label className="fw-bold">Línea</Form.Label>
-                <Form.Select 
-                    name="linea" 
-                    value={nuevoRegistro.linea} 
-                    onChange={handleChange} 
-                    required 
-                    className="border-primary fw-bold"
-                >
+                <Form.Select name="linea" value={nuevoRegistro.linea} onChange={handleChange} required className="border-primary fw-bold">
                     <option value="">-- SELECCIONAR --</option>
                     <option value="Suárez">SUÁREZ</option>
                     <option value="Tigre">TIGRE</option>
@@ -134,15 +139,7 @@ export const Peditina = () => {
             <Col md={4}>
               <Form.Group>
                 <Form.Label className="fw-bold"><FontAwesomeIcon icon={faUser} /> Operador de Control</Form.Label>
-                <Form.Control 
-                    type="text" 
-                    name="operador" 
-                    value={nuevoRegistro.operador} 
-                    onChange={handleChange} 
-                    required 
-                    placeholder="Nombre del operador..."
-                    className="border-primary fw-bold"
-                />
+                <Form.Control type="text" name="operador" value={nuevoRegistro.operador} onChange={handleChange} required placeholder="Nombre del operador..." className="border-primary fw-bold" />
               </Form.Group>
             </Col>
             <Col md={4}>
@@ -153,7 +150,6 @@ export const Peditina = () => {
             </Col>
           </Row>
 
-          {/* Fila 2: Datos del Tren (Se limpian en cada carga) */}
           <Row>
             <Col md={2}><Form.Group className="mb-3"><Form.Label>N° Tren</Form.Label><Form.Control type="text" name="tren" value={nuevoRegistro.tren} onChange={handleChange} required placeholder="3021" /></Form.Group></Col>
             <Col md={3}><Form.Group className="mb-3"><Form.Label>Equipo (Loc/Chapa)</Form.Label><Form.Control type="text" name="equipo" value={nuevoRegistro.equipo} onChange={handleChange} placeholder="Ej: A601" /></Form.Group></Col>
@@ -167,7 +163,6 @@ export const Peditina = () => {
         </Form>
       </Card>
 
-      {/* SECCIÓN DE FILTROS */}
       <Card className="p-3 mb-4 bg-light shadow-sm">
           <Row className="align-items-end">
             <Col md={3}><Form.Label className="small fw-bold">Filtrar Línea:</Form.Label>
@@ -180,12 +175,19 @@ export const Peditina = () => {
             <Col md={3}><Form.Label className="small fw-bold">Operador:</Form.Label><Form.Control size="sm" type="text" value={filtroOperador} onChange={(e) => setFiltroOperador(e.target.value)} placeholder="Nombre..." /></Col>
             <Col md={3}><Form.Label className="small fw-bold">Fecha:</Form.Label><Form.Control size="sm" type="date" value={filtroFecha} onChange={(e) => setFiltroFecha(e.target.value)} /></Col>
             <Col md={3} className="text-end">
-                <Button variant="outline-success" size="sm" className="w-100">Exportar Excel</Button>
+                <Button 
+                  variant="outline-success" 
+                  size="sm" 
+                  className="w-100 fw-bold"
+                  onClick={exportarCSV}
+                >
+                  <FontAwesomeIcon icon={faFileCsv} className="me-2" />
+                  Exportar CSV
+                </Button>
             </Col>
           </Row>
       </Card>
 
-      {/* Tabla de Resultados */}
       <Table responsive striped bordered hover className="shadow-sm border-danger">
         <thead className="table-dark text-center">
           <tr>

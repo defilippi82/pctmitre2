@@ -9,8 +9,8 @@ import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // LISTAS PREDEFINIDAS
-const ESTACIONES = ["Retiro", "Zárate", "Rosario", "San Lorenzo", "Córdoba", "Tucumán"];
-const EMPRESAS = ["NCA", "Ferrosur Roca", "Belgrano Cargas", "Ferroexpreso Pampeano", "Fepasa"];
+const ESTACIONES = ["Retiro", "Zárate", "Dv. Minetti","Dv. La Bota","Emp. Norte","Ugarteche","Rosario", "Córdoba", "Tucumán", ];
+const EMPRESAS = ["Trenes Argentinos","NCA","BCYL S.A", "Ferrosur Roca", "Belgrano Cargas", "Fepsa"];
 
 export const Tarjetas = () => {
   const { userData } = useContext(UserContext);
@@ -108,7 +108,7 @@ export const Tarjetas = () => {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `tarjetas_${new Date().toLocaleDateString()}.csv`;
+    a.download = `TrenesCargas_${new Date().toLocaleDateString()}.csv`;
     a.click();
   };
 

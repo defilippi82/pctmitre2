@@ -71,6 +71,7 @@ export const NavbarComponent = () => {
                 <NavDropdown title="Grupo de Estudio (GdE)" id="nav-gde">
                   <NavDropdown.Item href="#/peditina">Modulaciones T y E</NavDropdown.Item>
                   <NavDropdown.Item href="#/tarjetas">Trenes de Carga</NavDropdown.Item>
+                  <NavDropdown.Item href="#/eventos">Eventos</NavDropdown.Item>
                 </NavDropdown>
               )}
 
@@ -78,6 +79,7 @@ export const NavbarComponent = () => {
               {tieneAcceso('electrico') && (
                 <NavDropdown title="Mesa Eléctrica" id="nav-electrica">
                   <NavDropdown.Item href="#/cortesecc">Corte Secciones</NavDropdown.Item>
+                  <NavDropdown.Item href="#/pendientes">Pendientes</NavDropdown.Item>
                   <NavDropdown.Item href="#/precauciones">Precauciones</NavDropdown.Item>
                 </NavDropdown>
               )}
@@ -87,6 +89,7 @@ export const NavbarComponent = () => {
               {tieneAcceso('diesel') && (
                 <NavDropdown title="Mesa Diésel" id="nav-diesel">
                   <NavDropdown.Item href="#/auv">A.U.V.</NavDropdown.Item>
+                  <NavDropdown.Item href="#/pendientes">Pendientes</NavDropdown.Item>
                 </NavDropdown>
               )}
 
@@ -96,8 +99,9 @@ export const NavbarComponent = () => {
                   <NavDropdown.Item href="#/pendientes">Pendientes</NavDropdown.Item>
                   <NavDropdown.Item href="#/partes">Partes Regularidad</NavDropdown.Item>
                   <NavDropdown.Item href="#/barreras">Barreras</NavDropdown.Item>
+                  <NavDropdown.Item href="#/barrerasnormalizadas">Normales</NavDropdown.Item>
                   <NavDropdown.Item href="#/art">ART</NavDropdown.Item>
-                  <NavDropdown.Item href="#/emergencias">Teléfonos Útiles</NavDropdown.Item>
+                  <NavDropdown.Item href="#/direcciones">Teléfonos Útiles</NavDropdown.Item>
                   <NavDropdown.Item href="#/padron">Padrón</NavDropdown.Item>
                 </NavDropdown>
               )}

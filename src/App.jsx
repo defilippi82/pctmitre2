@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { HashRouter as Router, Routes, Route, Navigate} from "react-router-dom";
+import {UserProvider} from "./Services/UserContext";
 import { RutasPrivadas } from './Services/RutasPrivadas.jsx';
+import { NavbarComponent } from './Views/Navbar';
 import { Login } from "./components/Admin/Login";
 import {CorteSecc} from "./components/Electrico/CorteSecc.jsx";
 import {Precauciones} from "./components/Electrico/Precauciones.jsx";
@@ -21,21 +23,21 @@ import {Novedades} from "./components/Personal/Novedades.jsx"
 import {RegistrarTarjetas} from "./components/Personal/RegistrarTarjetas.jsx";
 import { Direcciones} from "./components/Emergencia/Direcciones"
 import { Barreras } from "./components/Emergencia/Barreras.jsx";
+import {Partes} from "./components/Emergencia/Partes.jsx";
 import { BarrerasNormalizadas } from "./components/Emergencia/Normales.jsx";
-import { Pendientes } from './components/Emergencia/Pendientes.jsx';
 import { Peditina } from "./components/GDE/Peditina.jsx";
 import { Tarjetas } from "./components/GDE/Tarjetas.jsx";
+import { Eventos } from './components/GDE/Eventos.jsx';
+import { CargaAUV }  from "./components/Diesel/AUV.jsx";
 import { EditarPeditina } from "./components/GDE/EditarPeditina.jsx";
 import { EditarTarjeta } from "./components/GDE/EditarTarjeta.jsx";
-import { NavbarComponent } from './Views/Navbar';
-import {UserProvider} from "./Services/UserContext";
+import { Pendientes } from './Services/Pendientes.jsx';
 import {Emergencia} from "./Services/Emergencia";
-import {Partes} from "./components/Emergencia/Partes.jsx";
-import { CargaAUV }  from "./components/Diesel/AUV.jsx";
 import {CargarColecciones} from "./Services/CargarColecciones";
 import {Footer} from './Views/Footer';
 import {Privacidad} from "./Views/Privacidad";
 import './scss/App.css'
+
 
 export const App = () => {
  
@@ -60,6 +62,7 @@ export const App = () => {
               <Route path="/novedades" element={<Novedades />} />
               <Route path="/peditina" element={<Peditina />} />
               <Route path="/tarjetas" element={<Tarjetas />} /> {/* Usando tu componente original */}
+              <Route path="/eventos" element={<Eventos />} />
               <Route path="/cortesecc" element={<CorteSecc />} />
               <Route path="/precauciones" element={<Precauciones />} />
               <Route path="/pendientes" element={<Pendientes />} />

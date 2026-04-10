@@ -145,7 +145,7 @@ export const Barreras = () => {
       <Table responsive striped bordered hover className="shadow-sm">
         <thead className="table-dark text-center">
           <tr>
-            <th>Fecha/Hora</th><th>Ramal</th><th>PAN/Señal</th><th>Estación</th><th>Falla</th><th>N° Novedad</th><th>Acción</th>
+            <th>Fecha/Hora</th><th>Ramal</th><th>PAN/Señal</th><th>Señal/Circ./ADV</th><th>Estación</th><th>Falla</th><th>N° Novedad</th><th>Acción</th>
           </tr>
         </thead>
         <tbody className="align-middle text-center">
@@ -156,7 +156,8 @@ export const Barreras = () => {
               <tr key={reg.id}>
                 <td>{reg.fecha} {reg.hora}</td>
                 <td><span className="badge bg-secondary">{reg.ramal}</span></td>
-                <td className="fw-bold">{reg.panPp || reg.senalamiento}</td>
+                <td className="fw-bold">{reg.panPp }</td>
+                <td className="fw-bold"> {reg.senalamiento}</td>
                 <td>{reg.estacion}</td>
                 <td className="text-danger">{reg.motivo}</td>
                 <td>{reg.novedad}</td>
