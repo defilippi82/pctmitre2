@@ -69,7 +69,7 @@ export const NavbarComponent = () => {
               {/* --- MESA GRUPO DE ESTUDIO (GdE) --- */}
               {tieneAcceso('gde') && (
                 <NavDropdown title="Grupo de Estudio (GdE)" id="nav-gde">
-                  <NavDropdown.Item href="#/peditina">Modulaciones T y E</NavDropdown.Item>
+                  <NavDropdown.Item href="#/modulacion">Modulaciones T y E</NavDropdown.Item>
                   <NavDropdown.Item href="#/tarjetas">Trenes de Carga</NavDropdown.Item>
                   <NavDropdown.Item href="#/eventos">Eventos</NavDropdown.Item>
                 </NavDropdown>
@@ -80,7 +80,7 @@ export const NavbarComponent = () => {
                 <NavDropdown title="Mesa Eléctrica" id="nav-electrica">
                   <NavDropdown.Item href="#/cortesecc">Corte Secciones</NavDropdown.Item>
                   <NavDropdown.Item href="#/pendientes">Pendientes</NavDropdown.Item>
-                  <NavDropdown.Item href="#/precauciones">Precauciones</NavDropdown.Item>
+                  {/*<NavDropdown.Item href="#/precauciones">Precauciones</NavDropdown.Item>*/}
                 </NavDropdown>
               )}
 
@@ -96,7 +96,6 @@ export const NavbarComponent = () => {
               {/* --- MESA EMERGENCIAS --- */}
               {tieneAcceso('emergencia') && (
                 <NavDropdown title="Mesa Emergencias" id="nav-emergencias">
-                  <NavDropdown.Item href="#/pendientes">Pendientes</NavDropdown.Item>
                   <NavDropdown.Item href="#/partes">Partes Regularidad</NavDropdown.Item>
                   <NavDropdown.Item href="#/barreras">Barreras</NavDropdown.Item>
                   <NavDropdown.Item href="#/barrerasnormalizadas">Normales</NavDropdown.Item>

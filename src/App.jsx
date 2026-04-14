@@ -25,7 +25,7 @@ import { Direcciones} from "./components/Emergencia/Direcciones"
 import { Barreras } from "./components/Emergencia/Barreras.jsx";
 import {Partes} from "./components/Emergencia/Partes.jsx";
 import { BarrerasNormalizadas } from "./components/Emergencia/Normales.jsx";
-import { Peditina } from "./components/GDE/Peditina.jsx";
+import { Modulacion } from "./components/GDE/Modulacion.jsx";
 import { Tarjetas } from "./components/GDE/Tarjetas.jsx";
 import { Eventos } from './components/GDE/Eventos.jsx';
 import { CargaAUV }  from "./components/Diesel/AUV.jsx";
@@ -60,7 +60,7 @@ export const App = () => {
             {/* --- 2. RUTAS OPERATIVAS (Requieren estar logueado) --- */}
             <Route element={<RutasPrivadas />}>
               <Route path="/novedades" element={<Novedades />} />
-              <Route path="/peditina" element={<Peditina />} />
+              <Route path="/modulacion" element={<Modulacion />} />
               <Route path="/tarjetas" element={<Tarjetas />} /> {/* Usando tu componente original */}
               <Route path="/eventos" element={<Eventos />} />
               <Route path="/cortesecc" element={<CorteSecc />} />

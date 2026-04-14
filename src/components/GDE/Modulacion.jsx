@@ -11,12 +11,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const MySwal = withReactContent(Swal);
 
-export const Peditina = () => {
+// Nombre actualizado a Modulacion
+export const Modulacion = () => {
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
   
   const [registros, setRegistros] = useState([]); // Base de datos local (pendientes)
-  const [resultadosBusqueda, setResultadosBusqueda] = useState([]); // Lo que se ve en tabla
+  const [resultadosBusqueda, setResultadosBusqueda] = useState([]); // Lo que se ve efectivamente en la tabla
   
   const hoy = new Date().toISOString().split('T')[0];
   
@@ -36,8 +37,8 @@ export const Peditina = () => {
   const [filtroOperador, setFiltroOperador] = useState('');
   const [filtroLinea, setFiltroLinea] = useState('');
 
-  // 1. Carga inicial de datos desde Firebase
-  const fetchPeditinas = async () => {
+  // 1. Carga inicial de datos desde Firebase (Solo los que no fueron a BigQuery)
+  const fetchModulaciones = async () => {
     try {
       const q = query(
         collection(db, 'Peditinas'), 
@@ -48,18 +49,18 @@ export const Peditina = () => {
       const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
       setRegistros(data);
-      setResultadosBusqueda(data); // Al cargar, mostramos todo lo pendiente
+      setResultadosBusqueda(data); // Inicialmente mostramos todo lo pendiente
     } catch (error) {
-      console.error("Error al obtener Peditinas: ", error);
+      console.error("Error al obtener Modulaciones: ", error);
       MySwal.fire('Error', 'No se pudieron cargar los registros.', 'error');
     }
   };
 
   useEffect(() => {
-    fetchPeditinas();
+    fetchModulaciones();
   }, []);
 
-  // 2. Función de búsqueda (Se ejecuta SOLO al hacer click en el botón)
+  // 2. Función de búsqueda (Se ejecuta SOLO al hacer click en el botón BUSCAR)
   const ejecutarBusqueda = () => {
     const filtrados = registros.filter(reg => {
       const coincideFecha = filtroFecha ? reg.fecha === filtroFecha : true;
@@ -70,7 +71,7 @@ export const Peditina = () => {
     setResultadosBusqueda(filtrados);
   };
 
-  // 3. Exportar CSV (Usa los resultados que están en pantalla actualmente)
+  // 3. Exportar CSV (Usa los resultados filtrados que están en pantalla)
   const exportarCSV = () => {
     if (resultadosBusqueda.length === 0) {
       return MySwal.fire('Sin datos', 'No hay registros en la tabla para exportar', 'info');
@@ -90,34 +91,37 @@ export const Peditina = () => {
     link.click();
   };
 
+  // 4. Exportación Masiva a BigQuery (Cierre de Lote)
   const exportarABigQuery = async () => {
     if (registros.length === 0) {
-      MySwal.fire('Atención', 'No hay registros pendientes.', 'info');
+      MySwal.fire('Atención', 'No hay registros pendientes de cierre.', 'info');
       return;
     }
 
     MySwal.fire({
       title: '¿Confirmar Exportación Masiva?',
-      text: `Se enviarán ${registros.length} registros a BigQuery.`,
+      text: `Se marcarán ${registros.length} registros como exportados. La extensión los moverá a BigQuery automáticamente.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#198754',
-      confirmButtonText: 'Sí, exportar todo',
+      confirmButtonText: 'Sí, cerrar y exportar',
       cancelButtonText: 'Cancelar'
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          MySwal.fire({ title: 'Exportando...', allowOutsideClick: false, didOpen: () => MySwal.showLoading() });
+          MySwal.fire({ title: 'Procesando...', allowOutsideClick: false, didOpen: () => MySwal.showLoading() });
+          
           const batch = writeBatch(db);
           registros.forEach((reg) => {
             const docRef = doc(db, "Peditinas", reg.id);
             batch.update(docRef, { exportado: true });
           });
+          
           await batch.commit();
-          MySwal.fire('¡Éxito!', 'Datos movidos a BigQuery.', 'success');
-          fetchPeditinas();
+          MySwal.fire('¡Éxito!', 'Los datos se han enviado a BigQuery. La tabla se ha limpiado.', 'success');
+          fetchModulaciones(); // Recargamos (traerá 0 si todo se exportó)
         } catch (error) {
-          MySwal.fire('Error', 'Fallo al exportar.', 'error');
+          MySwal.fire('Error', 'Hubo un fallo en la comunicación con Firebase.', 'error');
         }
       }
     });
@@ -128,10 +132,11 @@ export const Peditina = () => {
     try {
       await addDoc(collection(db, 'Peditinas'), { ...nuevoRegistro, exportado: false });
       MySwal.fire({ title: 'Guardado', icon: 'success', timer: 800, showConfirmButton: false });
+      // Limpiamos campos de tren pero mantenemos operador y línea para rapidez
       setNuevoRegistro(prev => ({ ...prev, tren: '', equipo: '', ubicacion: '', hora: '' }));
-      fetchPeditinas();
+      fetchModulaciones();
     } catch (error) {
-      MySwal.fire('Error', 'No se pudo guardar', 'error');
+      MySwal.fire('Error', 'No se pudo guardar la modulación.', 'error');
     }
   };
 
@@ -144,16 +149,16 @@ export const Peditina = () => {
     const result = await MySwal.fire({ title: '¿Borrar registro?', icon: 'warning', showCancelButton: true });
     if (result.isConfirmed) {
       await deleteDoc(doc(db, "Peditinas", id));
-      fetchPeditinas();
+      fetchModulaciones();
     }
   };
 
   return (
     <Container className="mt-5" style={{paddingTop: '30px'}}>
-      {/* SECCIÓN CARGA */}
+      
+      {/* FORMULARIO DE CARGA */}
       <Card className="p-4 shadow-sm mb-4 border-left-danger">
         <h2 className="text-danger mb-4 border-bottom pb-2">Carga de Modulaciones</h2>
-        <h6 className="text-danger mb-4">Tiempo y Espacio</h6>
         <Form onSubmit={handleSubmit}>
           <Row className="bg-light p-3 rounded mb-3 border">
             <Col md={4}>
@@ -188,32 +193,32 @@ export const Peditina = () => {
           </Row>
 
           <Button variant="danger" type="submit" className="w-100 fw-bold py-2 shadow-sm">
-            REGISTRAR Y CARGAR OTRO TREN
+            REGISTRAR TREN
           </Button>
         </Form>
       </Card>
       
-      {/* SECCIÓN EXPORTAR BIGQUERY */}
-      <Card className="p-4 mb-4 shadow-sm border-success">
+      {/* BOTÓN EXPORTACIÓN A BIGQUERY (CIERRE) */}
+      <Card className="p-4 mb-4 shadow-sm border-success bg-white">
           <Row className="align-items-center">
             <Col md={8}>
-              <h4 className="text-success mb-0">Gestión de Peditinas Pendientes</h4>
-              <p className="text-muted small">Registros acumulados en espera de BigQuery: {registros.length}</p>
+              <h4 className="text-success mb-0">Pendientes de Cierre</h4>
+              <p className="text-muted mb-0">Hay {registros.length} registros que aún no se han enviado a BigQuery.</p>
             </Col>
             <Col md={4} className="text-end">
-                <Button variant="success" onClick={exportarABigQuery}>
+                <Button variant="success" size="lg" onClick={exportarABigQuery} className="fw-bold shadow">
                   <FontAwesomeIcon icon={faCloudUploadAlt} className="me-2" />
-                  Cierre y Exportación BQ
+                  CERRAR Y ENVIAR A BQ
                 </Button>
             </Col>
           </Row>
       </Card>
 
-      {/* SECCIÓN BUSCADOR Y FILTROS */}
+      {/* BUSCADOR Y FILTROS */}
       <Card className="p-3 mb-4 bg-light shadow-sm border-info">
           <Row className="align-items-end">
             <Col md={3}>
-                <Form.Label className="small fw-bold text-info">Línea:</Form.Label>
+                <Form.Label className="small fw-bold text-info">Filtrar Línea:</Form.Label>
                 <Form.Select size="sm" value={filtroLinea} onChange={(e) => setFiltroLinea(e.target.value)}>
                     <option value="">TODAS</option>
                     <option value="Suárez">Suárez</option>
@@ -229,22 +234,21 @@ export const Peditina = () => {
                 <Form.Control size="sm" type="date" value={filtroFecha} onChange={(e) => setFiltroFecha(e.target.value)} />
             </Col>
             <Col md={3}>
-                {/* BOTÓN DE BÚSQUEDA */}
                 <Button variant="info" size="sm" className="w-100 text-white fw-bold" onClick={ejecutarBusqueda}>
                   <FontAwesomeIcon icon={faSearch} className="me-2" />
-                  BUSCAR REGISTROS
+                  BUSCAR EN TABLA
                 </Button>
             </Col>
             <Col md={2}>
                 <Button variant="outline-success" size="sm" className="w-100 fw-bold" onClick={exportarCSV}>
                   <FontAwesomeIcon icon={faFileCsv} className="me-2" />
-                  CSV
+                  EXPORTAR CSV
                 </Button>
             </Col>
           </Row>
       </Card>
 
-      {/* TABLA DE RESULTADOS */}
+      {/* TABLA DE MODULACIONES */}
       <Table responsive striped bordered hover className="shadow-sm border-danger">
         <thead className="table-dark text-center">
           <tr>
@@ -267,7 +271,7 @@ export const Peditina = () => {
             </tr>
           ))}
           {resultadosBusqueda.length === 0 && (
-            <tr><td colSpan="7" className="text-center p-4 text-muted">No se encontraron registros pendientes con esos filtros.</td></tr>
+            <tr><td colSpan="7" className="text-center p-4 text-muted">No hay modulaciones pendientes con esos criterios.</td></tr>
           )}
         </tbody>
       </Table>
