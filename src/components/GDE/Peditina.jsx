@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore'; 
+import { collection, getDocs, addDoc, deleteDoc, doc, query, where, writeBatch, orderBy } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase'; 
 import { UserContext } from '../../Services/UserContext';
 import { Form, Table, Button, Row, Col, Container, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; 
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { faTrash, faEdit, faUser, faFileCsv } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faUser, faFileCsv, faCloudUploadAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const MySwal = withReactContent(Swal);
@@ -15,29 +15,43 @@ export const Peditina = () => {
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
   
-  const [registros, setRegistros] = useState([]);
+  const [registros, setRegistros] = useState([]); // Base de datos local (pendientes)
+  const [resultadosBusqueda, setResultadosBusqueda] = useState([]); // Lo que se ve en tabla
+  
+  const hoy = new Date().toISOString().split('T')[0];
   
   const [nuevoRegistro, setNuevoRegistro] = useState({
-    fecha: new Date().toISOString().split('T')[0],
+    fecha: hoy,
     tren: '',
     equipo: '',
     ubicacion: '',
     hora: '',
     linea: '', 
-    operador: '' 
+    operador: '',
+    exportado: false 
   });
-
+  
+  // Estados para los campos del buscador
   const [filtroFecha, setFiltroFecha] = useState('');
   const [filtroOperador, setFiltroOperador] = useState('');
   const [filtroLinea, setFiltroLinea] = useState('');
 
+  // 1. Carga inicial de datos desde Firebase
   const fetchPeditinas = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'Peditinas'));
+      const q = query(
+        collection(db, 'Peditinas'), 
+        where('exportado', '==', false),
+        orderBy('fecha', 'desc')
+      );
+      const querySnapshot = await getDocs(q);
       const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
       setRegistros(data);
+      setResultadosBusqueda(data); // Al cargar, mostramos todo lo pendiente
     } catch (error) {
-      console.error("Error al cargar datos:", error);
+      console.error("Error al obtener Peditinas: ", error);
+      MySwal.fire('Error', 'No se pudieron cargar los registros.', 'error');
     }
   };
 
@@ -45,42 +59,80 @@ export const Peditina = () => {
     fetchPeditinas();
   }, []);
 
-  // --- FUNCIÓN PARA EXPORTAR A CSV ---
+  // 2. Función de búsqueda (Se ejecuta SOLO al hacer click en el botón)
+  const ejecutarBusqueda = () => {
+    const filtrados = registros.filter(reg => {
+      const coincideFecha = filtroFecha ? reg.fecha === filtroFecha : true;
+      const coincideOperador = filtroOperador ? reg.operador.toLowerCase().includes(filtroOperador.toLowerCase()) : true;
+      const coincideLinea = filtroLinea ? reg.linea === filtroLinea : true;
+      return coincideFecha && coincideOperador && coincideLinea;
+    });
+    setResultadosBusqueda(filtrados);
+  };
+
+  // 3. Exportar CSV (Usa los resultados que están en pantalla actualmente)
   const exportarCSV = () => {
-    if (registrosFiltrados.length === 0) {
-      return MySwal.fire('Sin datos', 'No hay registros para exportar con los filtros actuales', 'info');
+    if (resultadosBusqueda.length === 0) {
+      return MySwal.fire('Sin datos', 'No hay registros en la tabla para exportar', 'info');
     }
 
-    // Definir encabezados
     const headers = ["Linea", "Fecha", "Tren", "Equipo", "Ubicacion", "Hora", "Operador"];
-    
-    // Crear las filas
-    const rows = registrosFiltrados.map(reg => [
-      reg.linea,
-      reg.fecha,
-      reg.tren,
-      reg.equipo,
-      reg.ubicacion,
-      reg.hora,
-      reg.operador
+    const rows = resultadosBusqueda.map(reg => [
+      reg.linea, reg.fecha, reg.tren, reg.equipo, reg.ubicacion, reg.hora, reg.operador
     ]);
 
-    // Unir todo con punto y coma (común en Excel de regiones hispanas) o coma
-    const csvContent = [
-      headers.join(";"), 
-      ...rows.map(e => e.join(";"))
-    ].join("\n");
-
-    // Crear el archivo y descargar
+    const csvContent = [headers.join(";"), ...rows.map(e => e.join(";"))].join("\n");
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `Modulaciones_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
+    link.setAttribute("download", `Modulaciones_Export_${hoy}.csv`);
     link.click();
-    document.body.removeChild(link);
+  };
+
+  const exportarABigQuery = async () => {
+    if (registros.length === 0) {
+      MySwal.fire('Atención', 'No hay registros pendientes.', 'info');
+      return;
+    }
+
+    MySwal.fire({
+      title: '¿Confirmar Exportación Masiva?',
+      text: `Se enviarán ${registros.length} registros a BigQuery.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#198754',
+      confirmButtonText: 'Sí, exportar todo',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          MySwal.fire({ title: 'Exportando...', allowOutsideClick: false, didOpen: () => MySwal.showLoading() });
+          const batch = writeBatch(db);
+          registros.forEach((reg) => {
+            const docRef = doc(db, "Peditinas", reg.id);
+            batch.update(docRef, { exportado: true });
+          });
+          await batch.commit();
+          MySwal.fire('¡Éxito!', 'Datos movidos a BigQuery.', 'success');
+          fetchPeditinas();
+        } catch (error) {
+          MySwal.fire('Error', 'Fallo al exportar.', 'error');
+        }
+      }
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await addDoc(collection(db, 'Peditinas'), { ...nuevoRegistro, exportado: false });
+      MySwal.fire({ title: 'Guardado', icon: 'success', timer: 800, showConfirmButton: false });
+      setNuevoRegistro(prev => ({ ...prev, tren: '', equipo: '', ubicacion: '', hora: '' }));
+      fetchPeditinas();
+    } catch (error) {
+      MySwal.fire('Error', 'No se pudo guardar', 'error');
+    }
   };
 
   const handleChange = (e) => {
@@ -88,42 +140,20 @@ export const Peditina = () => {
     setNuevoRegistro(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!nuevoRegistro.linea || !nuevoRegistro.operador) {
-        return MySwal.fire('Campos incompletos', 'Por favor seleccioná la Línea y verificá el Operador', 'warning');
-    }
-
-    try {
-      await addDoc(collection(db, 'Peditinas'), nuevoRegistro);
-      MySwal.fire({ title: '¡Guardado!', text: `Tren ${nuevoRegistro.tren} registrado con éxito`, icon: 'success', timer: 1200, showConfirmButton: false });
-      setNuevoRegistro(prev => ({ ...prev, tren: '', equipo: '', ubicacion: '', hora: '' }));
-      fetchPeditinas();
-    } catch (error) {
-      MySwal.fire('Error', 'No se pudo guardar el registro', 'error');
-    }
-  };
-
   const eliminarRegistro = async (id) => {
-    const result = await MySwal.fire({ title: '¿Eliminar registro?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Borrar' });
+    const result = await MySwal.fire({ title: '¿Borrar registro?', icon: 'warning', showCancelButton: true });
     if (result.isConfirmed) {
       await deleteDoc(doc(db, "Peditinas", id));
-      setRegistros(registros.filter(reg => reg.id !== id));
+      fetchPeditinas();
     }
   };
-
-  const registrosFiltrados = registros.filter(reg => {
-    const coincideFecha = filtroFecha ? reg.fecha === filtroFecha : true;
-    const coincideOperador = filtroOperador ? reg.operador.toLowerCase().includes(filtroOperador.toLowerCase()) : true;
-    const coincideLinea = filtroLinea ? reg.linea === filtroLinea : true;
-    return coincideFecha && coincideOperador && coincideLinea;
-  });
 
   return (
     <Container className="mt-5" style={{paddingTop: '30px'}}>
+      {/* SECCIÓN CARGA */}
       <Card className="p-4 shadow-sm mb-4 border-left-danger">
         <h2 className="text-danger mb-4 border-bottom pb-2">Carga de Modulaciones</h2>
-        <h4 className="text-danger mb-4 border-bottom pb-2">Tiempo y Espacio</h4>
+        <h6 className="text-danger mb-4">Tiempo y Espacio</h6>
         <Form onSubmit={handleSubmit}>
           <Row className="bg-light p-3 rounded mb-3 border">
             <Col md={4}>
@@ -138,8 +168,8 @@ export const Peditina = () => {
             </Col>
             <Col md={4}>
               <Form.Group>
-                <Form.Label className="fw-bold"><FontAwesomeIcon icon={faUser} /> Operador de Control</Form.Label>
-                <Form.Control type="text" name="operador" value={nuevoRegistro.operador} onChange={handleChange} required placeholder="Nombre del operador..." className="border-primary fw-bold" />
+                <Form.Label className="fw-bold"><FontAwesomeIcon icon={faUser} /> Operador</Form.Label>
+                <Form.Control type="text" name="operador" value={nuevoRegistro.operador} onChange={handleChange} required placeholder="Nombre..." className="border-primary fw-bold" />
               </Form.Group>
             </Col>
             <Col md={4}>
@@ -151,9 +181,9 @@ export const Peditina = () => {
           </Row>
 
           <Row>
-            <Col md={2}><Form.Group className="mb-3"><Form.Label>N° Tren</Form.Label><Form.Control type="text" name="tren" value={nuevoRegistro.tren} onChange={handleChange} required placeholder="3021" /></Form.Group></Col>
-            <Col md={3}><Form.Group className="mb-3"><Form.Label>Equipo (Loc/Chapa)</Form.Label><Form.Control type="text" name="equipo" value={nuevoRegistro.equipo} onChange={handleChange} placeholder="Ej: A601" /></Form.Group></Col>
-            <Col md={4}><Form.Group className="mb-3"><Form.Label>Ubicación / Km</Form.Label><Form.Control type="text" name="ubicacion" value={nuevoRegistro.ubicacion} onChange={handleChange} placeholder="Km 15.5" /></Form.Group></Col>
+            <Col md={2}><Form.Group className="mb-3"><Form.Label>N° Tren</Form.Label><Form.Control type="text" name="tren" value={nuevoRegistro.tren} onChange={handleChange} required /></Form.Group></Col>
+            <Col md={3}><Form.Group className="mb-3"><Form.Label>Equipo / Loc.</Form.Label><Form.Control type="text" name="equipo" value={nuevoRegistro.equipo} onChange={handleChange} /></Form.Group></Col>
+            <Col md={4}><Form.Group className="mb-3"><Form.Label>Ubicación</Form.Label><Form.Control type="text" name="ubicacion" value={nuevoRegistro.ubicacion} onChange={handleChange} /></Form.Group></Col>
             <Col md={3}><Form.Group className="mb-3"><Form.Label>Hora</Form.Label><Form.Control type="time" name="hora" value={nuevoRegistro.hora} onChange={handleChange} required /></Form.Group></Col>
           </Row>
 
@@ -162,32 +192,59 @@ export const Peditina = () => {
           </Button>
         </Form>
       </Card>
+      
+      {/* SECCIÓN EXPORTAR BIGQUERY */}
+      <Card className="p-4 mb-4 shadow-sm border-success">
+          <Row className="align-items-center">
+            <Col md={8}>
+              <h4 className="text-success mb-0">Gestión de Peditinas Pendientes</h4>
+              <p className="text-muted small">Registros acumulados en espera de BigQuery: {registros.length}</p>
+            </Col>
+            <Col md={4} className="text-end">
+                <Button variant="success" onClick={exportarABigQuery}>
+                  <FontAwesomeIcon icon={faCloudUploadAlt} className="me-2" />
+                  Cierre y Exportación BQ
+                </Button>
+            </Col>
+          </Row>
+      </Card>
 
-      <Card className="p-3 mb-4 bg-light shadow-sm">
+      {/* SECCIÓN BUSCADOR Y FILTROS */}
+      <Card className="p-3 mb-4 bg-light shadow-sm border-info">
           <Row className="align-items-end">
-            <Col md={3}><Form.Label className="small fw-bold">Filtrar Línea:</Form.Label>
+            <Col md={3}>
+                <Form.Label className="small fw-bold text-info">Línea:</Form.Label>
                 <Form.Select size="sm" value={filtroLinea} onChange={(e) => setFiltroLinea(e.target.value)}>
                     <option value="">TODAS</option>
                     <option value="Suárez">Suárez</option>
                     <option value="Tigre">Tigre</option>
                 </Form.Select>
             </Col>
-            <Col md={3}><Form.Label className="small fw-bold">Operador:</Form.Label><Form.Control size="sm" type="text" value={filtroOperador} onChange={(e) => setFiltroOperador(e.target.value)} placeholder="Nombre..." /></Col>
-            <Col md={3}><Form.Label className="small fw-bold">Fecha:</Form.Label><Form.Control size="sm" type="date" value={filtroFecha} onChange={(e) => setFiltroFecha(e.target.value)} /></Col>
-            <Col md={3} className="text-end">
-                <Button 
-                  variant="outline-success" 
-                  size="sm" 
-                  className="w-100 fw-bold"
-                  onClick={exportarCSV}
-                >
+            <Col md={2}>
+                <Form.Label className="small fw-bold text-info">Operador:</Form.Label>
+                <Form.Control size="sm" type="text" value={filtroOperador} onChange={(e) => setFiltroOperador(e.target.value)} placeholder="Buscar..." />
+            </Col>
+            <Col md={2}>
+                <Form.Label className="small fw-bold text-info">Fecha:</Form.Label>
+                <Form.Control size="sm" type="date" value={filtroFecha} onChange={(e) => setFiltroFecha(e.target.value)} />
+            </Col>
+            <Col md={3}>
+                {/* BOTÓN DE BÚSQUEDA */}
+                <Button variant="info" size="sm" className="w-100 text-white fw-bold" onClick={ejecutarBusqueda}>
+                  <FontAwesomeIcon icon={faSearch} className="me-2" />
+                  BUSCAR REGISTROS
+                </Button>
+            </Col>
+            <Col md={2}>
+                <Button variant="outline-success" size="sm" className="w-100 fw-bold" onClick={exportarCSV}>
                   <FontAwesomeIcon icon={faFileCsv} className="me-2" />
-                  Exportar CSV
+                  CSV
                 </Button>
             </Col>
           </Row>
       </Card>
 
+      {/* TABLA DE RESULTADOS */}
       <Table responsive striped bordered hover className="shadow-sm border-danger">
         <thead className="table-dark text-center">
           <tr>
@@ -195,7 +252,7 @@ export const Peditina = () => {
           </tr>
         </thead>
         <tbody className="text-center align-middle">
-          {registrosFiltrados.map((reg) => (
+          {resultadosBusqueda.map((reg) => (
             <tr key={reg.id}>
               <td><span className={`badge ${reg.linea === 'Suárez' ? 'bg-primary' : 'bg-success'}`}>{reg.linea}</span></td>
               <td>{reg.fecha}</td>
@@ -204,11 +261,14 @@ export const Peditina = () => {
               <td>{reg.hora} hs</td>
               <td><small className="text-muted">{reg.operador}</small></td>
               <td>
-                <Button variant="link" className="text-primary p-0 me-2" onClick={() => navigate(`/peditina/edit/${reg.id}`)} title="Editar"><FontAwesomeIcon icon={faEdit} /></Button>
-                <Button variant="link" className="text-danger p-0" onClick={() => eliminarRegistro(reg.id)} title="Borrar"><FontAwesomeIcon icon={faTrash} /></Button>
+                <Button variant="link" className="text-primary p-0 me-2" onClick={() => navigate(`/peditina/edit/${reg.id}`)}><FontAwesomeIcon icon={faEdit} /></Button>
+                <Button variant="link" className="text-danger p-0" onClick={() => eliminarRegistro(reg.id)}><FontAwesomeIcon icon={faTrash} /></Button>
               </td>
             </tr>
           ))}
+          {resultadosBusqueda.length === 0 && (
+            <tr><td colSpan="7" className="text-center p-4 text-muted">No se encontraron registros pendientes con esos filtros.</td></tr>
+          )}
         </tbody>
       </Table>
     </Container>
