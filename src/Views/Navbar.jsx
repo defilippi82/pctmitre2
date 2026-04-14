@@ -38,12 +38,12 @@ export const NavbarComponent = () => {
           <span className="ms-2 fw-light text-muted small">| {userData.nombre}</span>
         </Navbar.Brand>
 
-        {/* -----Boton Emergencia (Visible solo para roles con acceso a emergencias)-----         <div className="d-flex align-items-center">
-          <Button href='#/emergencia' variant="danger" className="me-2 d-flex align-items-center gap-2">
+                 <div className="d-flex align-items-center">
+          {/*<Button href='#/emergencia' variant="danger" className="me-2 d-flex align-items-center gap-2">
             EMERGENCIA <FontAwesomeIcon icon={faBullhorn} />
-          </Button>
+          </Button>*/}
           <Navbar.Toggle aria-controls="offcanvasNavbar" />
-        </div>*/}
+        </div>
 
         <Navbar.Offcanvas 
           id="offcanvasNavbar" 
