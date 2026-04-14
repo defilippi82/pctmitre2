@@ -12,7 +12,6 @@ export const CargarColecciones = () => {
         setJsonFiles(Array.from(event.target.files));
     };
 
-    // Función para procesar y limpiar el formato específico de tu JSON
     const processAndUpload = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -21,36 +20,41 @@ export const CargarColecciones = () => {
                     const rawData = JSON.parse(e.target.result);
                     const colRef = collection(db, collectionName);
 
+                    // Iteramos sobre cada elemento del array para que sean documentos separados
                     const uploadPromises = rawData.map(async (item) => {
-                        // Extraemos la clave larga (ej: "fecha;tren;equipo...")
-                        const fullKey = Object.keys(item)[0];
-                        const fullValue = item[fullKey];
+                        // 1. Detectamos la clave del objeto (que contiene los nombres de los campos)
+                        const rawKey = Object.keys(item)[0];
+                        const rawValue = item[rawKey];
 
-                        if (!fullValue || fullValue.trim() === "" || fullValue.includes(";;;;")) {
-                            return; // Salta filas vacías
+                        // 2. Si la fila está vacía (como los ;;;;;; finales del archivo), la ignoramos
+                        if (!rawValue || rawValue.trim() === "" || rawValue.startsWith(";;")) {
+                            return; 
                         }
 
-                        // Separamos los valores por punto y coma
-                        const values = fullValue.split(';');
-                        const keys = fullKey.split(';');
+                        // 3. Separamos los encabezados y los valores por ";"
+                        const headers = rawKey.split(';');
+                        const values = rawValue.split(';');
 
-                        // Reconstruimos el objeto limpio
-                        const cleanDoc = {};
-                        keys.forEach((key, index) => {
-                            if (key && values[index]) {
-                                cleanDoc[key.trim()] = values[index].trim();
+                        // 4. Construimos el objeto final limpio
+                        const docToUpload = {};
+                        headers.forEach((header, index) => {
+                            if (header && header.trim() !== "") {
+                                // Limpiamos espacios y quitamos las comillas extras si existen
+                                docToUpload[header.trim()] = values[index] ? values[index].replace(/"/g, '').trim() : "";
                             }
                         });
 
+                        // 5. Subimos como un documento nuevo
                         return addDoc(colRef, {
-                            ...cleanDoc,
-                            timestamp: serverTimestamp()
+                            ...docToUpload,
+                            fecha_proceso: serverTimestamp() // Opcional: para saber cuándo se subió
                         });
                     });
 
                     await Promise.all(uploadPromises);
                     resolve();
                 } catch (error) {
+                    console.error("Error procesando archivo:", error);
                     reject(error);
                 }
             };
@@ -60,13 +64,13 @@ export const CargarColecciones = () => {
 
     const handleUpload = async () => {
         if (jsonFiles.length === 0) {
-            Swal.fire('Error', 'Selecciona al menos un archivo JSON', 'error');
+            Swal.fire('Error', 'Selecciona el archivo JSON', 'error');
             return;
         }
 
         Swal.fire({
-            title: 'Subiendo a Firestore...',
-            text: `Destino: ${collectionName}`,
+            title: 'Subiendo datos...',
+            text: `Creando documentos individuales en ${collectionName}`,
             allowOutsideClick: false,
             didOpen: () => Swal.showLoading()
         });
@@ -75,60 +79,35 @@ export const CargarColecciones = () => {
             for (const file of jsonFiles) {
                 await processAndUpload(file);
             }
-            Swal.fire('¡Éxito!', `Datos cargados en la colección ${collectionName}`, 'success');
+            Swal.fire('¡Éxito!', 'Cada fila se ha subido como un documento independiente.', 'success');
             setJsonFiles([]);
         } catch (error) {
-            console.error(error);
-            Swal.fire('Error', 'Hubo un fallo en la carga de datos', 'error');
+            Swal.fire('Error', 'Hubo un problema al procesar el JSON.', 'error');
         }
     };
 
     return (
-        <div style={{ padding: '25px', maxWidth: '500px', margin: 'auto' }}>
-            <h3>Panel de Carga Masiva</h3>
-            
-            <div style={{ marginBottom: '20px' }}>
-                <label>**Colección de Destino:**</label>
-                <input 
-                    type="text" 
-                    className="form-control"
-                    value={collectionName} 
-                    onChange={(e) => setCollectionName(e.target.value)}
-                    placeholder="Ej: Peditinas_2026"
-                    style={{ width: '100%', padding: '8px', display: 'block' }}
-                />
-            </div>
-
-            <div style={{ marginBottom: '20px' }}>
-                <label>**Archivos JSON:**</label>
-                <input 
-                    type="file" 
-                    accept=".json" 
-                    multiple 
-                    onChange={handleFileChange}
-                    style={{ display: 'block' }}
-                />
-            </div>
-
-            {jsonFiles.length > 0 && (
-                <div style={{ marginBottom: '15px', fontSize: '0.8em' }}>
-                    <strong>Seleccionados:</strong> {jsonFiles.length} archivo(s).
-                </div>
-            )}
-
+        <div style={{ padding: '20px', maxWidth: '400px' }}>
+            <h3>Cargar Base de Datos</h3>
+            <input 
+                type="text" 
+                placeholder="Nombre de la colección"
+                value={collectionName} 
+                onChange={(e) => setCollectionName(e.target.value)}
+                style={{ width: '100%', marginBottom: '10px', padding: '8px' }}
+            />
+            <input 
+                type="file" 
+                accept=".json" 
+                multiple 
+                onChange={handleFileChange}
+                style={{ marginBottom: '10px' }}
+            />
             <button 
                 onClick={handleUpload}
-                style={{ 
-                    width: '100%', 
-                    padding: '12px', 
-                    backgroundColor: '#4CAF50', 
-                    color: 'white', 
-                    border: 'none', 
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                }}
+                style={{ width: '100%', padding: '10px', backgroundColor: '#008CBA', color: 'white', border: 'none', cursor: 'pointer' }}
             >
-                Subir Datos a {collectionName}
+                Subir documentos
             </button>
         </div>
     );
