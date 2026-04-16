@@ -99,9 +99,9 @@ export const NavbarComponent = () => {
                   <NavDropdown.Item href="#/partes">Partes Regularidad</NavDropdown.Item>
                   <NavDropdown.Item href="#/barreras">Barreras</NavDropdown.Item>
                   <NavDropdown.Item href="#/barrerasnormalizadas">Normales</NavDropdown.Item>
-                  <NavDropdown.Item href="#/art">ART</NavDropdown.Item>
+                  {/*<NavDropdown.Item href="#/art">ART</NavDropdown.Item>
                   <NavDropdown.Item href="#/direcciones">Teléfonos Útiles</NavDropdown.Item>
-                  <NavDropdown.Item href="#/padron">Padrón</NavDropdown.Item>
+                  <NavDropdown.Item href="#/padron">Padrón</NavDropdown.Item>*/}
                 </NavDropdown>
               )}
 

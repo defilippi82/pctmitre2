@@ -41,7 +41,7 @@ export const Modulacion = () => {
   const fetchModulaciones = async () => {
     try {
       const q = query(
-        collection(db, 'Peditinas'), 
+        collection(db, 'Modulaciones'), 
         where('exportado', '==', false),
         orderBy('fecha', 'desc')
       );
@@ -113,7 +113,7 @@ export const Modulacion = () => {
           
           const batch = writeBatch(db);
           registros.forEach((reg) => {
-            const docRef = doc(db, "Peditinas", reg.id);
+            const docRef = doc(db, "Modulaciones", reg.id);
             batch.update(docRef, { exportado: true });
           });
           
@@ -130,7 +130,7 @@ export const Modulacion = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, 'Peditinas'), { ...nuevoRegistro, exportado: false });
+      await addDoc(collection(db, 'Modulaciones'), { ...nuevoRegistro, exportado: false });
       MySwal.fire({ title: 'Guardado', icon: 'success', timer: 800, showConfirmButton: false });
       // Limpiamos campos de tren pero mantenemos operador y línea para rapidez
       setNuevoRegistro(prev => ({ ...prev, tren: '', equipo: '', ubicacion: '', hora: '' }));
@@ -148,7 +148,7 @@ export const Modulacion = () => {
   const eliminarRegistro = async (id) => {
     const result = await MySwal.fire({ title: '¿Borrar registro?', icon: 'warning', showCancelButton: true });
     if (result.isConfirmed) {
-      await deleteDoc(doc(db, "Peditinas", id));
+      await deleteDoc(doc(db, "Modulaciones", id));
       fetchModulaciones();
     }
   };
