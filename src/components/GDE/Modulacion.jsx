@@ -6,18 +6,21 @@ import { Form, Table, Button, Row, Col, Container, Card } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'; 
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { faTrash, faEdit, faUser, faFileCsv, faCloudUploadAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faEdit, faUser, faFileExcel, faCloudUploadAlt, faSearch, faHistory } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as XLSX from 'xlsx'; // Usamos XLSX para descargar Excel real
+
+// Importamos la lista de operadores que creamos aparte
+import { listaOperadores } from './Operadores'; 
 
 const MySwal = withReactContent(Swal);
 
-// Nombre actualizado a Modulacion
 export const Modulacion = () => {
   const { userData } = useContext(UserContext);
   const navigate = useNavigate();
   
-  const [registros, setRegistros] = useState([]); // Base de datos local (pendientes)
-  const [resultadosBusqueda, setResultadosBusqueda] = useState([]); // Lo que se ve efectivamente en la tabla
+  const [registros, setRegistros] = useState([]); 
+  const [resultadosBusqueda, setResultadosBusqueda] = useState([]); 
   
   const hoy = new Date().toISOString().split('T')[0];
   
@@ -32,24 +35,31 @@ export const Modulacion = () => {
     exportado: false 
   });
   
-  // Estados para los campos del buscador
+  // Estados para los campos del buscador de la tabla activa
   const [filtroFecha, setFiltroFecha] = useState('');
   const [filtroOperador, setFiltroOperador] = useState('');
   const [filtroLinea, setFiltroLinea] = useState('');
 
-  // 1. Carga inicial de datos desde Firebase (Solo los que no fueron a BigQuery)
+  // Estados para la Exportación Histórica Mensual
+  const [histLinea, setHistLinea] = useState('');
+  const [histMes, setHistMes] = useState('');
+  const [histAnio, setHistAnio] = useState(new Date().getFullYear().toString());
+
+  // Función auxiliar para generar el formato 'abril-2026'
+  const obtenerNombreMes = (fechaISO) => {
+    const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    const [year, month] = fechaISO.split('-');
+    return `${meses[parseInt(month, 10) - 1]}-${year}`;
+  };
+
   const fetchModulaciones = async () => {
     try {
-      const q = query(
-        collection(db, 'Modulaciones'), 
-        where('exportado', '==', false),
-        orderBy('fecha', 'desc')
-      );
+      const q = query(collection(db, 'Modulaciones'), where('exportado', '==', false), orderBy('fecha', 'desc'));
       const querySnapshot = await getDocs(q);
       const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
       setRegistros(data);
-      setResultadosBusqueda(data); // Inicialmente mostramos todo lo pendiente
+      setResultadosBusqueda(data); 
     } catch (error) {
       console.error("Error al obtener Modulaciones: ", error);
       MySwal.fire('Error', 'No se pudieron cargar los registros.', 'error');
@@ -60,7 +70,6 @@ export const Modulacion = () => {
     fetchModulaciones();
   }, []);
 
-  // 2. Función de búsqueda (Se ejecuta SOLO al hacer click en el botón BUSCAR)
   const ejecutarBusqueda = () => {
     const filtrados = registros.filter(reg => {
       const coincideFecha = filtroFecha ? reg.fecha === filtroFecha : true;
@@ -71,36 +80,14 @@ export const Modulacion = () => {
     setResultadosBusqueda(filtrados);
   };
 
-  // 3. Exportar CSV (Usa los resultados filtrados que están en pantalla)
-  const exportarCSV = () => {
-    if (resultadosBusqueda.length === 0) {
-      return MySwal.fire('Sin datos', 'No hay registros en la tabla para exportar', 'info');
-    }
-
-    const headers = ["Linea", "Fecha", "Tren", "Equipo", "Ubicacion", "Hora", "Operador"];
-    const rows = resultadosBusqueda.map(reg => [
-      reg.linea, reg.fecha, reg.tren, reg.equipo, reg.ubicacion, reg.hora, reg.operador
-    ]);
-
-    const csvContent = [headers.join(";"), ...rows.map(e => e.join(";"))].join("\n");
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `Modulaciones_Export_${hoy}.csv`);
-    link.click();
-  };
-
-  // 4. Exportación Masiva a BigQuery (Cierre de Lote)
   const exportarABigQuery = async () => {
     if (registros.length === 0) {
-      MySwal.fire('Atención', 'No hay registros pendientes de cierre.', 'info');
-      return;
+      return MySwal.fire('Atención', 'No hay registros pendientes de cierre.', 'info');
     }
 
     MySwal.fire({
-      title: '¿Confirmar Exportación Masiva?',
-      text: `Se marcarán ${registros.length} registros como exportados. La extensión los moverá a BigQuery automáticamente.`,
+      title: '¿Confirmar Cierre de Lote?',
+      text: `Se marcarán ${registros.length} registros como exportados para ser leídos por Looker Studio.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#198754',
@@ -118,8 +105,8 @@ export const Modulacion = () => {
           });
           
           await batch.commit();
-          MySwal.fire('¡Éxito!', 'Los datos se han enviado a BigQuery. La tabla se ha limpiado.', 'success');
-          fetchModulaciones(); // Recargamos (traerá 0 si todo se exportó)
+          MySwal.fire('¡Éxito!', 'Los datos se cerraron correctamente.', 'success');
+          fetchModulaciones(); 
         } catch (error) {
           MySwal.fire('Error', 'Hubo un fallo en la comunicación con Firebase.', 'error');
         }
@@ -127,12 +114,70 @@ export const Modulacion = () => {
     });
   };
 
+  // NUEVA FUNCIÓN: Descargar Excel Histórico por Mes y Línea
+  const descargarExcelHistorico = async () => {
+    if (!histLinea || !histMes || !histAnio) {
+      return MySwal.fire('Atención', 'Debe seleccionar Línea, Mes y Año para exportar.', 'warning');
+    }
+
+    const mesFiltro = `${histMes}-${histAnio}`; // Ej: 'abril-2026'
+
+    try {
+      MySwal.fire({ title: 'Generando Excel...', allowOutsideClick: false, didOpen: () => MySwal.showLoading() });
+
+      // Buscamos TODOS los registros de ese mes y línea (exportados o no)
+      const q = query(
+        collection(db, 'Modulaciones'),
+        where('linea', '==', histLinea),
+        where('mes', '==', mesFiltro)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        return MySwal.fire('Sin resultados', `No se encontraron modulaciones en ${histLinea} para ${mesFiltro}.`, 'info');
+      }
+
+      const datos = querySnapshot.docs.map(doc => doc.data());
+
+      // Mapeamos al formato exacto del Excel de la red interna
+      const filasExcel = datos.map(reg => ({
+        "Fecha": reg.fecha.split('-').reverse().join('/'), // Convierte 2026-04-12 a 12/04/2026
+        "N° de Tren": reg.tren,
+        "Equipo": reg.equipo,
+        "Ubicación": reg.ubicacion,
+        "Horario": reg.hora + ':00',
+        "Operador": reg.operador,
+        "Mes": reg.mes
+      }));
+
+      // Creamos y descargamos el archivo Excel
+      const worksheet = XLSX.utils.json_to_sheet(filasExcel);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, `Base de datos ${histLinea}`);
+      XLSX.writeFile(workbook, `Modulaciones_${histLinea}_${mesFiltro}.xlsx`);
+
+      MySwal.close();
+    } catch (error) {
+      console.error(error);
+      MySwal.fire('Error', 'Hubo un problema al generar el archivo.', 'error');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, 'Modulaciones'), { ...nuevoRegistro, exportado: false });
+      // Agregamos automáticamente la columna "mes" al guardar
+      const registroFinal = {
+        ...nuevoRegistro,
+        mes: obtenerNombreMes(nuevoRegistro.fecha),
+        exportado: false
+      };
+
+      await addDoc(collection(db, 'Modulaciones'), registroFinal);
       MySwal.fire({ title: 'Guardado', icon: 'success', timer: 800, showConfirmButton: false });
-      // Limpiamos campos de tren pero mantenemos operador y línea para rapidez
+      
+      // Limpiamos tren/equipo/ubicacion/hora, mantenemos fecha, línea y operador
       setNuevoRegistro(prev => ({ ...prev, tren: '', equipo: '', ubicacion: '', hora: '' }));
       fetchModulaciones();
     } catch (error) {
@@ -156,7 +201,7 @@ export const Modulacion = () => {
   return (
     <Container className="mt-5" style={{paddingTop: '30px'}}>
       
-      {/* FORMULARIO DE CARGA */}
+      {/* 1. FORMULARIO DE CARGA */}
       <Card className="p-4 shadow-sm mb-4 border-left-danger">
         <h2 className="text-danger mb-4 border-bottom pb-2">Carga de Modulaciones</h2>
         <Form onSubmit={handleSubmit}>
@@ -174,7 +219,23 @@ export const Modulacion = () => {
             <Col md={4}>
               <Form.Group>
                 <Form.Label className="fw-bold"><FontAwesomeIcon icon={faUser} /> Operador</Form.Label>
-                <Form.Control type="text" name="operador" value={nuevoRegistro.operador} onChange={handleChange} required placeholder="Nombre..." className="border-primary fw-bold" />
+                <Form.Control 
+                  list="lista-operadores"
+                  type="text" 
+                  name="operador" 
+                  value={nuevoRegistro.operador} 
+                  onChange={handleChange} 
+                  required 
+                  placeholder="Escribí para buscar..." 
+                  className="border-primary fw-bold" 
+                  autoComplete="off"
+                />
+                {/* Datalist enlazado al input para autocompletado */}
+                <datalist id="lista-operadores">
+                  {listaOperadores.map((op, index) => (
+                    <option key={index} value={op} />
+                  ))}
+                </datalist>
               </Form.Group>
             </Col>
             <Col md={4}>
@@ -198,23 +259,23 @@ export const Modulacion = () => {
         </Form>
       </Card>
       
-      {/* BOTÓN EXPORTACIÓN A BIGQUERY (CIERRE) */}
+      {/* 2. BOTÓN EXPORTACIÓN A BIGQUERY (CIERRE DIARIO) */}
       <Card className="p-4 mb-4 shadow-sm border-success bg-white">
           <Row className="align-items-center">
             <Col md={8}>
               <h4 className="text-success mb-0">Pendientes de Cierre</h4>
-              <p className="text-muted mb-0">Hay {registros.length} registros que aún no se han enviado a BigQuery.</p>
+              <p className="text-muted mb-0">Hay {registros.length} registros que aún no se han enviado a BigQuery/Looker.</p>
             </Col>
             <Col md={4} className="text-end">
                 <Button variant="success" size="lg" onClick={exportarABigQuery} className="fw-bold shadow">
                   <FontAwesomeIcon icon={faCloudUploadAlt} className="me-2" />
-                  CERRAR Y ENVIAR A BQ
+                  CERRAR Y ENVIAR
                 </Button>
             </Col>
           </Row>
       </Card>
 
-      {/* BUSCADOR Y FILTROS */}
+      {/* 3. BUSCADOR EN TABLA ACTIVA */}
       <Card className="p-3 mb-4 bg-light shadow-sm border-info">
           <Row className="align-items-end">
             <Col md={3}>
@@ -225,11 +286,11 @@ export const Modulacion = () => {
                     <option value="Tigre">Tigre</option>
                 </Form.Select>
             </Col>
-            <Col md={2}>
+            <Col md={3}>
                 <Form.Label className="small fw-bold text-info">Operador:</Form.Label>
                 <Form.Control size="sm" type="text" value={filtroOperador} onChange={(e) => setFiltroOperador(e.target.value)} placeholder="Buscar..." />
             </Col>
-            <Col md={2}>
+            <Col md={3}>
                 <Form.Label className="small fw-bold text-info">Fecha:</Form.Label>
                 <Form.Control size="sm" type="date" value={filtroFecha} onChange={(e) => setFiltroFecha(e.target.value)} />
             </Col>
@@ -239,17 +300,11 @@ export const Modulacion = () => {
                   BUSCAR EN TABLA
                 </Button>
             </Col>
-            <Col md={2}>
-                <Button variant="outline-success" size="sm" className="w-100 fw-bold" onClick={exportarCSV}>
-                  <FontAwesomeIcon icon={faFileCsv} className="me-2" />
-                  EXPORTAR CSV
-                </Button>
-            </Col>
           </Row>
       </Card>
 
-      {/* TABLA DE MODULACIONES */}
-      <Table responsive striped bordered hover className="shadow-sm border-danger">
+      {/* 4. TABLA DE MODULACIONES ACTIVAS */}
+      <Table responsive striped bordered hover className="shadow-sm border-danger mb-5">
         <thead className="table-dark text-center">
           <tr>
             <th>Línea</th><th>Fecha</th><th>Tren</th><th>Ubicación</th><th>Hora</th><th>Operador</th><th>Acciones</th>
@@ -259,7 +314,7 @@ export const Modulacion = () => {
           {resultadosBusqueda.map((reg) => (
             <tr key={reg.id}>
               <td><span className={`badge ${reg.linea === 'Suárez' ? 'bg-primary' : 'bg-success'}`}>{reg.linea}</span></td>
-              <td>{reg.fecha}</td>
+              <td>{reg.fecha.split('-').reverse().join('/')}</td>
               <td className="fw-bold text-danger">{reg.tren}</td>
               <td>{reg.ubicacion}</td>
               <td>{reg.hora} hs</td>
@@ -275,6 +330,60 @@ export const Modulacion = () => {
           )}
         </tbody>
       </Table>
+
+      {/* 5. NUEVA SECCIÓN: ARCHIVO HISTÓRICO (EXCEL PARA GDE) */}
+      <Card className="p-4 shadow-sm mb-5 border-secondary bg-white">
+        <h4 className="text-secondary mb-3 border-bottom pb-2">
+          <FontAwesomeIcon icon={faHistory} className="me-2" />
+          Descargar Archivo Histórico Mensual
+        </h4>
+        <p className="text-muted small mb-3">Seleccioná los parámetros para generar el Excel estructurado de meses anteriores.</p>
+        <Row className="align-items-end">
+          <Col md={3}>
+            <Form.Group>
+              <Form.Label className="fw-bold">Línea</Form.Label>
+              <Form.Select value={histLinea} onChange={(e) => setHistLinea(e.target.value)}>
+                <option value="">Seleccionar...</option>
+                <option value="Suárez">Suárez</option>
+                <option value="Tigre">Tigre</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={3}>
+            <Form.Group>
+              <Form.Label className="fw-bold">Mes</Form.Label>
+              <Form.Select value={histMes} onChange={(e) => setHistMes(e.target.value)}>
+                <option value="">Seleccionar...</option>
+                <option value="enero">Enero</option>
+                <option value="febrero">Febrero</option>
+                <option value="marzo">Marzo</option>
+                <option value="abril">Abril</option>
+                <option value="mayo">Mayo</option>
+                <option value="junio">Junio</option>
+                <option value="julio">Julio</option>
+                <option value="agosto">Agosto</option>
+                <option value="septiembre">Septiembre</option>
+                <option value="octubre">Octubre</option>
+                <option value="noviembre">Noviembre</option>
+                <option value="diciembre">Diciembre</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col md={2}>
+            <Form.Group>
+              <Form.Label className="fw-bold">Año</Form.Label>
+              <Form.Control type="number" value={histAnio} onChange={(e) => setHistAnio(e.target.value)} />
+            </Form.Group>
+          </Col>
+          <Col md={4}>
+            <Button variant="outline-dark" className="w-100 fw-bold shadow-sm" onClick={descargarExcelHistorico}>
+              <FontAwesomeIcon icon={faFileExcel} className="me-2 text-success" />
+              GENERAR EXCEL MENSUAL
+            </Button>
+          </Col>
+        </Row>
+      </Card>
+
     </Container>
   );
 };

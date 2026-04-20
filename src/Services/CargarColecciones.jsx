@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { collection, getDocs, query, where, writeBatch, doc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig/firebase'; 
+import { db } from '../firebaseConfig/firebase'; 
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import { Card, Button, Form, ProgressBar, Row, Col } from 'react-bootstrap';
