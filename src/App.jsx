@@ -31,6 +31,7 @@ import { Eventos } from './components/GDE/Eventos.jsx';
 import { CargaAUV }  from "./components/Diesel/AUV.jsx";
 import { EditarPeditina } from "./components/GDE/EditarPeditina.jsx";
 import { EditarTarjeta } from "./components/GDE/EditarTarjeta.jsx";
+import { Dashboard } from './components/GDE/Reportes.jsx';
 import { Pendientes } from './Services/Pendientes.jsx';
 import {Emergencia} from "./Services/Emergencia";
 import {CargarColecciones} from "./Services/CargarColecciones";
@@ -61,6 +62,7 @@ export const App = () => {
             <Route element={<RutasPrivadas />}>
               <Route path="/novedades" element={<Novedades />} />
               <Route path="/modulacion" element={<Modulacion />} />
+              <Route path="/reportes" element={<Dashboard />} />
               <Route path="/tarjetas" element={<Tarjetas />} /> {/* Usando tu componente original */}
               <Route path="/eventos" element={<Eventos />} />
               <Route path="/cortesecc" element={<CorteSecc />} />
