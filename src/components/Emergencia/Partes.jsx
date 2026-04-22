@@ -13,7 +13,7 @@ export const PartesDiarios = () => {
   };
 
   const franjas = Object.keys(programadosPorFranja);
-  const sectoresBase = ["Retiro-Tigre", "Retiro-J.L. Suárez", "Retiro-Mitre", "V. Ballester-Zárate", "Victoria-Capilla", "tren de la Costa"];
+  const sectoresBase = ["Retiro-Tigre", "Retiro-J.L. Suárez", "Retiro-Mitre", "V. Ballester-Zárate", "Victoria-Capilla", "Tren de la Costa"];
 
   const [franja, setFranja] = useState("");
   const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
