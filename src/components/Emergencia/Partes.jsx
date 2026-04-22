@@ -56,7 +56,7 @@ export const PartesDiarios = () => {
   };
 
   const enviarMail = () => {
-    let cuerpo = `Parte Diario - Línea Mitre\nFecha: ${fecha}\nFranja: ${franja}\n\n`;
+    let cuerpo = `Parte Diario - Línea Mitre/TdC\nFecha: ${fecha}\nFranja: ${franja}\n\n`;
     cuerpo += `Sector | Prog | Dem | Canc | Corr | Punt | %Cump | %Reg\n`;
     cuerpo += `----------------------------------------------------------\n`;
 
@@ -71,7 +71,7 @@ export const PartesDiarios = () => {
 
   return (
     <Card className="p-4 shadow-sm border-0">
-      <h3 className="text-primary mb-4">Carga de Parte Diario (P1)</h3>
+      <h3 className="text-primary mb-4">Carga de Parte Diario </h3>
       
       <Row className="mb-4">
         <Col md={3}>
