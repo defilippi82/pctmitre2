@@ -7,9 +7,9 @@ export const PartesDiarios = () => {
   // Modificá estos números según el cronograma vigente
   const programadosPorFranja = {
     "00:00 - 06:30": { "Retiro-Tigre": 25, "Retiro-J.L. Suárez": 20, "Retiro-Mitre": 10, "V. Ballester-Zárate": 5, "Victoria-Capilla": 4, "Tren de la Costa": 3 },
-    "06:30 - 08:00": { "Retiro-Tigre": 35, "Retiro-J.L. Suárez": 30, "Retiro-Mitre": 15, "V. Ballester-Zárate": 8, "Victoria-Capilla": 6, "tren de la Costa": 2 },
-    "08:00 - 13:00": { "Retiro-Tigre": 60, "Retiro-J.L. Suárez": 55, "Retiro-Mitre": 25, "V. Ballester-Zárate": 12, "Victoria-Capilla": 10, "tren de la Costa": 2 },
-    "13:00 - 18:00": { "Retiro-Tigre": 70, "Retiro-J.L. Suárez": 65, "Retiro-Mitre": 30, "V. Ballester-Zárate": 15, "Victoria-Capilla": 12, "tren de la Costa": 2 }
+    "06:30 - 08:00": { "Retiro-Tigre": 35, "Retiro-J.L. Suárez": 30, "Retiro-Mitre": 15, "V. Ballester-Zárate": 8, "Victoria-Capilla": 6, "Tren de la Costa": 2 },
+    "08:00 - 13:00": { "Retiro-Tigre": 60, "Retiro-J.L. Suárez": 55, "Retiro-Mitre": 25, "V. Ballester-Zárate": 12, "Victoria-Capilla": 10, "Tren de la Costa": 2 },
+    "13:00 - 18:00": { "Retiro-Tigre": 70, "Retiro-J.L. Suárez": 65, "Retiro-Mitre": 30, "V. Ballester-Zárate": 15, "Victoria-Capilla": 12, "Tren de la Costa": 2 }
   };
 
   const franjas = Object.keys(programadosPorFranja);
@@ -55,15 +55,31 @@ export const PartesDiarios = () => {
     return { corridos, puntuales, cumplimiento, regularidad, cancSuma };
   };
 
-  const enviarMail = () => {
-    let cuerpo = `Parte Diario - Línea Mitre/TdC\nFecha: ${fecha}\nFranja: ${franja}\n\n`;
-    cuerpo += `Sector | Prog | Dem | Canc | Corr | Punt | %Cump | %Reg\n`;
+ const enviarMail = () => {
+    const alinear = (txt, largo) => txt.toString().padEnd(largo, ' ');
+
+    let cuerpo = `==========================================================\n`;
+    cuerpo += `      PARTE DIARIO DE CIRCULACIÓN - LÍNEA MITRE/TdC       \n`;
+    cuerpo += `==========================================================\n`;
+    cuerpo += `Fecha: ${fecha}          | Franja: ${franja}\n`;
     cuerpo += `----------------------------------------------------------\n`;
+    cuerpo += `${alinear("SECTOR", 19)}| PRG | DEM | CAN | COR | PUN | %CUMP | %REG\n`;
+    cuerpo += `-------------------|-----|-----|-----|-----|-----|-------|-------\n`;
 
     datos.forEach(s => {
       const { corridos, puntuales, cumplimiento, regularidad, cancSuma } = calcularFila(s);
-      cuerpo += `${s.nombre} | ${s.prog} | ${s.dem} | ${cancSuma} | ${corridos} | ${puntuales} | ${cumplimiento}% | ${regularidad}%\n`;
+      cuerpo += `${alinear(s.nombre, 19)}| ` +
+                `${alinear(s.prog, 3)} | ` +
+                `${alinear(s.dem, 3)} | ` +
+                `${alinear(cancSuma, 3)} | ` +
+                `${alinear(corridos, 3)} | ` +
+                `${alinear(puntuales, 3)} | ` +
+                `${cumplimiento}% | ` +
+                `${regularidad}%\n`;
     });
+
+    cuerpo += `----------------------------------------------------------\n`;
+    cuerpo += `Generado por Sistema de Grupo de Estudio - Mitre`;
 
     const mailtoUrl = `mailto:Mariano.DaRiva@trenesargentinos.gob.ar?subject=Parte diario (${fecha}) - ${franja}&body=${encodeURIComponent(cuerpo)}`;
     window.location.href = mailtoUrl;
@@ -97,8 +113,8 @@ export const PartesDiarios = () => {
             <th>Canc. Total</th>
             <th>Corr.</th>
             <th>Punt.</th>
-            <th>% Cump.</th>
-            <th>% Reg.</th>
+            <th>Cump.</th>
+            <th>Reg.</th>
           </tr>
         </thead>
         <tbody>
