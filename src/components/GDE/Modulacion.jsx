@@ -8,10 +8,11 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { faTrash, faEdit, faUser, faFileExcel, faCloudUploadAlt, faSearch, faHistory } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChartBar, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import * as XLSX from 'xlsx'; // Usamos XLSX para descargar Excel real
 
 // Importamos la lista de operadores que creamos aparte
-import { listaOperadores } from './Operadores'; 
+import { listaOperadores } from '../../Services/Operadores'; 
 
 const MySwal = withReactContent(Swal);
 
@@ -302,6 +303,31 @@ export const Modulacion = () => {
             </Col>
           </Row>
       </Card>
+
+      <Card className="p-4 shadow-sm mb-4 border-left-primary bg-light">
+  <Row className="align-items-center">
+    <Col md={1} className="text-center">
+      <FontAwesomeIcon icon={faChartBar} size="3x" className="text-primary" />
+    </Col>
+    <Col md={8}>
+      <h4 className="text-primary mb-1">Tablero de Control - Looker Studio</h4>
+      <p className="text-muted mb-0">
+        Visualizá estadísticas en tiempo real, cruce de datos con operadores y análisis de frecuencias.
+      </p>
+    </Col>
+    <Col md={3} className="text-end">
+      <Button 
+        variant="primary" 
+        size="lg" 
+        className="fw-bold shadow"
+        onClick={() => window.open('https://datastudio.google.com/embed/reporting/8cb76e4e-20d8-419e-bb39-0a941d7afbd0/page/C0OvF', '_blank')}
+      >
+        <FontAwesomeIcon icon={faExternalLinkAlt} className="me-2" />
+        ABRIR TABLERO
+      </Button>
+    </Col>
+  </Row>
+</Card>
 
       {/* 4. TABLA DE MODULACIONES ACTIVAS */}
       <Table responsive striped bordered hover className="shadow-sm border-danger mb-5">

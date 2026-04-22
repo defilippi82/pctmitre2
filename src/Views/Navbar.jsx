@@ -72,7 +72,7 @@ export const NavbarComponent = () => {
                   <NavDropdown.Item href="#/modulacion">Modulaciones T y E</NavDropdown.Item>
                   <NavDropdown.Item href="#/tarjetas">Trenes de Carga</NavDropdown.Item>
                   <NavDropdown.Item href="#/eventos">Eventos</NavDropdown.Item>
-                  <NavDropdown.Item href="#/reportes">Reportes</NavDropdown.Item>
+                  
                 </NavDropdown>
               )}
 
