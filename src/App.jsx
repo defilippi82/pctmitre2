@@ -23,7 +23,7 @@ import {Novedades} from "./components/Personal/Novedades.jsx"
 import {RegistrarTarjetas} from "./components/Personal/RegistrarTarjetas.jsx";
 import { Direcciones} from "./components/Emergencia/Direcciones"
 import { Barreras } from "./components/Emergencia/Barreras.jsx";
-import {Partes} from "./components/Emergencia/Partes.jsx";
+import {PartesDiarios} from "./components/Emergencia/Partes.jsx";
 import { BarrerasNormalizadas } from "./components/Emergencia/Normales.jsx";
 import { Modulacion } from "./components/GDE/Modulacion.jsx";
 import { Tarjetas } from "./components/GDE/Tarjetas.jsx";
@@ -72,7 +72,7 @@ export const App = () => {
               <Route path="/barreras" element={<Barreras />} />
               <Route path="/emergencia" element={<Emergencia />} />
               <Route path="/direcciones" element={<Direcciones />} />
-              <Route path="/partes" element={<Partes />} />
+              <Route path="/partes" element={<PartesDiarios />} />
               <Route path="/pool" element={<Pool />} />
               <Route path="/sabana" element={<Sabana />} />
               <Route path="/registrartarjetas" element={<RegistrarTarjetas />} />
