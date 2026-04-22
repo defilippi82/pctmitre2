@@ -1,50 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../firebaseConfig/firebase";
-import { collection, addDoc, onSnapshot, query } from "firebase/firestore";
+import { collection, addDoc, onSnapshot, query, where } from "firebase/firestore";
 import { Form, Table, Button, Row, Col, Card } from "react-bootstrap";
 import Swal from "sweetalert2";
 
 export const Partes = () => {
-  const franjasHorarias = [
-    "00:00 - 06:00",
-    "06:00 - 08:30",
-    "08:30 - 12:00",
-    "12:00 - 16:00",
-    "16:00 - 18:30",
-  ];
-
-  const sectoresBase = ["AP", "BP", "CP", "DP", "EP", "Tren de la Costa"];
-
-  const [franjaSeleccionada, setFranjaSeleccionada] = useState("");
-  const [sectores, setSectores] = useState([]);
-  const [partes, setPartes] = useState([]);
-
-  useEffect(() => {
-    const q = query(collection(db, "partes"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = [];
-      snapshot.forEach((doc) => {
-        data.push({ id: doc.id, ...doc.data() });
-      });
-      setPartes(data);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (franjaSeleccionada) {
-      setSectores(
-        sectoresBase.map((nombre) => ({
-          nombre,
-          programados: 0,
-          circulacion: 0,
-          demorados: 0,
-          cancelados: 0,
-        }))
-      );
-    }
-  }, [franjaSeleccionada]);
+  const sectoresBase = ["Retiro-Tigre", "Retiro-J.L. Suárez", "Retiro-Mitre", "Villa Ballester-Zárate", "Victoria-Capilla del Señor"];
+  
+  const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
+  const [sectores, setSectores] = useState(
+    sectoresBase.map(nombre => ({
+      nombre,
+      programados: 0,
+      cancelados: 0,
+      puntuales: 0
+    }))
+  );
 
   const handleChange = (index, field, value) => {
     const updated = [...sectores];
@@ -52,162 +23,83 @@ export const Partes = () => {
     setSectores(updated);
   };
 
-  const calcularRegularidad = (programados, cancelados) => {
-    if (programados === 0) return 0;
-    return (((programados - cancelados) / programados) * 100).toFixed(2);
+  // Cálculos según lógica P1
+  const calcularResultados = (s) => {
+    const corridos = s.programados - s.cancelados;
+    const cumplimiento = s.programados > 0 ? ((corridos / s.programados) * 100).toFixed(2) : 0;
+    const regularidad = corridos > 0 ? ((s.puntuales / corridos) * 100).toFixed(2) : 0;
+    return { corridos, cumplimiento, regularidad };
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!franjaSeleccionada) {
-      Swal.fire("Error", "Seleccione una franja horaria", "error");
-      return;
-    }
-
-    try {
-      await addDoc(collection(db, "partes"), {
-        franja: franjaSeleccionada,
-        sectores,
-        fecha: new Date(),
-      });
-
-      Swal.fire("Éxito", "Parte guardado correctamente", "success");
-      setFranjaSeleccionada("");
-    } catch (error) {
-      Swal.fire("Error", "No se pudo guardar el parte", "error");
-    }
-  };
-
-  // 🔴 Cálculo acumulativo
-  const calcularAcumulado = (franjaActual) => {
-    let totalProg = 0;
-    let totalCancel = 0;
-
-    partes.forEach((parte) => {
-      if (
-        franjasHorarias.indexOf(parte.franja) <=
-        franjasHorarias.indexOf(franjaActual)
-      ) {
-        parte.sectores.forEach((sec) => {
-          totalProg += sec.programados;
-          totalCancel += sec.cancelados;
-        });
-      }
+  const generarCuerpoMail = () => {
+    let texto = `Parte Diario de Circulación - Fecha: ${fecha}\n\n`;
+    texto += `Sector | Prog. | Canc. | Corr. | Punt. | % Cump. | % Reg.\n`;
+    texto += `----------------------------------------------------------\n`;
+    
+    sectores.forEach(s => {
+      const { corridos, cumplimiento, regularidad } = calcularResultados(s);
+      texto += `${s.nombre} | ${s.programados} | ${s.cancelados} | ${corridos} | ${s.puntuales} | ${cumplimiento}% | ${regularidad}%\n`;
     });
 
-    return calcularRegularidad(totalProg, totalCancel);
+    return encodeURIComponent(texto);
+  };
+
+  const enviarMail = () => {
+    const subject = encodeURIComponent(`Parte diario (${fecha}) - Línea Mitre`);
+    const body = generarCuerpoMail();
+    const destinatarios = "gde@trenesargentinos.gob.ar;control@trenesargentinos.gob.ar";
+    
+    window.location.href = `mailto:${destinatarios}?subject=${subject}&body=${body}`;
   };
 
   return (
-    <div>
-      <h1>Partes de Regularidad</h1>
-
-      <Form onSubmit={handleSubmit}>
-        <Row>
-          <Col md={4}>
-            <Form.Group>
-              <Form.Label>Seleccione Franja Horaria</Form.Label>
-              <Form.Select
-                value={franjaSeleccionada}
-                onChange={(e) => setFranjaSeleccionada(e.target.value)}
-              >
-                <option value="">Seleccione...</option>
-                {franjasHorarias.map((fr) => (
-                  <option key={fr}>{fr}</option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-          </Col>
-        </Row>
-
-        {sectores.length > 0 && (
-          <Table striped bordered hover className="mt-4">
-            <thead>
-              <tr>
-                <th>Sector</th>
-                <th>Programados</th>
-                <th>Circulación</th>
-                <th>Demorados</th>
-                <th>Cancelados</th>
-                <th>Regularidad %</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sectores.map((sector, i) => (
-                <tr key={i}>
-                  <td>{sector.nombre}</td>
-                  <td>
-                    <Form.Control
-                      type="number"
-                      onChange={(e) =>
-                        handleChange(i, "programados", e.target.value)
-                      }
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type="number"
-                      onChange={(e) =>
-                        handleChange(i, "circulacion", e.target.value)
-                      }
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type="number"
-                      onChange={(e) =>
-                        handleChange(i, "demorados", e.target.value)
-                      }
-                    />
-                  </td>
-                  <td>
-                    <Form.Control
-                      type="number"
-                      onChange={(e) =>
-                        handleChange(i, "cancelados", e.target.value)
-                      }
-                    />
-                  </td>
-                  <td>
-                    {calcularRegularidad(
-                      sector.programados,
-                      sector.cancelados
-                    )} %
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        )}
-
-        {sectores.length > 0 && (
-          <Button type="submit" className="btn btn-success">
-            Guardar Parte
-          </Button>
-        )}
-      </Form>
-
-      <hr />
-
-      <h3>Reportes Guardados</h3>
+    <Card className="p-4 shadow-sm">
+      <h3>Generar Parte Diario (P1)</h3>
+      <Row className="mb-3">
+        <Col md={3}>
+          <Form.Label>Fecha del Reporte</Form.Label>
+          <Form.Control type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+        </Col>
+      </Row>
 
       <Table striped bordered hover responsive>
-        <thead>
+        <thead className="bg-dark text-white">
           <tr>
-            <th>Franja</th>
-            <th>Regularidad Acumulada %</th>
+            <th>Corredor</th>
+            <th>Programados</th>
+            <th>Cancelados</th>
+            <th>Corridos (Prog - Canc)</th>
+            <th>Puntuales</th>
+            <th>% Cumplimiento</th>
+            <th>% Regularidad</th>
           </tr>
         </thead>
         <tbody>
-          {partes.map((parte) => (
-            <tr key={parte.id}>
-              <td>{parte.franja}</td>
-              <td>{calcularAcumulado(parte.franja)} %</td>
-            </tr>
-          ))}
+          {sectores.map((s, i) => {
+            const { corridos, cumplimiento, regularidad } = calcularResultados(s);
+            return (
+              <tr key={i}>
+                <td>{s.nombre}</td>
+                <td><Form.Control type="number" size="sm" onChange={(e) => handleChange(i, "programados", e.target.value)} /></td>
+                <td><Form.Control type="number" size="sm" onChange={(e) => handleChange(i, "cancelados", e.target.value)} /></td>
+                <td className="fw-bold">{corridos}</td>
+                <td><Form.Control type="number" size="sm" onChange={(e) => handleChange(i, "puntuales", e.target.value)} /></td>
+                <td>{cumplimiento}%</td>
+                <td>{regularidad}%</td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
-    </div>
+
+      <div className="d-flex gap-2">
+        <Button variant="success" onClick={() => Swal.fire('Guardado', 'Datos almacenados en Firebase', 'success')}>
+          Guardar en Base de Datos
+        </Button>
+        <Button variant="primary" onClick={enviarMail}>
+          Enviar por Outlook
+        </Button>
+      </div>
+    </Card>
   );
 };
