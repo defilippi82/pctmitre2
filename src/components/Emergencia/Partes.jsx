@@ -56,32 +56,37 @@ export const PartesDiarios = () => {
   };
 
  const enviarMail = () => {
+    // Función auxiliar para mantener las columnas perfectamente alineadas
     const alinear = (txt, largo) => txt.toString().padEnd(largo, ' ');
 
-    let cuerpo = `==========================================================\n`;
-    cuerpo += `      PARTE DIARIO DE CIRCULACIÓN - LÍNEA MITRE/TdC       \n`;
-    cuerpo += `==========================================================\n`;
-    cuerpo += `Fecha: ${fecha}          | Franja: ${franja}\n`;
-    cuerpo += `----------------------------------------------------------\n`;
-    cuerpo += `${alinear("SECTOR", 19)}| PRG | DEM | CAN | COR | PUN | %CUMP | %REG\n`;
-    cuerpo += `-------------------|-----|-----|-----|-----|-----|-------|-------\n`;
+    let cuerpo = `PARTE DIARIO - LÍNEA MITRE/ TdC\n`;
+    cuerpo += `__________________________________________________________\n\n`;
+    cuerpo += `Fecha: ${fecha} | Franja: ${franja}\n`;
+    cuerpo += `__________________________________________________________\n\n`;
 
+    // Encabezado de la tabla con anchos fijos
+    cuerpo += `${alinear("SECTOR", 19)}| PRG | DEM | CAN | COR | PUN | %REG  |\n`;
+    cuerpo += `-------------------|-----|-----|-----|-----|-----|-------|\n`;
+
+    // Cuerpo de la tabla
     datos.forEach(s => {
-      const { corridos, puntuales, cumplimiento, regularidad, cancSuma } = calcularFila(s);
+      const { corridos, puntuales, regularidad, cancSuma } = calcularFila(s);
+      
       cuerpo += `${alinear(s.nombre, 19)}| ` +
                 `${alinear(s.prog, 3)} | ` +
                 `${alinear(s.dem, 3)} | ` +
                 `${alinear(cancSuma, 3)} | ` +
                 `${alinear(corridos, 3)} | ` +
                 `${alinear(puntuales, 3)} | ` +
-                `${cumplimiento}% | ` +
-                `${regularidad}%\n`;
+                `${alinear(regularidad + '%', 5)} |\n`;
     });
 
-    cuerpo += `----------------------------------------------------------\n`;
-    cuerpo += `Generado por Sistema de Grupo de Estudio - Mitre`;
+    cuerpo += `__________________________________________________________\n`;
+    cuerpo += `Generado por Grupo de Estudio - Mitre`;
 
-    const mailtoUrl = `mailto:Mariano.DaRiva@trenesargentinos.gob.ar?subject=Parte diario (${fecha}) - ${franja}&body=${encodeURIComponent(cuerpo)}`;
+    // Armado y envío del correo
+    const subject = `Parte diario - Mitre/TdC (${fecha}) - ${franja}`;
+    const mailtoUrl = `mailto:Mariano.DaRiva@trenesargentinos.gob.ar?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(cuerpo)}`;
     window.location.href = mailtoUrl;
   };
 
