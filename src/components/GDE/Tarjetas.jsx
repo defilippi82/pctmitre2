@@ -196,13 +196,14 @@ export const Tarjetas = () => {
       <Table responsive striped bordered hover className="shadow-sm">
         <thead className="table-dark text-center">
           <tr>
-            <th>Tren</th><th>Ingreso</th><th>Egreso</th><th>Origen/Destino</th><th>KM</th><th>Tiempo</th><th>Toneladas</th><th>Acciones</th>
+            <th>Tren</th><th>Loc.</th><th>Ingreso</th><th>Egreso</th><th>Origen/Destino</th><th>KM</th><th>Tiempo</th><th>Toneladas</th><th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {registrosFiltrados.map((reg) => (
             <tr key={reg.id} className="text-center align-middle">
               <td><strong>{reg.tren}</strong> <br/><small>{reg.sentido}</small></td>
+              <td>{reg.locomotora}</td>
               <td>{reg.fechaIngreso} <br/> {reg.horaIngreso}</td>
               <td>{reg.fechaEgreso} <br/> {reg.horaEgreso}</td>
               <td><small>{reg.origen} → {reg.destino}</small></td>
